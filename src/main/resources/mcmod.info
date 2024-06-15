@@ -1,0 +1,16 @@
+[
+{
+  "modid": "blacksmithTweaks",
+  "name": "Blacksmith Tweaks",
+  "description": "Every wanted basic tools to be more interesting? Ever wanted more interesting combat, ever wanted to hold a weapon so strong it strikes fear into the very heart of any mob in the area? Then this mod is for you!",
+  "version": "1.1",
+  "mcversion": "1.7.10",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["GamingB3ast", "Modbder"],
+  "credits": "Modbder for the original mod (Buff tools)!",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
