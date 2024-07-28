@@ -104,13 +104,13 @@ public class BT_GuiAnvil extends GuiCommon{
     
     public int getReforgeCost(ItemStack stk)
     {
-    	if(!BT_Utils.itemHasEffect(stk))return 10;
+    	if(!BT_Utils.itemHasEffect(stk))return 5;
     	NBTTagCompound primalTag = MiscUtils.getStackTag(stk);
     	NBTTagCompound tag = primalTag.getCompoundTag("BT_TagList");
     	if(tag.hasKey("BT_Buffs"))
     	{
     		DummyData[] data = DataStorage.parseData(tag.getString("BT_Buffs"));
-    		return data.length*5;
+    		return data.length*2;
     	}
     	return 0;
     }
