@@ -7,6 +7,7 @@ import DummyCore.Utils.DataStorage;
 import DummyCore.Utils.DummyData;
 import DummyCore.Utils.EnumRarityColor;
 import DummyCore.Utils.MiscUtils;
+import cpw.mods.fml.common.gameevent.TickEvent;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -19,6 +20,7 @@ import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -43,6 +45,8 @@ import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 
 
 public class BT_Handler{
+
+
 
 	@SubscribeEvent
 	public void onCrafting(ItemCraftedEvent event) {
@@ -195,17 +199,36 @@ public class BT_Handler{
 			}
 		}
 	}
-	
+
 	@SubscribeEvent(priority=EventPriority.LOW)
 	public void event_LivingHurtEvent(LivingHurtEvent event)
 	{
+		double critValue = 0.0;
 		DamageSource dms = event.source;
 		if(dms instanceof EntityDamageSource)
 		{
 			EntityDamageSource edms = (EntityDamageSource)dms;
+
 			if(edms.damageType.contains("player") && edms.getSourceOfDamage() instanceof EntityPlayer)
 			{
 				EntityPlayer p = (EntityPlayer) edms.getSourceOfDamage();
+				for(int aSlot = 0; aSlot < 4; aSlot++)
+				{
+					if (p.getCurrentArmor(aSlot) != null && BT_Utils.itemHasEffect(p.getCurrentArmor(aSlot))) {
+						ItemStack stack = p.getCurrentArmor(aSlot);
+						String dummyDataString = stack.getTagCompound().getCompoundTag("BT_TagList").getString("BT_Buffs");
+						DummyData[] d = DataStorage.parseData(dummyDataString);
+						for (int i1 = 0; i1 < d.length; ++i1)
+						{
+							DummyData data = d[i1];
+							String name = data.fieldName;
+							double value = Double.parseDouble(data.fieldValue);
+							if (name.contains("crit")) {
+								critValue+=value;
+							}
+						}
+					}
+				}
 				if(p.getCurrentEquippedItem() != null && BT_Utils.itemHasEffect(p.getCurrentEquippedItem()))
 				{
 					ItemStack stack = p.getCurrentEquippedItem();
@@ -241,10 +264,8 @@ public class BT_Handler{
 						}
 						if(name.contains("crit"))
 						{
-							if(p.worldObj.rand.nextDouble() <= value)
-							{
-								event.ammount*=3;
-							}
+							critValue += value;
+
 						}
 						if(name.contains("speed"))
 						{
@@ -257,9 +278,9 @@ public class BT_Handler{
 							p.swingProgressInt -= value*100;
 							event.setCanceled(true);
 						}
-						if(name.contains("poisonous"))
+						if(name.contains("poison"))
 						{
-							if(p.worldObj.rand.nextDouble() <= value)
+							if(p.worldObj.rand.nextDouble() <= value || 0 <= value)
 							{
 								event.entityLiving.addPotionEffect(new PotionEffect(19, 450, 3));
 							}
@@ -273,9 +294,80 @@ public class BT_Handler{
 						}
 					}
 				}
+				if(p.worldObj.rand.nextDouble() <= critValue)
+				{
+					event.ammount*=2.5F;
+				}
+			}
+			if(event.entityLiving instanceof EntityPlayer)
+			{
+
+				EntityPlayer p = (EntityPlayer) event.entityLiving;
+				World w = p.worldObj;
+				for(int aSlot = 0; aSlot < 4; aSlot++)
+				{
+					if (p.getCurrentArmor(aSlot) != null && BT_Utils.itemHasEffect(p.getCurrentArmor(aSlot))) {
+						ItemStack stack = p.getCurrentArmor(aSlot);
+						String dummyDataString = stack.getTagCompound().getCompoundTag("BT_TagList").getString("BT_Buffs");
+						DummyData[] d = DataStorage.parseData(dummyDataString);
+						for (int i1 = 0; i1 < d.length; ++i1) {
+							DummyData data = d[i1];
+							String name = data.fieldName;
+							double value = Double.parseDouble(data.fieldValue);
+
+							if (name.contains("durability")) {
+								if (value > 0 && w.rand.nextDouble() < value && stack.getItemDamage() > 0) {
+									stack.setItemDamage(stack.getItemDamage() - 1);
+								}
+								if (value < 0 && w.rand.nextDouble() < -value) {
+									stack.setItemDamage(stack.getItemDamage() + 1);
+								}
+
+							}
+							if (name.contains("bind"))
+							{
+								if(p.worldObj.rand.nextDouble() <= value)
+                                {
+									if (edms.getSourceOfDamage() instanceof EntityMob)
+										((EntityLiving)edms.getSourceOfDamage()).addPotionEffect((new PotionEffect(2, 200, 1000)));
+                                }
+							}
+							if (name.contains("damage"))
+							{
+								if (value > 0 && w.rand.nextDouble() < value) {
+									if (edms.getSourceOfDamage() instanceof EntityMob)
+										((EntityLiving)edms.getSourceOfDamage()).addPotionEffect((new PotionEffect(7, 1, 1)));
+                                }
+								if (value < 0 && w.rand.nextDouble() < -value) {
+									event.ammount -= event.ammount*value;
+								}
+							}
+							if (name.contains("poison"))
+							{
+								if(p.worldObj.rand.nextDouble() <= value) {
+									if (edms.getSourceOfDamage() instanceof EntityMob) {
+										((EntityLiving) edms.getSourceOfDamage()).addPotionEffect((new PotionEffect(19, 450, 3)));
+									}
+								}
+							}
+							if (name.contains("life"))
+							{
+								if(p.worldObj.rand.nextDouble() <= value/3)
+								{
+									p.addPotionEffect(new PotionEffect(6, 1, 1));
+									if (edms.getSourceOfDamage() instanceof EntityMob)
+										((EntityLiving)edms.getSourceOfDamage()).addPotionEffect(new PotionEffect(7, 1, 1));
+
+								}
+							}
+
+						}
+					}
+				}
 			}
 		}
 	}
+	private static double hasteValue = 0.0;
 	
 	@SubscribeEvent
 	public void event_BreakSpeed(BreakSpeed event)
@@ -295,32 +387,36 @@ public class BT_Handler{
 				double value = Double.parseDouble(data.fieldValue);
 				if(name.contains("speed"))
 				{
-					float speed = event.originalSpeed;
-					if(value < 0)
-					{
-						value = -value;
-						float mainSpeed = (float) (speed*value);
-						event.newSpeed = speed-mainSpeed;
-					}else
-					{
-						float mainSpeed = (float) (speed*value);
-						event.newSpeed = speed+mainSpeed;
-					}
+					hasteValue += value;
 				}
 			}
 		}
+		float speed = event.originalSpeed;
+		if(hasteValue < 0)
+		{
+			hasteValue = -hasteValue;
+			float mainSpeed = (float) (speed*hasteValue);
+			event.newSpeed = speed-mainSpeed;
+		}else
+		{
+			float mainSpeed = (float) (speed*hasteValue);
+			event.newSpeed = speed+mainSpeed;
+		}
 	}
 	EntityAIAvoidEntity avoidPlayerTask;
-
+	private EntityMob mob = null;
 	@SubscribeEvent
-	public void onItemHeld(PlayerEvent event) {
+	public void PlayerTickEvent(PlayerEvent event)
+	{
 		EntityPlayer p = event.entityPlayer;
 		World w = p.worldObj;
-		EntityMob mob = null;
+		double speedValue = 0.0;
+		double slowValue = 0.0;
+		hasteValue = 0.0;
+
 
 
 		if (p.ticksExisted < 80) return;
-
 		if (p.getCurrentEquippedItem() != null && BT_Utils.itemHasEffect(p.getCurrentEquippedItem())) {
 			ItemStack stack = p.getCurrentEquippedItem();
 			String dummyDataString = stack.getTagCompound().getCompoundTag("BT_TagList").getString("BT_Buffs");
@@ -330,33 +426,79 @@ public class BT_Handler{
 				String name = data.fieldName;
 				double value = Double.parseDouble(data.fieldValue);
 				if (name.contains("swift"))
-					p.addPotionEffect(new PotionEffect(1, 1, (int) value - 1));
+					speedValue += value;
 				else if (name.contains("slow"))
-					p.addPotionEffect(new PotionEffect(2, 1, (int) (-1 * (value + 1))));
+					slowValue -= value;
 				if (name.contains("fear")) {
-					if(p.ticksExisted % 50 == 0) {
-						for (Object obj : w.loadedEntityList) {
-							if (obj instanceof EntityMob) {
-								mob = (EntityMob) obj;
-								if(mob.getDistanceToEntity(p) <= 10) {
-									avoidPlayerTask = new EntityAIAvoidEntity(mob, p.getClass(), (float) 12.0D, value * 1.0D, 1.2D);
-									mob.tasks.addTask(1, avoidPlayerTask);
-								}
-								else if(mob.getDistanceToEntity(p) <= 15)
-								{
-									mob.tasks.removeTask(avoidPlayerTask);
-								}
-							}
-						}
-					}
-
-				}
-				else if(avoidPlayerTask != null && mob != null) {
+					assignFleeTask(p, w, value);
+				} else if (avoidPlayerTask != null && mob != null) {
 					mob.tasks.removeTask(avoidPlayerTask);
-                    avoidPlayerTask = null;
+					avoidPlayerTask = null;
+				}
+			}
+		}
+		for (int aSlot = 0; aSlot < 4; aSlot++)
+		{
+			if (p.getCurrentArmor(aSlot) != null && BT_Utils.itemHasEffect(p.getCurrentArmor(aSlot)))
+			{
+				ItemStack stack = p.getCurrentArmor(aSlot);
+				String dummyDataString = stack.getTagCompound().getCompoundTag("BT_TagList").getString("BT_Buffs");
+				DummyData[] d = DataStorage.parseData(dummyDataString);
+				for (int i1 = 0; i1 < d.length; ++i1)
+				{
+					DummyData data = d[i1];
+					String name = data.fieldName;
+					double value = Double.parseDouble(data.fieldValue);
+					if (name.contains("swift"))
+					{
+						speedValue += value;
+					}
+					if (name.contains("slow"))
+					{
+						slowValue+= value;
+					}
+					if (name.contains("speed"))
+					{
+						hasteValue+=value;
+					}
+					if (name.contains("fear")) {
+						assignFleeTask(p, w, value);
+					} else if (avoidPlayerTask != null && mob != null) {
+						mob.tasks.removeTask(avoidPlayerTask);
+						avoidPlayerTask = null;
+					}
+				}
+			}
+		}
+		if (speedValue > 0)
+		{
+			p.addPotionEffect(new PotionEffect(1, 1, (int)(speedValue-1)));
+		}
+		else if (slowValue < 0)
+		{
+			p.addPotionEffect(new PotionEffect(2, 1, (int)(-1 * (slowValue+1))));
+		}
+
+
+	}
+
+	private void assignFleeTask(EntityPlayer p, World w, double value)
+	{
+		if (p.ticksExisted % 50 == 0) {
+			for (Object obj : w.loadedEntityList) {
+				if (obj instanceof EntityMob) {
+					mob = (EntityMob) obj;
+					if (mob.getDistanceToEntity(p) <= 10) {
+						avoidPlayerTask = new EntityAIAvoidEntity(mob, p.getClass(), (float) 12.0D, value * 1.0D, 1.2D);
+						mob.tasks.addTask(1, avoidPlayerTask);
+					} else if (mob.getDistanceToEntity(p) <= 15) {
+						mob.tasks.removeTask(avoidPlayerTask);
+					}
 				}
 			}
 		}
 	}
+
+
 
 }

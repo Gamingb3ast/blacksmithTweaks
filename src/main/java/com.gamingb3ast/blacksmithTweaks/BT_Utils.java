@@ -23,7 +23,7 @@ public class BT_Utils {
 		int type = getISType(stk);
 		if(type != -1)
 		{
-			if(type == 0)
+			if(type == 1)
 			{
 				MiscUtils.createNBTTag(stk);
 				NBTTagCompound itemTag = stk.getTagCompound();
@@ -66,19 +66,29 @@ public class BT_Utils {
 	{
 		if(isItemBuffable(stk))
 		{
-			if(stk.getItem() instanceof ItemArmor || stk.getItem() instanceof ISpecialArmor)
-				return 1;
-			return 0;
+			return 1;
 		}
 		return -1;
 	}
-	public static boolean isItemOnList(ItemStack stk)
+	public static boolean isItemOnBlackList(ItemStack stk)
 	{
 		boolean output = false;
-		for(int i = 0; i < BT_Config.list.length; i++)
+		for(int i = 0; i < BT_Config.blacklist.length; i++)
 		{
-			if(BT_Config.list[i] == stk.getItem()) {
-				//If whitelist is on, then output = false, and returns true, if whitelist is off, then output = true, returns false
+			if(BT_Config.blacklist[i] == stk.getItem()) {
+				output = true;
+			}
+		}
+		return output;
+
+	}
+
+	public static boolean isItemOnWhiteList(ItemStack stk)
+	{
+		boolean output = false;
+		for(int i = 0; i < BT_Config.whitelist.length; i++)
+		{
+			if(BT_Config.whitelist[i] == stk.getItem()) {
 				output = true;
 			}
 		}
@@ -90,10 +100,9 @@ public class BT_Utils {
 		boolean enable = false;
 		if(!enable)
 			enable = isTConstructTool(stk);
-		if(!BT_Config.whitelist)
-			return ((stk != null && stk.getItem() != null && !(stk.getItem() instanceof ItemBlock) && stk.getItem().isItemTool(stk)) && !isItemOnList(stk)) || enable;
-		else
-			return (isItemOnList(stk)) || enable;
+
+		return ((stk != null && stk.getItem() != null && !(stk.getItem() instanceof ItemBlock) && stk.getItem().isItemTool(stk)) && !isItemOnBlackList(stk)) || isItemOnWhiteList(stk) || enable;
+
 	}
 	
 	public static boolean itemHasEffect(ItemStack stack)
