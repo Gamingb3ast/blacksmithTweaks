@@ -33,7 +33,7 @@ public class BT_Mod {
 
 	public static BT_Anvil anvil;
 
-	@SidedProxy(serverSide="com.gamingb3ast.blacksmithTweaksBT_ServerProxy",clientSide="com.gamingb3ast.blacksmithTweaks.BT_ClientProxy")
+	@SidedProxy(serverSide="com.gamingb3ast.blacksmithTweaks.BT_ServerProxy",clientSide="com.gamingb3ast.blacksmithTweaks.BT_ClientProxy")
 	public static BT_ServerProxy proxy;
 	@EventHandler
 	public void preinit(FMLPreInitializationEvent event)
