@@ -33,8 +33,8 @@ public class BT_Mod {
 
 	public static BT_Anvil anvil;
 
-	@SidedProxy(serverSide="com.gamingb3ast.blacksmithTweaksBT_ServerProxy",clientSide="com.gamingb3ast.blacksmithTweaks.BT_ClientProxy")
-	static BT_ServerProxy proxy;
+	@SidedProxy(serverSide="com.gamingb3ast.blacksmithTweaks.BT_ServerProxy",clientSide="com.gamingb3ast.blacksmithTweaks.BT_ClientProxy")
+	public static BT_ServerProxy proxy;
 	@EventHandler
 	public void preinit(FMLPreInitializationEvent event)
 	{
@@ -111,58 +111,44 @@ public class BT_Mod {
 
 		BT_Effect eaa = new BT_Effect("BT.Effect.Damaged", "Damaged", EnumRarityColor.BROKEN, new DummyData("damage", -0.2D)).registerEffect();
 		BT_Effect eab = new BT_Effect("BT.Effect.Dull", "Dull", EnumRarityColor.BROKEN, new DummyData("damage", -0.20D)).registerEffect();
-
-		BT_Effect eac = new BT_Effect("BT.Effect.Sluggish", "Sluggish", EnumRarityColor.BROKEN, new DummyData("speed", -0.23D), new DummyData("slow", -1)).registerEffect();
-
-		BT_Effect ead = new BT_Effect("BT.Effect.Slow", "Slow", EnumRarityColor.BROKEN, new DummyData("speed", -0.15D)).registerEffect();
-		BT_Effect eae = new BT_Effect("BT.Effect.Lazy", "Lazy", EnumRarityColor.BROKEN, new DummyData("speed", -0.08D)).registerEffect();
+		BT_Effect eac = new BT_Effect("BT.Effect.Sluggish", "Sluggish", EnumRarityColor.BROKEN, new DummyData("speed", -0.46D), new DummyData("slow", -1)).registerEffect();
+		BT_Effect ead = new BT_Effect("BT.Effect.Slow", "Slow", EnumRarityColor.BROKEN, new DummyData("speed", -0.3D)).registerEffect();
+		BT_Effect eae = new BT_Effect("BT.Effect.Lazy", "Lazy", EnumRarityColor.BROKEN, new DummyData("speed", -0.16D)).registerEffect();
 		BT_Effect eaf = new BT_Effect("BT.Effect.Cracky", "Cracky", EnumRarityColor.BROKEN, new DummyData("durability", -0.2D)).registerEffect();
-		BT_Effect eag = new BT_Effect("BT.Effect.Broken", "Broken", EnumRarityColor.BROKEN, new DummyData("damage", -0.4D),new DummyData("speed", -0.2D)).registerEffect();
-		BT_Effect eah = new BT_Effect("BT.Effect.Annoying", "Annoying", EnumRarityColor.BROKEN, new DummyData("damage", -0.2D),new DummyData("speed", -0.15D)).registerEffect();
-		BT_Effect eai = new BT_Effect("BT.Effect.Shoddy", "Shoddy", EnumRarityColor.BROKEN, new DummyData("damage", -0.2D),new DummyData("speed", -0.15D)).registerEffect();
+		BT_Effect eag = new BT_Effect("BT.Effect.Broken", "Broken", EnumRarityColor.BROKEN, new DummyData("damage", -0.4D),new DummyData("speed", -0.4D)).registerEffect();
+		BT_Effect eah = new BT_Effect("BT.Effect.Annoying", "Annoying", EnumRarityColor.BROKEN, new DummyData("damage", -0.2D),new DummyData("speed", -0.3D)).registerEffect();
+		BT_Effect eai = new BT_Effect("BT.Effect.Shoddy", "Shoddy", EnumRarityColor.BROKEN, new DummyData("damage", -0.2D),new DummyData("speed", -0.3D)).registerEffect();
 		BT_Effect eaj = new BT_Effect("BT.Effect.Terrible", "Terrible", EnumRarityColor.BROKEN, new DummyData("damage", -0.2D),new DummyData("speed", -0.15D),new DummyData("durability", -0.08D)).registerEffect();
-		BT_Effect eak = new BT_Effect("BT.Effect.Unhappy", "Unhappy", EnumRarityColor.BROKEN, new DummyData("damage", -0.15D),new DummyData("speed", -0.1D),new DummyData("durability", -0.1D)).registerEffect();
-
-		BT_Effect eal = new BT_Effect("BT.Effect.Heavy", "Heavy", EnumRarityColor.COMMON, new DummyData("damage", 0.15D),new DummyData("speed", -0.15D), new DummyData("slow", -2)).registerEffect();
-		BT_Effect eam = new BT_Effect("BT.Effect.Light", "Light", EnumRarityColor.COMMON, new DummyData("damage", -0.15D),new DummyData("speed", 0.15D), new DummyData("swift", 1)).registerEffect();
-
+		BT_Effect eak = new BT_Effect("BT.Effect.Unhappy", "Unhappy", EnumRarityColor.BROKEN, new DummyData("damage", -0.15D),new DummyData("speed", -0.2D),new DummyData("durability", -0.1D)).registerEffect();
+		BT_Effect eal = new BT_Effect("BT.Effect.Heavy", "Heavy", EnumRarityColor.COMMON, new DummyData("damage", 0.15D),new DummyData("speed", -0.3D), new DummyData("slow", -2)).registerEffect();
+		BT_Effect eam = new BT_Effect("BT.Effect.Light", "Light", EnumRarityColor.COMMON, new DummyData("damage", -0.15D),new DummyData("speed", 0.3D), new DummyData("swift", 1)).registerEffect();
 		BT_Effect ean = new BT_Effect("BT.Effect.Ruthless", "Ruthless", EnumRarityColor.COMMON, new DummyData("damage", 0.2D),new DummyData("speed", -0.15D), new DummyData("fear", 1)).registerEffect();
-		BT_Effect eao = new BT_Effect("BT.Effect.Shameful", "Shameful", EnumRarityColor.COMMON, new DummyData("damage", -0.2D),new DummyData("speed", -0.2D),new DummyData("durability", 0.15D)).registerEffect();
-
-		BT_Effect eap = new BT_Effect("BT.Effect.Bulky", "Bulky", EnumRarityColor.GOOD, new DummyData("damage", 0.15D),new DummyData("speed", -0.15D),new DummyData("durability", 0.1D), new DummyData("slow", -1), new DummyData("bind", 0.4)).registerEffect();
-
-		BT_Effect eaq = new BT_Effect("BT.Effect.Nasty", "Nasty", EnumRarityColor.GOOD, new DummyData("damage", 0.05D),new DummyData("speed", 0.01D),new DummyData("durability", 0.1D)).registerEffect();
+		BT_Effect eao = new BT_Effect("BT.Effect.Shameful", "Shameful", EnumRarityColor.COMMON, new DummyData("damage", -0.2D),new DummyData("speed", -0.4D),new DummyData("durability", 0.15D)).registerEffect();
+		BT_Effect eap = new BT_Effect("BT.Effect.Bulky", "Bulky", EnumRarityColor.GOOD, new DummyData("damage", 0.15D),new DummyData("speed", -0.2D),new DummyData("durability", 0.1D), new DummyData("slow", -1), new DummyData("bind", 0.4)).registerEffect();
+		BT_Effect eaq = new BT_Effect("BT.Effect.Nasty", "Nasty", EnumRarityColor.GOOD, new DummyData("damage", 0.05D),new DummyData("speed", 0.1D),new DummyData("durability", 0.1D)).registerEffect();
 		BT_Effect ear = new BT_Effect("BT.Effect.Sharp", "Sharp", EnumRarityColor.UNCOMMON, new DummyData("damage", 0.2D)).registerEffect();
 		BT_Effect eas = new BT_Effect("BT.Effect.Pointy", "Pointy", EnumRarityColor.UNCOMMON, new DummyData("damage", 0.1D)).registerEffect();
 		BT_Effect eat = new BT_Effect("BT.Effect.Hurtful", "Hurtful", EnumRarityColor.UNCOMMON, new DummyData("damage", 0.1D)).registerEffect();
 		BT_Effect eau = new BT_Effect("BT.Effect.Strong", "Strong", EnumRarityColor.UNCOMMON, new DummyData("durability", 0.15D)).registerEffect();
-
 		BT_Effect eav = new BT_Effect("BT.Effect.Forceful", "Forceful", EnumRarityColor.UNCOMMON, new DummyData("durability", 0.15D), new DummyData("bind", 0.4)).registerEffect();
-
-		BT_Effect eaw = new BT_Effect("BT.Effect.Quick", "Quick", EnumRarityColor.UNCOMMON, new DummyData("speed", 0.1D), new DummyData("swift", 1), new DummyData("damage", -0.2)).registerEffect();
-		BT_Effect eax = new BT_Effect("BT.Effect.Nimble", "Nimble", EnumRarityColor.UNCOMMON, new DummyData("speed", 0.05D), new DummyData("swift", 1), new DummyData("damage", -0.15)).registerEffect();
-
+		BT_Effect eaw = new BT_Effect("BT.Effect.Quick", "Quick", EnumRarityColor.UNCOMMON, new DummyData("speed", 0.2D), new DummyData("swift", 1), new DummyData("damage", -0.2)).registerEffect();
+		BT_Effect eax = new BT_Effect("BT.Effect.Nimble", "Nimble", EnumRarityColor.UNCOMMON, new DummyData("speed", 0.15D), new DummyData("swift", 1), new DummyData("damage", -0.15)).registerEffect();
 		BT_Effect eay = new BT_Effect("BT.Effect.Zealous", "Zealous", EnumRarityColor.UNCOMMON, new DummyData("crit", 0.25D), new DummyData("fear", 1), new DummyData("lifesteal", 0.30)).registerEffect();
 		BT_Effect eaz = new BT_Effect("BT.Effect.Keen", "Keen", EnumRarityColor.UNCOMMON, new DummyData("crit", 0.30D)).registerEffect();
-
-		BT_Effect eba = new BT_Effect("BT.Effect.Massive", "Massive", EnumRarityColor.UNCOMMON, new DummyData("speed", 0.18D), new DummyData("bind", 0.6)).registerEffect();
-		BT_Effect ebb = new BT_Effect("BT.Effect.Large", "Large", EnumRarityColor.UNCOMMON, new DummyData("speed", 0.12D), new DummyData("bind", 0.5)).registerEffect();
-
-		BT_Effect ebc = new BT_Effect("BT.Effect.Demonic", "Demonic", EnumRarityColor.RARE, new DummyData("damage", 0.15D), new DummyData("crit", 0.15D), new DummyData("lifesteal", 0.40), new DummyData("fear", 1), new DummyData("swift", 1)).registerEffect();
-		BT_Effect ebd = new BT_Effect("BT.Effect.Agile", "Agile", EnumRarityColor.RARE, new DummyData("speed", 0.1D), new DummyData("crit", 0.1D), new DummyData("swift", 1)).registerEffect();
-
-		BT_Effect ebe = new BT_Effect("BT.Effect.Deadly", "Deadly", EnumRarityColor.RARE, new DummyData("damage", 0.1D), new DummyData("speed", 0.1D)).registerEffect();
+		BT_Effect eba = new BT_Effect("BT.Effect.Massive", "Massive", EnumRarityColor.UNCOMMON, new DummyData("speed", -0.15D), new DummyData("bind", 0.6)).registerEffect();
+		BT_Effect ebb = new BT_Effect("BT.Effect.Large", "Large", EnumRarityColor.UNCOMMON, new DummyData("speed", -0.1D), new DummyData("bind", 0.5)).registerEffect();
+		BT_Effect ebc = new BT_Effect("BT.Effect.Demonic", "Demonic", EnumRarityColor.RARE, new DummyData("speed", 0.4D), new DummyData("damage", 0.15D), new DummyData("crit", 0.15D), new DummyData("lifesteal", 0.40), new DummyData("fear", 1), new DummyData("swift", 1)).registerEffect();
+		BT_Effect ebd = new BT_Effect("BT.Effect.Agile", "Agile", EnumRarityColor.RARE, new DummyData("speed", 0.3D), new DummyData("crit", 0.1D), new DummyData("swift", 1)).registerEffect();
+		BT_Effect ebe = new BT_Effect("BT.Effect.Deadly", "Deadly", EnumRarityColor.RARE, new DummyData("damage", 0.1D), new DummyData("speed", 0.16D)).registerEffect();
 		BT_Effect ebf = new BT_Effect("BT.Effect.Unpleasant", "Unpleasant", EnumRarityColor.RARE, new DummyData("damage", 0.05D), new DummyData("durability", 0.15D), new DummyData("fear", 1)).registerEffect();
-		BT_Effect ebg = new BT_Effect("BT.Effect.Rapid", "Rapid", EnumRarityColor.RARE, new DummyData("speed", 0.15D), new DummyData("durability", 0.10D)).registerEffect();
-
+		BT_Effect ebg = new BT_Effect("BT.Effect.Rapid", "Rapid", EnumRarityColor.RARE, new DummyData("speed", 0.25D), new DummyData("durability", 0.10D)).registerEffect();
 		BT_Effect ebh = new BT_Effect("BT.Effect.Godly", "Godly", EnumRarityColor.UNIQUE, new DummyData("damage", 0.15D), new DummyData("crit", 0.25D), new DummyData("lifesteal", 0.50), new DummyData("durability", 0.15D), new DummyData("swift", 2)).registerEffect();
 		BT_Effect ebi = new BT_Effect("BT.Effect.Rusty", "Rusty", EnumRarityColor.UNIQUE, new DummyData("damage", -0.08D), new DummyData("durability", -0.1D), new DummyData("poison", 0.60)).registerEffect();
-
 		BT_Effect ebj = new BT_Effect("BT.Effect.Superior", "Superior", EnumRarityColor.UNIQUE, new DummyData("damage", 0.1D), new DummyData("crit", 0.3D), new DummyData("durability", 0.1D), new DummyData("swift", 1)).registerEffect();
-		BT_Effect ebk = new BT_Effect("BT.Effect.Dangerous", "Dangerous", EnumRarityColor.UNIQUE, new DummyData("damage", 0.05D), new DummyData("lifesteal", 0.60), new DummyData("crit", 0.22D), new DummyData("fear", 1), new DummyData("speed", 0.05D), new DummyData("swift", 1), new DummyData("poison", 0.60)).registerEffect();
-		BT_Effect ebl = new BT_Effect("BT.Effect.Savage", "Savage", EnumRarityColor.UNIQUE, new DummyData("damage", 0.1D), new DummyData("speed", 0.1D), new DummyData("durability", 0.10D), new DummyData("swift", 2), new DummyData("poison", 0.60)).registerEffect();
-		BT_Effect ebm = new BT_Effect("BT.Effect.Murderous", "Murderous", EnumRarityColor.UNIQUE, new DummyData("damage", 0.07D), new DummyData("crit", 0.35D), new DummyData("fear", 1), new DummyData("speed", 0.06D), new DummyData("swift", 2), new DummyData("poison", 0.60), new DummyData("bind", 0.4)).registerEffect();
-		BT_Effect ebn = new BT_Effect("BT.Effect.Legendary", "Legendary", EnumRarityColor.LEGENDARY, new DummyData("damage", 0.15D), new DummyData("lifesteal", 0.70), new DummyData("speed", 0.1D), new DummyData("fear", 1), new DummyData("crit", 0.45D), new DummyData("durability", 0.15D), new DummyData("swift", 2), new DummyData("poison", 0.60), new DummyData("bind", 0.4)).registerEffect();
+		BT_Effect ebk = new BT_Effect("BT.Effect.Dangerous", "Dangerous", EnumRarityColor.UNIQUE, new DummyData("damage", 0.05D), new DummyData("lifesteal", 0.60), new DummyData("crit", 0.22D), new DummyData("fear", 1), new DummyData("speed", 0.3D), new DummyData("swift", 1), new DummyData("poison", 0.60)).registerEffect();
+		BT_Effect ebl = new BT_Effect("BT.Effect.Savage", "Savage", EnumRarityColor.UNIQUE, new DummyData("damage", 0.1D), new DummyData("speed", 0.42D), new DummyData("durability", 0.10D), new DummyData("swift", 2), new DummyData("poison", 0.60)).registerEffect();
+		BT_Effect ebm = new BT_Effect("BT.Effect.Murderous", "Murderous", EnumRarityColor.UNIQUE, new DummyData("damage", 0.07D), new DummyData("crit", 0.35D), new DummyData("fear", 1), new DummyData("speed", 0.18D), new DummyData("swift", 2), new DummyData("poison", 0.60), new DummyData("bind", 0.4)).registerEffect();
+		BT_Effect ebn = new BT_Effect("BT.Effect.Legendary", "Legendary", EnumRarityColor.LEGENDARY, new DummyData("damage", 0.15D), new DummyData("lifesteal", 0.70), new DummyData("speed", 0.5D), new DummyData("fear", 1), new DummyData("crit", 0.45D), new DummyData("durability", 0.15D), new DummyData("swift", 2), new DummyData("poison", 0.60), new DummyData("bind", 0.4)).registerEffect();
 
 	}
 }
