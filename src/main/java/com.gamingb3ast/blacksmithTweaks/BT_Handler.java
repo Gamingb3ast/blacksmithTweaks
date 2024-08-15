@@ -50,6 +50,7 @@ public class BT_Handler{
 
 	@SubscribeEvent
 	//https://github.com/MinecraftForge/MinecraftForge/issues/3780#issuecomment-286099327
+	//https://www.bokmcdok.com/itemcraftedevent-doesnt-do-what-you-think/
 	public void onCrafting(ItemCraftedEvent event) {
 		EntityPlayer player = event.player;
 		ItemStack item = event.crafting;
