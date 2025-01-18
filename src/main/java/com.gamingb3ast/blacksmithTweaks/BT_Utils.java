@@ -7,14 +7,20 @@ import java.util.UUID;
 import DummyCore.Utils.DataStorage;
 import DummyCore.Utils.DummyData;
 import DummyCore.Utils.MiscUtils;
+import ibxm.Player;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.*;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.ISpecialArmor;
+import net.minecraftforge.common.util.Constants;
 
 public class BT_Utils {
 	
@@ -58,10 +64,16 @@ public class BT_Utils {
 				itemTag.setTag("display", display);
 				itemTag.setTag("BT_TagList", buffsTag);
 				stk.setTagCompound(itemTag);
-			}
+							}
 		}
 	}
-	
+	public static NBTBase savedNBT;
+	public static void copyNBTData(ItemStack source) {
+		if (source != null && source.hasTagCompound() && itemHasEffect(source)) {
+			savedNBT = source.getTagCompound().copy();
+		}
+	}
+
 	public static int getISType(ItemStack stk)
 	{
 		if(isItemBuffable(stk))
@@ -116,6 +128,24 @@ public class BT_Utils {
 			}
 		}
 		return false;
+	}
+
+
+	public static void buffItemsInContainer(Container cont, EntityPlayer player)
+	{
+		if(cont == null) return;
+        for(int i = 0; i < cont.inventorySlots.size(); i++)
+        {
+            ItemStack stk = cont.getSlot(i).getStack();
+            if(stk!= null && stk.getItem()!= null)
+            {
+                if(isItemBuffable(stk) && !itemHasEffect(stk))
+                {
+                    addRandomEffects(stk);
+                    cont.detectAndSendChanges();
+                }
+            }
+        }
 	}
 	
 	public static boolean isTConstructTool(ItemStack stk)

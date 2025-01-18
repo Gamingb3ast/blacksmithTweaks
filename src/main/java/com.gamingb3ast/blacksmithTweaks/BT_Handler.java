@@ -7,7 +7,10 @@ import DummyCore.Utils.DataStorage;
 import DummyCore.Utils.DummyData;
 import DummyCore.Utils.EnumRarityColor;
 import DummyCore.Utils.MiscUtils;
+import cpw.mods.fml.common.SidedProxy;
+import cpw.mods.fml.common.asm.transformers.ItemStackTransformer;
 import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.network.IGuiHandler;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -16,12 +19,15 @@ import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIAvoidEntity;
+import net.minecraft.entity.monster.EntityCaveSpider;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryCraftResult;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
@@ -31,10 +37,9 @@ import net.minecraft.util.EntityDamageSource;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.player.AttackEntityEvent;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.*;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
@@ -42,6 +47,8 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.ItemCraftedEvent;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import static com.gamingb3ast.blacksmithTweaks.BT_Config.buffApplicationMethod;
+import static com.gamingb3ast.blacksmithTweaks.BT_Utils.*;
 
 
 public class BT_Handler{
@@ -49,9 +56,8 @@ public class BT_Handler{
 
 
 	@SubscribeEvent
-	//https://github.com/MinecraftForge/MinecraftForge/issues/3780#issuecomment-286099327
-	//https://www.bokmcdok.com/itemcraftedevent-doesnt-do-what-you-think/
 	public void onCrafting(ItemCraftedEvent event) {
+
 		EntityPlayer player = event.player;
 		ItemStack item = event.crafting;
 		IInventory matrix = event.craftMatrix;
@@ -67,57 +73,96 @@ public class BT_Handler{
 
 		if(!player.worldObj.isRemote && item != null)
 		{
-			if(GuiScreen.isShiftKeyDown()) {
-				if (player.experienceLevel < 30) {
-					if(player.getActivePotionEffect(Potion.digSlowdown) == null) {
-						player.addChatMessage(message1);
-						player.addChatMessage(message2);
-						player.addChatMessage(message3);
+			if(buffApplicationMethod == 1) {
+				if (GuiScreen.isShiftKeyDown()) {
+					if (player.experienceLevel < 30) {
+						if (player.getActivePotionEffect(Potion.digSlowdown) == null) {
+							player.addChatMessage(message1);
+							player.addChatMessage(message2);
+							player.addChatMessage(message3);
+
+						}
+						if (player.getActivePotionEffect(Potion.blindness) != null) {
+							//Harming
+							player.addPotionEffect(new PotionEffect(7, 1, 0));
+							//Nausea
+							player.addPotionEffect(new PotionEffect(9, 500, 1));
+						}
+						if (player.getActivePotionEffect(Potion.digSlowdown) != null) {
+							//Hunger
+							player.addPotionEffect(new PotionEffect(17, 500, 1));
+							//Weakness
+							player.addPotionEffect(new PotionEffect(18, 1000, 1));
+							//Blindness
+							player.addPotionEffect(new PotionEffect(15, 1000, 0));
+
+
+							player.addChatMessage(message4);
+						}
+						//Slowness
+						player.addPotionEffect(new PotionEffect(2, 1000, 2));
+						//Negative Jump Boost
+						player.addPotionEffect(new PotionEffect(8, 1000, -3));
+						//Miner's fatigue
+						player.addPotionEffect(new PotionEffect(4, 1000, 2));
+
+
+						player.experienceLevel = Math.max(player.experienceLevel - 1, 0);
+						player.worldObj.spawnEntityInWorld(new EntityXPOrb(player.worldObj, player.posX, player.posY, player.posZ, 1));
+						if(player.worldObj.isRemote)
+							Minecraft.getMinecraft().displayGuiScreen(null);
+
 
 					}
-					if (player.getActivePotionEffect(Potion.blindness) != null) {
-						//Harming
-						player.addPotionEffect(new PotionEffect(7, 1, 0));
-						//Nausea
-						player.addPotionEffect(new PotionEffect(9, 500, 1));
-					}
-					if (player.getActivePotionEffect(Potion.digSlowdown) != null) {
-						//Hunger
-						player.addPotionEffect(new PotionEffect(17, 500, 1));
-						//Weakness
-						player.addPotionEffect(new PotionEffect(18, 1000, 1));
-						//Blindness
-						player.addPotionEffect(new PotionEffect(15, 1000, 0));
-
-
-						player.addChatMessage(message4);
-					}
-					//Slowness
-					player.addPotionEffect(new PotionEffect(2, 1000, 2));
-					//Negative Jump Boost
-					player.addPotionEffect(new PotionEffect(8, 1000, -3));
-					//Miner's fatigue
-					player.addPotionEffect(new PotionEffect(4, 1000, 2));
-
-
-					player.experienceLevel = Math.max(player.experienceLevel - 1, 0);
-					player.worldObj.spawnEntityInWorld(new EntityXPOrb(player.worldObj, player.posX, player.posY, player.posZ, 1));
-					Minecraft.getMinecraft().displayGuiScreen(null);
-
-
-
 
 				}
+				BT_Utils.addRandomEffects(item);
+			}
+			//TODO: Create this method, reads through the entire inventory for changes, find a good way to save inventory after every change so that shift click changes can be properly compared
+			else if(buffApplicationMethod == 2)
+			{
 
 			}
-			BT_Utils.addRandomEffects(item);
 		}
 	}
-	
+
+	@SubscribeEvent
+	public void onOpenedContainer(PlayerOpenContainerEvent event)
+	{
+		if(buffApplicationMethod == 4) {
+			EntityPlayer player = event.entityPlayer;
+			Container cont = player.openContainer;
+			BT_Utils.buffItemsInContainer(cont, player);
+		}
+
+	}
+
+
 	@SubscribeEvent
 	public void event_ItemTooltipEvent(ItemTooltipEvent event)
 	{
+		//TODO: Attempt to relocate this application method into the addRandom method
 		ItemStack stack = event.itemStack;
+		if(buffApplicationMethod == 3) {
+			if (!BT_Utils.itemHasEffect(stack)) {
+				if (BT_Utils.isItemBuffable(stack)) {
+					if (BT_Utils.savedNBT != null) {
+						stack.setTagCompound((NBTTagCompound) savedNBT);
+						System.out.println("Set " + stack.getDisplayName() + " to buff" + savedNBT);
+					}
+					else {
+						addRandomEffects(stack);
+					}
+				}
+			} else if(BT_Utils.isItemBuffable(stack) && savedNBT != stack.getTagCompound()) {
+				BT_Utils.copyNBTData(stack);
+			}
+			else
+			{
+				savedNBT = null;
+			}
+		}
+
 		if(stack.hasTagCompound() && stack.getTagCompound().hasKey("BT_TagList"))
 		{
 			NBTTagCompound tag = (NBTTagCompound)stack.getTagCompound().getTag("BT_TagList");
@@ -134,12 +179,13 @@ public class BT_Handler{
 					double da = Double.parseDouble(data.fieldValue);
 					da *= 100;
 					if(da > 0)
-					event.toolTip.add(EnumRarityColor.GOOD.getRarityColor()+"+"+(int)da+"% "+mainName);
+						event.toolTip.add(EnumRarityColor.GOOD.getRarityColor()+"+"+(int)da+"% "+mainName);
 					else
-					event.toolTip.add(EnumRarityColor.ULTIMATE.getRarityColor()+(int)da+"% "+mainName);
+						event.toolTip.add(EnumRarityColor.ULTIMATE.getRarityColor()+(int)da+"% "+mainName);
 				}
 			}
 		}
+
 	}
 	
 	@SubscribeEvent

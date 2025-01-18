@@ -22,6 +22,7 @@ public class BT_Config extends Configuration{
 
 	public static Item[] blacklist;
 	public static Item[] whitelist;
+	public static int buffApplicationMethod;
 	public static String CONFIG_GENERAL = "General";
 
 	public BT_Config(File configFile)
@@ -67,7 +68,7 @@ public class BT_Config extends Configuration{
 		+ "\n To write this data you need to follow the simple rules: after : put ||, then put an actual name of one of the 10 possible effects. Then put : again, and after that write your value. It can be below 0, should never be an integer unless specified"
 		+ "\n This value is persentage-based, and it scales, as 1 = 100%, and 0.25 = 25%. Some effects only except integer values, such as 'swift', 'fear', and 'slow', THESE ARE THE ONLY EFFECTS THAT ACCEPT INTEGER VALUES, PLEASE GIVE THE CORRECT TYPE OF NUMBER TO THE CORRECT EFFECT. "
 		+ "\n If you want to add more than one effect, ust put || after the value you have last written, and start writing another data string. But remember, that || represents the beginning of the new datastring, so something like |||| will most likely lead to crash."
-		+ "\n You Can also create a blacklist and whitelist for items which you be given buffs when crafted, simply do this by adding the item name to the list as shown in the config."
+		+ "\n You Can also create a blacklist and whitelist for items which will be given buffs, simply do this by adding the item name to the list as shown in the config."
 		+ "\n Please note that the whitelist overrides the blacklist!");
 		ConfigCategory c = this.getCategory("BT:Effect:Durable");
 		c.put("name", new Property("name","Durable",Type.STRING));
@@ -81,7 +82,16 @@ public class BT_Config extends Configuration{
 		//whitelist = this.get(CONFIG_GENERAL, "whitelist", false, "Is list a whitelist?").getBoolean();
 		String[] blacklistItems = this.get(CONFIG_GENERAL, "Blacklist", "minecraft:book", "Items to blacklist. Ignores tinkers construct tools").getString().split(", ");
 		//Whitelist
-		String[] whitelistItems = this.get(CONFIG_GENERAL, "Whitelist", "minecraft:iron_helmet, minecraft:iron_chestplate, minecraft:iron_leggings, minecraft:iron_boots", "Items to whitelist. Ignores tinkers construct tools").getString().split(", ");
+		String[] whitelistItems = this.get(CONFIG_GENERAL, "Whitelist", "minecraft:iron_helmet", "Items to whitelist. Ignores tinkers construct tools").getString().split(", ");
+		//Buff application type
+		int buffApplicationType = this.get(CONFIG_GENERAL, "Buff Application Type", 2, "This is the method that will be used to apply buffs to tools and armor. The different types are the following:" +
+				"\n 1: Classic. Buffs are applied when crafting the item, holding shift will prevent buffs from being applied but will give you negative status effects unless you are above level 30 " +
+				"\n 2: Crafting Reworked. Buffs are always applied when crafting the item, shifting will do nothing" +
+				"\n 3: Tooltip. Buffs are applied when you hover over the item and will apply to any valid item even if it was in a chest. The only exception being if you de-buffed the item using the reforging anvil" +
+				"\n 4: Container open. An alternative to Tooltip, visually works the same as Tooltip but instead it runs through every item in the currently opened container and applies buffs to the valid items. Also skips items that were debuffed in the reforging anvil" +
+				"\n 5: Buffs are only applied via reforging anvil (This will be more relevant in a future update)" +
+				"\n Any other number will result in buff application being disabled" +
+				"\n WARNING: SOME OF THESE WILL NOT WORK WITH CERTAIN MODS, THIS CONFIG OPTION EXISTS SO YOU CAN HAVE ALTERNATIVES IN CASE OF BUGS OR CRASHES").getInt();
 
 		//Create data
 		Set s = this.getCategoryNames();
@@ -101,7 +111,7 @@ public class BT_Config extends Configuration{
 			}
 		}
 
-
+		buffApplicationMethod = buffApplicationType;
 
 
 			String mod, item;
