@@ -85,10 +85,10 @@ public class BT_Config extends Configuration{
 		String[] whitelistItems = this.get(CONFIG_GENERAL, "Whitelist", "minecraft:iron_helmet", "Items to whitelist. Ignores tinkers construct tools").getString().split(", ");
 		//Buff application type
 		int buffApplicationType = this.get(CONFIG_GENERAL, "Buff Application Type", 2, "This is the method that will be used to apply buffs to tools and armor. The different types are the following:" +
-				"\n 1: Classic. Buffs are applied when crafting the item, holding shift will prevent buffs from being applied but will give you negative status effects unless you are above level 30 " +
-				"\n 2: Crafting Reworked. Buffs are always applied when crafting the item, shifting will do nothing" +
-				"\n 3: Tooltip. Buffs are applied when you hover over the item and will apply to any valid item even if it was in a chest. The only exception being if you de-buffed the item using the reforging anvil" +
-				"\n 4: Container open. An alternative to Tooltip, visually works the same as Tooltip but instead it runs through every item in the currently opened container and applies buffs to the valid items. Also skips items that were debuffed in the reforging anvil" +
+				"\n 1: Classic. Buffs are applied when crafting the item, holding shift will prevent buffs from being applied but will give you negative status effects unless you are above level 30 (Inventory refresh required to see buffs applied to an item)" +
+				"\n 2: Crafting Reworked. Buffs are always applied when crafting the item, shifting will do nothing " +
+				"\n 3: Container. An alternative system, it runs through every item in the currently opened/updated container and applies buffs to the valid items. Also skips items that were debuffed in the reforging anvil" +
+				"\n 4: Tooltip Container. Alternative to Container, a hybrid between container update and item hover events, will apply to any valid item even if it was in a chest. The only exception being if you de-buffed the item using the reforging anvil (Is a bit more optimized via single slot checking)" +
 				"\n 5: Buffs are only applied via reforging anvil (This will be more relevant in a future update)" +
 				"\n Any other number will result in buff application being disabled" +
 				"\n WARNING: SOME OF THESE WILL NOT WORK WITH CERTAIN MODS, THIS CONFIG OPTION EXISTS SO YOU CAN HAVE ALTERNATIVES IN CASE OF BUGS OR CRASHES").getInt();

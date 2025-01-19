@@ -67,12 +67,7 @@ public class BT_Utils {
 							}
 		}
 	}
-	public static NBTBase savedNBT;
-	public static void copyNBTData(ItemStack source) {
-		if (source != null && source.hasTagCompound() && itemHasEffect(source)) {
-			savedNBT = source.getTagCompound().copy();
-		}
-	}
+
 
 	public static int getISType(ItemStack stk)
 	{
