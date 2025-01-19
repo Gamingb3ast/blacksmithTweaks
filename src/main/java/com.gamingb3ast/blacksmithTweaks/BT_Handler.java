@@ -73,8 +73,9 @@ public class BT_Handler{
 
 		if(!player.worldObj.isRemote && item != null)
 		{
+			boolean isShiftDown = BT_ShiftHandler.isPlayerShiftDown(player.getUniqueID());
 			if(buffApplicationMethod == 1) {
-				if (GuiScreen.isShiftKeyDown()) {
+				if (isShiftDown) {
 					if (player.experienceLevel < 30) {
 						if (player.getActivePotionEffect(Potion.digSlowdown) == null) {
 							player.addChatMessage(message1);
@@ -96,7 +97,6 @@ public class BT_Handler{
 							//Blindness
 							player.addPotionEffect(new PotionEffect(15, 1000, 0));
 
-
 							player.addChatMessage(message4);
 						}
 						//Slowness
@@ -109,60 +109,60 @@ public class BT_Handler{
 
 						player.experienceLevel = Math.max(player.experienceLevel - 1, 0);
 						player.worldObj.spawnEntityInWorld(new EntityXPOrb(player.worldObj, player.posX, player.posY, player.posZ, 1));
-						if(player.worldObj.isRemote)
-							Minecraft.getMinecraft().displayGuiScreen(null);
-
 
 					}
 
 				}
 				BT_Utils.addRandomEffects(item);
 			}
-			//TODO: Create this method, reads through the entire inventory for changes, find a good way to save inventory after every change so that shift click changes can be properly compared
-			else if(buffApplicationMethod == 2)
+			else if(buffApplicationMethod == 2 && isItemBuffable(item))
 			{
-
+				Container cont = player.openContainer;
+				if (isShiftDown)
+					BT_Utils.buffItemsInContainer(cont, player);
+				else
+					addRandomEffects(item);
 			}
+
+
 		}
 	}
 
 	@SubscribeEvent
 	public void onOpenedContainer(PlayerOpenContainerEvent event)
 	{
-		if(buffApplicationMethod == 4) {
-			EntityPlayer player = event.entityPlayer;
-			Container cont = player.openContainer;
+		EntityPlayer player = event.entityPlayer;
+		Container cont = player.openContainer;
+		if(buffApplicationMethod == 3) {
 			BT_Utils.buffItemsInContainer(cont, player);
+
+		}
+		else if(buffApplicationMethod == 4)
+		{
+			ItemStack stack = null;
+			if(itemToBuffIndex != -1)
+				 stack = cont.getSlot(itemToBuffIndex).getStack();
+			if(stack != null)
+				if(!itemHasEffect(stack) && isItemBuffable(stack))
+				{
+					addRandomEffects(stack);
+					itemToBuffIndex = -1;
+				}
 		}
 
 	}
 
-
+	private int itemToBuffIndex;
 	@SubscribeEvent
 	public void event_ItemTooltipEvent(ItemTooltipEvent event)
 	{
-		//TODO: Attempt to relocate this application method into the addRandom method
 		ItemStack stack = event.itemStack;
-		if(buffApplicationMethod == 3) {
-			if (!BT_Utils.itemHasEffect(stack)) {
-				if (BT_Utils.isItemBuffable(stack)) {
-					if (BT_Utils.savedNBT != null) {
-						stack.setTagCompound((NBTTagCompound) savedNBT);
-						System.out.println("Set " + stack.getDisplayName() + " to buff" + savedNBT);
-					}
-					else {
-						addRandomEffects(stack);
-					}
-				}
-			} else if(BT_Utils.isItemBuffable(stack) && savedNBT != stack.getTagCompound()) {
-				BT_Utils.copyNBTData(stack);
-			}
-			else
-			{
-				savedNBT = null;
+		if(buffApplicationMethod == 4) {
+			List inventory = event.entityPlayer.openContainer.getInventory();
+			if (!itemHasEffect(stack) && isItemBuffable(stack)) {
+				itemToBuffIndex = inventory.indexOf(stack);
 			}
 		}
-
 		if(stack.hasTagCompound() && stack.getTagCompound().hasKey("BT_TagList"))
 		{
 			NBTTagCompound tag = (NBTTagCompound)stack.getTagCompound().getTag("BT_TagList");

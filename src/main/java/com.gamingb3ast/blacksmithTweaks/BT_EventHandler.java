@@ -14,7 +14,7 @@ public class BT_EventHandler {
 		if(event.client_ParentClassPath.equalsIgnoreCase("com.gamingb3ast.blacksmithTweaks.BT_GuiAnvil"))
 		{
 			TileEntity tile = event.presser.worldObj.getTileEntity(event.x, event.y, event.z);
-			if(tile != null && tile instanceof BT_TileAnvil)
+			if(tile != null && tile instanceof BT_TileAnvil && BT_Config.buffApplicationMethod <= 5 && BT_Config.buffApplicationMethod > 0)
 			{
 				BT_TileAnvil anvil = (BT_TileAnvil) tile;
 				ItemStack stk = anvil.getStackInSlot(0).copy();
