@@ -55,9 +55,8 @@ public class BT_Mod {
 
 		//TODO: Work on networking and get the GUI shift checker working
 		network = NetworkRegistry.INSTANCE.newSimpleChannel("Blacksmith_Tweaks");
-		//network.registerMessage(BT_MessageShift.Handler.class, BT_MessageShift.class, 0, Side.CLIENT);
-		network.registerMessage(new BT_MessageShift.Handler(), BT_MessageShift.class, 0, Side.CLIENT);
-		network.registerMessage(new BT_MessageShift.Handler(), BT_MessageShift.class, 0, Side.SERVER);
+		network.registerMessage(BT_MessageShift.Handler.class, BT_MessageShift.class, 0, Side.SERVER);
+		//network.registerMessage(new BT_MessageShift.Handler(), BT_MessageShift.class, 0, Side.SERVER);
 		MinecraftForge.EVENT_BUS.register(new BT_EventHandler());
 	}
 	

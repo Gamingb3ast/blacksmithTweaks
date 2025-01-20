@@ -3,17 +3,20 @@ package com.gamingb3ast.blacksmithTweaks;
 import java.util.List;
 import java.util.UUID;
 
+import DummyCore.Events.DummyEvent_OnKeyboardKeyPressed_Server;
 import DummyCore.Utils.DataStorage;
 import DummyCore.Utils.DummyData;
 import DummyCore.Utils.EnumRarityColor;
 import DummyCore.Utils.MiscUtils;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.asm.transformers.ItemStackTransformer;
+import cpw.mods.fml.common.gameevent.InputEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.IGuiHandler;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
@@ -38,6 +41,7 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.*;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
@@ -70,7 +74,14 @@ public class BT_Handler{
 		ChatComponentText message4 = new ChatComponentText("#---If you continue to craft flawless tools, you will die from exhaustion!---#");
 		message4.getChatStyle().setColor(EnumChatFormatting.RED).setBold(true);
 
-
+		if(player.worldObj.isRemote)
+		{
+			boolean isShiftDown = GuiScreen.isShiftKeyDown();
+			if (BT_ShiftHandler.isPlayerShiftDown(event.player.getUniqueID()) != isShiftDown) {
+				BT_Mod.network.sendToServer(new BT_MessageShift(isShiftDown));
+				BT_ShiftHandler.setPlayerShiftState(event.player.getUniqueID(), isShiftDown); // Update locally
+			}
+		}
 		if(!player.worldObj.isRemote && item != null)
 		{
 			boolean isShiftDown = BT_ShiftHandler.isPlayerShiftDown(player.getUniqueID());
@@ -146,7 +157,6 @@ public class BT_Handler{
 				if(!itemHasEffect(stack) && isItemBuffable(stack))
 				{
 					addRandomEffects(stack);
-					itemToBuffIndex = -1;
 				}
 		}
 
@@ -465,6 +475,9 @@ public class BT_Handler{
 
 
 		if (p.ticksExisted < 80) return;
+
+
+
 		if (p.getCurrentEquippedItem() != null && BT_Utils.itemHasEffect(p.getCurrentEquippedItem())) {
 			ItemStack stack = p.getCurrentEquippedItem();
 			String dummyDataString = stack.getTagCompound().getCompoundTag("BT_TagList").getString("BT_Buffs");
