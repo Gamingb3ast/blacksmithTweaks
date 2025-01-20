@@ -1,5 +1,6 @@
 package com.gamingb3ast.blacksmithTweaks;
 
+import net.minecraft.util.StatCollector;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
@@ -27,7 +28,7 @@ public class BT_GuiAnvil extends GuiCommon{
         super.initGui();
 	    int k = (this.width - this.xSize) / 2;
 	    int l = (this.height - this.ySize) / 2;
-	    this.buttonList.add(new GuiButton(0,k+48,l+42,80,20,"Reforge"));
+	    this.buttonList.add(new GuiButton(0,k+48,l+42,80,20,StatCollector.translateToLocal("gui.bt.anvil.reforge.name")));
     }
     
     public void drawScreen(int p_73863_1_, int p_73863_2_, float p_73863_3_)
@@ -39,7 +40,7 @@ public class BT_GuiAnvil extends GuiCommon{
     	GL11.glTranslatef(0, 0, 1);
 	    int k = (this.width - this.xSize) / 2;
 	    int l1 = (this.height - this.ySize) / 2;
-	    this.fontRendererObj.drawString("Reforging Anvil", k+52, l1+4, 4210752);
+	    this.fontRendererObj.drawString(StatCollector.translateToLocal("tile.bt.anvil.name"), k+52, l1+4, 4210752);
 	    MiscUtils.bindTexture("minecraft", "textures/entity/experience_orb.png");
 	    GL11.glPushMatrix();
 	    GL11.glScalef(0.25F, 0.25F, 0.25F);

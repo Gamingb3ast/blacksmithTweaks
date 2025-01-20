@@ -6,6 +6,7 @@ import java.io.IOException;
 import DummyCore.Utils.DummyData;
 import DummyCore.Utils.EnumRarityColor;
 import DummyCore.Utils.MiscUtils;
+import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
@@ -32,7 +33,7 @@ public class BT_Mod {
 	BT_Config config;
 
 	public static BT_Anvil anvil;
-
+	public static SimpleNetworkWrapper network;
 	@SidedProxy(serverSide="com.gamingb3ast.blacksmithTweaks.BT_ServerProxy",clientSide="com.gamingb3ast.blacksmithTweaks.BT_ClientProxy")
 	public static BT_ServerProxy proxy;
 	@EventHandler
@@ -51,6 +52,11 @@ public class BT_Mod {
 			}
 		proxy.preload();
 		NetworkRegistry.INSTANCE.registerGuiHandler(instance, proxy);
+
+		//TODO: Work on networking and get the GUI shift checker working
+		network = NetworkRegistry.INSTANCE.newSimpleChannel("Blacksmith_Tweaks");
+		network.registerMessage(BT_MessageShift.Handler.class, BT_MessageShift.class, 0, Side.SERVER);
+		//network.registerMessage(new BT_MessageShift.Handler(), BT_MessageShift.class, 0, Side.SERVER);
 		MinecraftForge.EVENT_BUS.register(new BT_EventHandler());
 	}
 	
