@@ -33,8 +33,6 @@ public class BT_MessageShift implements IMessage {
                 EntityPlayerMP player = ctx.getServerHandler().playerEntity;
                 boolean shiftDown = message.isShiftDown;
 
-
-                // Store the state in a map for use in GUI/containers
                 BT_ShiftHandler.setPlayerShiftState(player.getUniqueID(), shiftDown);
             }
             return null;
