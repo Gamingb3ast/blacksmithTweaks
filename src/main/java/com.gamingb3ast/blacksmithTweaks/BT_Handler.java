@@ -151,7 +151,6 @@ public class BT_Handler{
 		else if(buffApplicationMethod == 4)
 		{
 			ItemStack stack = null;
-			System.out.println("index: " + itemToBuffIndex);
 			if(itemToBuffIndex != -1)
 				 stack = cont.getSlot(itemToBuffIndex).getStack();
 			if(stack != null)
@@ -170,10 +169,8 @@ public class BT_Handler{
 		ItemStack stack = event.itemStack;
 		if(buffApplicationMethod == 4) {
 			List inventory = event.entityPlayer.openContainer.getInventory();
-			System.out.println("inventory: " + inventory);
 			if (!itemHasEffect(stack) && isItemBuffable(stack)) {
 				itemToBuffIndex = inventory.indexOf(stack);
-				System.out.println("index 2: " + itemToBuffIndex);
 			}
 		}
 		if(stack.hasTagCompound() && stack.getTagCompound().hasKey("BT_TagList"))

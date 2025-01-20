@@ -112,7 +112,29 @@ public class BT_Config extends Configuration{
 		}
 
 		buffApplicationMethod = buffApplicationType;
-
+		String applicationString = "Classic";
+		switch(buffApplicationType)
+		{
+			case 1:
+                applicationString = "Classic";
+                break;
+            case 2:
+                applicationString = "Crafting Reworked";
+                break;
+            case 3:
+                applicationString = "Container";
+                break;
+            case 4:
+                applicationString = "Tooltip Container";
+                break;
+            case 5:
+                applicationString = "Buffs are only applied via reforging anvil";
+                break;
+            default:
+                applicationString = "Buff application disabled";
+                break;
+		}
+		Notifier.notifyCustomMod("Blacksmith Tweaks", "Application method in use:: " + applicationString);
 
 			String mod, item;
 			blacklist = new Item[blacklistItems.length];
