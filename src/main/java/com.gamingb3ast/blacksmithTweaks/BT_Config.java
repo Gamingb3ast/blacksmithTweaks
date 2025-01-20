@@ -15,7 +15,6 @@ import DummyCore.Utils.DummyData;
 import DummyCore.Utils.EnumRarityColor;
 import DummyCore.Utils.Notifier;
 
-import javax.xml.crypto.Data;
 
 public class BT_Config extends Configuration{
 
@@ -75,7 +74,7 @@ public class BT_Config extends Configuration{
 
 
 		//TODO: Rework the entire config system :(
-		/*ConfigCategory durableCat = this.getCategory("BT:Effect:Durable");
+		ConfigCategory durableCat = this.getCategory("BT:Effect:Durable");
 		durableCat.put("name", new Property("name","Durable",Type.STRING));
 		durableCat.put("color", new Property("color","a",Type.STRING));
 		DummyData durDat = new DummyData("durability", 0.25D);
@@ -83,7 +82,7 @@ public class BT_Config extends Configuration{
 		String str = DataStorage.getDataString();
 		durableCat.put("dataArray", new Property("dataArray",str,Type.STRING));
 
-		ConfigCategory eaaCat = this.getCategory("BT:Effect:Damaged");
+		/**ConfigCategory eaaCat = this.getCategory("BT:Effect:Damaged");
 		eaaCat.put("name", new Property("name", "Damaged", Type.STRING));
 		eaaCat.put("color", new Property("color", "8", Type.STRING)); // BROKEN
 		DummyData eaaData = new DummyData("damage", -0.2D);
