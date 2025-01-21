@@ -7,20 +7,12 @@ import java.util.UUID;
 import DummyCore.Utils.DataStorage;
 import DummyCore.Utils.DummyData;
 import DummyCore.Utils.MiscUtils;
-import ibxm.Player;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
+import com.gamingb3ast.blacksmithTweaks.configs.BT_CoreConfig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.*;
-import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.DamageSource;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.ISpecialArmor;
-import net.minecraftforge.common.util.Constants;
 
 public class BT_Utils {
 	
@@ -80,9 +72,9 @@ public class BT_Utils {
 	public static boolean isItemOnBlackList(ItemStack stk)
 	{
 		boolean output = false;
-		for(int i = 0; i < BT_Config.blacklist.length; i++)
+		for(int i = 0; i < BT_CoreConfig.blacklist.length; i++)
 		{
-			if(BT_Config.blacklist[i] == stk.getItem()) {
+			if(BT_CoreConfig.blacklist[i] == stk.getItem()) {
 				output = true;
 			}
 		}
@@ -93,9 +85,9 @@ public class BT_Utils {
 	public static boolean isItemOnWhiteList(ItemStack stk)
 	{
 		boolean output = false;
-		for(int i = 0; i < BT_Config.whitelist.length; i++)
+		for(int i = 0; i < BT_CoreConfig.whitelist.length; i++)
 		{
-			if(BT_Config.whitelist[i] == stk.getItem()) {
+			if(BT_CoreConfig.whitelist[i] == stk.getItem()) {
 				output = true;
 			}
 		}

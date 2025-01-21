@@ -1,5 +1,7 @@
 package com.gamingb3ast.blacksmithTweaks;
 
+import com.gamingb3ast.blacksmithTweaks.anvil.BT_ContainerAnvil;
+import com.gamingb3ast.blacksmithTweaks.anvil.BT_TileAnvil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;

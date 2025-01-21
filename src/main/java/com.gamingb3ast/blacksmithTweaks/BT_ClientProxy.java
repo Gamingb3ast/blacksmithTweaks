@@ -1,9 +1,11 @@
 package com.gamingb3ast.blacksmithTweaks;
 
+import com.gamingb3ast.blacksmithTweaks.anvil.BT_AnvilRenderer;
+import com.gamingb3ast.blacksmithTweaks.anvil.BT_ContainerAnvil;
+import com.gamingb3ast.blacksmithTweaks.anvil.BT_GuiAnvil;
+import com.gamingb3ast.blacksmithTweaks.anvil.BT_TileAnvil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.StatCollector;
-import net.minecraft.util.StringTranslate;
 import net.minecraft.world.World;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 
