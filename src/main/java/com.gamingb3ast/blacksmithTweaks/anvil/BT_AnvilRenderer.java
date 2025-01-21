@@ -1,4 +1,4 @@
-package com.gamingb3ast.blacksmithTweaks;
+package com.gamingb3ast.blacksmithTweaks.anvil;
 
 import org.lwjgl.opengl.GL11;
 

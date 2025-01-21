@@ -1,4 +1,4 @@
-package com.gamingb3ast.blacksmithTweaks;
+package com.gamingb3ast.blacksmithTweaks.anvil;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;

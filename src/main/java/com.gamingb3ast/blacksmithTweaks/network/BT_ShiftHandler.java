@@ -1,4 +1,4 @@
-package com.gamingb3ast.blacksmithTweaks;
+package com.gamingb3ast.blacksmithTweaks.network;
 
 import java.util.HashMap;
 import java.util.Map;

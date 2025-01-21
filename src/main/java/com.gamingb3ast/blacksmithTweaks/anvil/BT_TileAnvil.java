@@ -1,4 +1,4 @@
-package com.gamingb3ast.blacksmithTweaks;
+package com.gamingb3ast.blacksmithTweaks.anvil;
 
 import DummyCore.Utils.MiscUtils;
 import net.minecraft.entity.player.EntityPlayer;
@@ -108,7 +108,7 @@ public class BT_TileAnvil extends TileEntity implements IInventory{
 	@Override
 	public String getInventoryName() {
 		// TODO Auto-generated method stub
-		return "bt.container.anvil";
+		return "bt.container.com.gamingb3ast.blacksmithTweaks.anvil";
 	}
 
 	@Override

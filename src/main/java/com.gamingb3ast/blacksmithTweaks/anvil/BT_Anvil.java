@@ -1,6 +1,7 @@
-package com.gamingb3ast.blacksmithTweaks;
+package com.gamingb3ast.blacksmithTweaks.anvil;
 
 import DummyCore.Utils.MiscUtils;
+import com.gamingb3ast.blacksmithTweaks.BT_Mod;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
