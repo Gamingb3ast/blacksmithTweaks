@@ -1,36 +1,21 @@
 package com.gamingb3ast.blacksmithTweaks;
 
 import java.util.List;
-import java.util.UUID;
 
-import DummyCore.Events.DummyEvent_OnKeyboardKeyPressed_Server;
 import DummyCore.Utils.DataStorage;
 import DummyCore.Utils.DummyData;
 import DummyCore.Utils.EnumRarityColor;
 import DummyCore.Utils.MiscUtils;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.asm.transformers.ItemStackTransformer;
-import cpw.mods.fml.common.gameevent.InputEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.network.IGuiHandler;
+import com.gamingb3ast.blacksmithTweaks.network.BT_MessageShift;
+import com.gamingb3ast.blacksmithTweaks.network.BT_ShiftHandler;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIAvoidEntity;
-import net.minecraft.entity.monster.EntityCaveSpider;
 import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntitySpider;
-import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryCraftResult;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
@@ -40,8 +25,6 @@ import net.minecraft.util.EntityDamageSource;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.client.event.GuiOpenEvent;
-import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.*;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
@@ -50,8 +33,8 @@ import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.ItemCraftedEvent;
 import net.minecraft.entity.item.EntityXPOrb;
-import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
-import static com.gamingb3ast.blacksmithTweaks.BT_Config.buffApplicationMethod;
+
+import static com.gamingb3ast.blacksmithTweaks.configs.BT_CoreConfig.buffApplicationMethod;
 import static com.gamingb3ast.blacksmithTweaks.BT_Utils.*;
 
 
@@ -489,7 +472,7 @@ public class BT_Handler{
 				if (name.contains("swift"))
 					speedValue += value;
 				else if (name.contains("slow"))
-					slowValue -= value;
+					slowValue += value;
 				if (name.contains("fear")) {
 					assignFleeTask(p, w, value);
 				} else if (avoidPlayerTask != null && mob != null) {
@@ -531,13 +514,15 @@ public class BT_Handler{
 				}
 			}
 		}
+		System.out.println("Speed Value : " + speedValue);
+		System.out.println("Slow Value : " + slowValue);
 		if (speedValue > 0)
 		{
 			p.addPotionEffect(new PotionEffect(1, 1, (int)(speedValue-1)));
 		}
 		else if (slowValue < 0)
 		{
-			p.addPotionEffect(new PotionEffect(2, 1, (int)(-1 * (slowValue+1))));
+			p.addPotionEffect(new PotionEffect(2, 1, (int)((slowValue+1))));
 		}
 
 
