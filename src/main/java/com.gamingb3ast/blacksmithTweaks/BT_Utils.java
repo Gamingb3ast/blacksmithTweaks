@@ -13,6 +13,7 @@ import net.minecraft.inventory.*;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.StatCollector;
 
 public class BT_Utils {
 	
@@ -147,6 +148,10 @@ public class BT_Utils {
 		{
 			return false;
 		}
+	}
+	public static String translateEffectName(String name)
+	{
+		return StatCollector.translateToLocal("effect.bt." + name + ".name");
 	}
 
 
