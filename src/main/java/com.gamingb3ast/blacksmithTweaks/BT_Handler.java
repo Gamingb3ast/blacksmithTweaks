@@ -167,8 +167,7 @@ public class BT_Handler{
 				{
 					DummyData data = d[i];
 					String name = data.fieldName;
-					String nameLetter1 = String.valueOf(name.charAt(0)).toUpperCase();
-					String mainName = nameLetter1+name.substring(1, name.length());
+					String mainName = BT_Utils.translateEffectName(name);
 					double da = Double.parseDouble(data.fieldValue);
 					da *= 100;
 					if(da > 0)
@@ -372,7 +371,7 @@ public class BT_Handler{
 									if (edms.getSourceOfDamage() instanceof EntityMob)
 										((EntityLiving)edms.getSourceOfDamage()).addPotionEffect((new PotionEffect(2, 200, 1000)));
                                 }
-							}
+							}/*
 							if (name.contains("damage"))
 							{
 								if (value > 0 && w.rand.nextDouble() < value) {
@@ -400,7 +399,7 @@ public class BT_Handler{
 										((EntityLiving)edms.getSourceOfDamage()).addPotionEffect(new PotionEffect(7, 1, 1));
 
 								}
-							}
+							}*/
 
 						}
 					}
@@ -476,8 +475,7 @@ public class BT_Handler{
 				if (name.contains("fear")) {
 					assignFleeTask(p, w, value);
 				} else if (avoidPlayerTask != null && mob != null) {
-					mob.tasks.removeTask(avoidPlayerTask);
-					avoidPlayerTask = null;
+					removeFleeTask(avoidPlayerTask, mob, p);
 				}
 			}
 		}
@@ -508,14 +506,11 @@ public class BT_Handler{
 					if (name.contains("fear")) {
 						assignFleeTask(p, w, value);
 					} else if (avoidPlayerTask != null && mob != null) {
-						mob.tasks.removeTask(avoidPlayerTask);
-						avoidPlayerTask = null;
+						removeFleeTask(avoidPlayerTask, mob, p);
 					}
 				}
 			}
 		}
-		System.out.println("Speed Value : " + speedValue);
-		System.out.println("Slow Value : " + slowValue);
 		if (speedValue > 0)
 		{
 			p.addPotionEffect(new PotionEffect(1, 1, (int)(speedValue-1)));
@@ -543,6 +538,42 @@ public class BT_Handler{
 				}
 			}
 		}
+	}
+	private void removeFleeTask(EntityAIAvoidEntity task, EntityMob mob, EntityPlayer p)
+	{
+		boolean okToRemoveTask = true;
+
+		//Armor
+		for (int aSlot = 0; aSlot < 4; aSlot++) {
+			if (p.getCurrentArmor(aSlot) != null && BT_Utils.itemHasEffect(p.getCurrentArmor(aSlot))) {
+				ItemStack stack = p.getCurrentArmor(aSlot);
+				String dummyDataString = stack.getTagCompound().getCompoundTag("BT_TagList").getString("BT_Buffs");
+				DummyData[] d = DataStorage.parseData(dummyDataString);
+				for (int i1 = 0; i1 < d.length; ++i1) {
+					DummyData data = d[i1];
+					String name = data.fieldName;
+					double value = Double.parseDouble(data.fieldValue);
+					if (name.contains("fear")) {
+						okToRemoveTask = false;
+					}
+				}
+			}
+		}
+
+		//Hand
+		if (p.getCurrentEquippedItem() != null && BT_Utils.itemHasEffect(p.getCurrentEquippedItem())) {
+			ItemStack stack = p.getCurrentEquippedItem();
+			String dummyDataString = stack.getTagCompound().getCompoundTag("BT_TagList").getString("BT_Buffs");
+			DummyData[] d = DataStorage.parseData(dummyDataString);
+			for (int i1 = 0; i1 < d.length; ++i1) {
+				DummyData data = d[i1];
+				String name = data.fieldName;
+				if (name.contains("fear")) {
+					okToRemoveTask = false;
+				}
+			}
+		}
+			mob.tasks.removeTask(avoidPlayerTask);
 	}
 
 

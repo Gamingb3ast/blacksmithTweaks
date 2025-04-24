@@ -1,3 +1,15 @@
-## Set all blocknames
+## Set all block names
 tile.bt.anvil.name=Reforging Anvil
+## Set all Gui Element names
 gui.bt.anvil.reforge.name=Reforge
+## Set all Effect names
+effect.bt.damage.name=Damage
+effect.bt.speed.name=Speed
+effect.bt.slow.name=Slow
+effect.bt.durability.name=Durability
+effect.bt.swift.name=Swift
+effect.bt.fear.name=Fear
+effect.bt.bind.name=Bind
+effect.bt.crit.name=Crit
+effect.bt.life.name=Lifesteal
+effect.bt.poison.name=Poison
