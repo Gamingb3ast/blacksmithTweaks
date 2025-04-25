@@ -297,8 +297,9 @@ public class BT_Handler{
 						{
 							if(p.worldObj.rand.nextDouble() <= value)
 							{
-								p.addPotionEffect(new PotionEffect(6, 1, 1));
-								event.entityLiving.addPotionEffect(new PotionEffect(7, 1, 1));
+								int heartAmount = p.worldObj.rand.nextInt(3);
+								p.heal(heartAmount);
+								event.ammount+=heartAmount;
 
 							}
 						}
