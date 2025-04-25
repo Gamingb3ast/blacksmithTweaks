@@ -1,0 +1,15 @@
+## 设置所有方块名称
+tile.bt.anvil.name=重铸铁砧
+## 设置所有界面元素名称
+gui.bt.anvil.reforge.name=重铸
+## 设置所有效果名称
+effect.bt.damage.name=伤害
+effect.bt.speed.name=速度
+effect.bt.slow.name=缓慢
+effect.bt.durability.name=耐久
+effect.bt.swift.name=迅捷
+effect.bt.fear.name=恐惧
+effect.bt.bind.name=束缚
+effect.bt.crit.name=暴击
+effect.bt.lifesteal.name=生命偷取
+effect.bt.poison.name=中毒
