@@ -3,7 +3,6 @@ package com.gamingb3ast.blacksmithTweaks;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.entity.ai.attributes.AttributeModifier;
 import DummyCore.Utils.DummyData;
 import DummyCore.Utils.EnumRarityColor;
 
@@ -53,7 +52,15 @@ public class BT_Effect {
 	
 	public String getName()
 	{
-		return rarity.getRarityColor()+name;
+		return rarity.getRarityColor() + name;
+	}
+	public String getRealName()
+	{
+		return name;
+	}
+	public String getCodeName()
+	{
+		return codeName;
 	}
 	
 	public String getColor()

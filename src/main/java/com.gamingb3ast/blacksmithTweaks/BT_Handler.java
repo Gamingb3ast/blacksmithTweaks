@@ -19,11 +19,8 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EntityDamageSource;
+import net.minecraft.util.*;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.*;
@@ -159,6 +156,19 @@ public class BT_Handler{
 		if(stack.hasTagCompound() && stack.getTagCompound().hasKey("BT_TagList"))
 		{
 			NBTTagCompound tag = (NBTTagCompound)stack.getTagCompound().getTag("BT_TagList");
+			if(tag.hasKey("BT_CodeName"))
+			{
+				if(BT_Utils.getEffectName(stack).equals("LANG"))
+				{
+					String formatting = stack.getTagCompound().getCompoundTag("display").getString("Name").substring(0, 4);
+					String codeName = tag.getString("BT_CodeName");
+					String originalName = stack.getTagCompound().getCompoundTag("display").getString("BT_OriginalName");
+					if(originalName.isEmpty()) {
+						originalName = StatCollector.translateToLocal(stack.getUnlocalizedName() + ".name");
+					}
+						stack.setStackDisplayName(formatting + StatCollector.translateToLocal(StatCollector.translateToLocal("custom.effect." + codeName + ".name")) + " " + originalName);
+				}
+			}
 			if(tag.hasKey("BT_Buffs"))
 			{
 				String s = tag.getString("BT_Buffs");
@@ -167,7 +177,7 @@ public class BT_Handler{
 				{
 					DummyData data = d[i];
 					String name = data.fieldName;
-					String mainName = BT_Utils.translateEffectName(name);
+					String mainName = BT_Utils.translateBuffName(name);
 					double da = Double.parseDouble(data.fieldValue);
 					da *= 100;
 					if(da > 0)

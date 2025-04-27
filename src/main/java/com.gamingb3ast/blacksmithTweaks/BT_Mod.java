@@ -110,7 +110,8 @@ public class BT_Mod {
 	}
 	
 
-	
+
+	//THIS IS NOT USED ANYMORE
 	public void registerEffects()
 	{
 

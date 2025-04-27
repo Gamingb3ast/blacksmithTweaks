@@ -3,13 +3,15 @@ tile.bt.anvil.name=Reforging Anvil
 ## Set all Gui Element names
 gui.bt.anvil.reforge.name=Reforge
 ## Set all Effect names
-effect.bt.damage.name=Damage
-effect.bt.speed.name=Speed
-effect.bt.slow.name=Slow
-effect.bt.durability.name=Durability
-effect.bt.swift.name=Swift
-effect.bt.fear.name=Fear
-effect.bt.bind.name=Bind
-effect.bt.crit.name=Crit
-effect.bt.lifesteal.name=Lifesteal
-effect.bt.poison.name=Poison
+buff.bt.damage.name=Damage
+buff.bt.speed.name=Speed
+buff.bt.slow.name=Slow
+buff.bt.durability.name=Durability
+buff.bt.swift.name=Swift
+buff.bt.fear.name=Fear
+buff.bt.bind.name=Bind
+buff.bt.crit.name=Crit
+buff.bt.lifesteal.name=Lifesteal
+buff.bt.poison.name=Poison
+## Set all Custom Effect names
+custom.effect.BT:Effect:Durable.name=Durable

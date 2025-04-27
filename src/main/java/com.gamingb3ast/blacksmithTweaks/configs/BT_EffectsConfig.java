@@ -6,14 +6,11 @@ import DummyCore.Utils.EnumRarityColor;
 import DummyCore.Utils.Notifier;
 import com.gamingb3ast.blacksmithTweaks.BT_Effect;
 import com.gamingb3ast.blacksmithTweaks.BT_Mod;
-import cpw.mods.fml.common.registry.GameRegistry;
-import net.minecraft.item.Item;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.common.config.Property.Type;
 import java.io.File;
-import java.io.IOException;
 import java.util.Set;
 
 
@@ -27,7 +24,9 @@ public class BT_EffectsConfig extends Configuration{
 	{
 		super(configFile);
 		this.load();
-		registerEffects(configFile);
+		if(this.getCategoryNames().size() < 1) {
+			registerEffects(configFile);
+		}
 		loadCFG();
 		this.save();
 	}
@@ -100,7 +99,7 @@ public class BT_EffectsConfig extends Configuration{
 			}
 		}
 
-		if(buffsCount!= 0) {
+		if(buffsCount != 0) {
 			Notifier.notifyCustomMod("Blacksmith Tweaks", "Loaded " + buffsCount + " effect(s).");
 		}
 		else
@@ -113,6 +112,14 @@ public class BT_EffectsConfig extends Configuration{
 	public void registerEffects(File configFile)
 	{
 		if(BT_Mod.effectConfigExists) {
+			ConfigCategory ea0Cat = this.getCategory("BT:Effect:Durable");
+			ea0Cat.put("name", new Property("name", "LANG", Type.STRING));
+			ea0Cat.put("color", new Property("color", "f", Type.STRING)); // BROKEN
+			DummyData ea0Data = new DummyData("durability", .15D);
+			DataStorage.addDataToString(ea0Data);
+			String ea0Str = DataStorage.getDataString();
+			ea0Cat.put("dataArray", new Property("dataArray", ea0Str, Type.STRING));
+
 			ConfigCategory eaaCat = this.getCategory("BT:Effect:Damaged");
 			eaaCat.put("name", new Property("name", "Damaged", Type.STRING));
 			eaaCat.put("color", new Property("color", "8", Type.STRING)); // BROKEN

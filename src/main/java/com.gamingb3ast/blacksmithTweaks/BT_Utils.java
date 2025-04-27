@@ -42,9 +42,11 @@ public class BT_Utils {
 				}
 				String data = DataStorage.getDataString();
 				buffsTag.setString("BT_Buffs", data);
+				buffsTag.setString("BT_CodeName", effect.getCodeName());
 				buffsTag.setString("BT_UUID", UUID.randomUUID().toString());
 				if(originalName == null || originalName.isEmpty())
 					itemTag.setString("BT_OriginalName", stk.getDisplayName());
+
 				NBTTagCompound display = new NBTTagCompound();
 				if(itemTag.hasKey("display"))
 				{
@@ -54,6 +56,7 @@ public class BT_Utils {
 					display.setString("Name", effect.getColor()+effect.getName()+" "+stk.getDisplayName());
 				else
 					display.setString("Name", effect.getColor()+effect.getName()+" "+originalName);
+				display.setString("EffectName", effect.getRealName());
 				itemTag.setTag("display", display);
 				itemTag.setTag("BT_TagList", buffsTag);
 				stk.setTagCompound(itemTag);
@@ -61,7 +64,11 @@ public class BT_Utils {
 		}
 	}
 
-
+	public static String getEffectName(ItemStack stack)
+	{
+		String name = stack.getTagCompound().getCompoundTag("display").getString("EffectName");
+		return name;
+	}
 	public static int getISType(ItemStack stk)
 	{
 		if(isItemBuffable(stk))
@@ -149,9 +156,9 @@ public class BT_Utils {
 			return false;
 		}
 	}
-	public static String translateEffectName(String name)
+	public static String translateBuffName(String name)
 	{
-		return StatCollector.translateToLocal("effect.bt." + name + ".name");
+		return StatCollector.translateToLocal("buff.bt." + name + ".name");
 	}
 
 
