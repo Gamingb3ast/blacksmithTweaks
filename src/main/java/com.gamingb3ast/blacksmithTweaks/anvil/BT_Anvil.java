@@ -23,7 +23,7 @@ public class BT_Anvil extends BlockContainer{
 		this.setStepSound(soundTypeAnvil);
 		this.setCreativeTab(CreativeTabs.tabDecorations);
 		GameRegistry.registerBlock(this, "anvil");
-		GameRegistry.registerTileEntity(BT_TileAnvil.class, "bt.tile.anvil");
+		GameRegistry.registerTileEntity(BT_TileAnvil.class, "tile.bt.anvil");
 
 	}
 	

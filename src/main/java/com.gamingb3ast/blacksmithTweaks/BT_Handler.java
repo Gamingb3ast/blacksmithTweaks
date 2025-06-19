@@ -552,8 +552,6 @@ public class BT_Handler{
 	}
 	private void removeFleeTask(EntityAIAvoidEntity task, EntityMob mob, EntityPlayer p)
 	{
-		boolean okToRemoveTask = true;
-
 		//Armor
 		for (int aSlot = 0; aSlot < 4; aSlot++) {
 			if (p.getCurrentArmor(aSlot) != null && BT_Utils.itemHasEffect(p.getCurrentArmor(aSlot))) {
@@ -565,12 +563,12 @@ public class BT_Handler{
 					String name = data.fieldName;
 					double value = Double.parseDouble(data.fieldValue);
 					if (name.contains("fear")) {
-						okToRemoveTask = false;
+						mob.tasks.removeTask(task);
+						return;
 					}
 				}
 			}
 		}
-
 		//Hand
 		if (p.getCurrentEquippedItem() != null && BT_Utils.itemHasEffect(p.getCurrentEquippedItem())) {
 			ItemStack stack = p.getCurrentEquippedItem();
@@ -580,11 +578,11 @@ public class BT_Handler{
 				DummyData data = d[i1];
 				String name = data.fieldName;
 				if (name.contains("fear")) {
-					okToRemoveTask = false;
+					mob.tasks.removeTask(task);
 				}
 			}
 		}
-			mob.tasks.removeTask(avoidPlayerTask);
+
 	}
 
 
