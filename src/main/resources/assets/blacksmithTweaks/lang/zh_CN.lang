@@ -1,0 +1,57 @@
+## 设置所有方块名称
+tile.bt.anvil.name=重铸铁砧
+## 设置所有界面元素名称
+gui.bt.anvil.reforge.name=重铸
+## 设置所有效果名称
+buff.bt.damage.name=伤害
+buff.bt.speed.name=速度
+buff.bt.slow.name=缓慢
+buff.bt.durability.name=耐久
+buff.bt.swift.name=迅捷
+buff.bt.fear.name=恐惧
+buff.bt.bind.name=束缚
+buff.bt.crit.name=暴击
+buff.bt.lifesteal.name=吸血
+buff.bt.poison.name=中毒
+## 设置所有自定义效果名称
+custom.effect.BT:Effect:Durable.name=耐用
+custom.effect.BT:Effect:Damaged.name=破损
+custom.effect.BT:Effect:Dull.name=钝
+custom.effect.BT:Effect:Sluggish.name=迟钝
+custom.effect.BT:Effect:Slow.name=缓慢
+custom.effect.BT:Effect:Lazy.name=呆滞
+custom.effect.BT:Effect:Cracky.name=裂开
+custom.effect.BT:Effect:Broken.name=碎裂
+custom.effect.BT:Effect:Annoying.name=惹恼
+custom.effect.BT:Effect:Shoddy.name=粗劣
+custom.effect.BT:Effect:Terrible.name=可怕
+custom.effect.BT:Effect:Unhappy.name=倒霉
+custom.effect.BT:Effect:Heavy.name=重
+custom.effect.BT:Effect:Light.name=轻
+custom.effect.BT:Effect:Ruthless.name=无情
+custom.effect.BT:Effect:Shameful.name=可耻
+custom.effect.BT:Effect:Bulky.name=笨重
+custom.effect.BT:Effect:Nasty.name=凶险
+custom.effect.BT:Effect:Sharp.name=锋利
+custom.effect.BT:Effect:Pointy.name=尖锐
+custom.effect.BT:Effect:Hurtful.name=致伤
+custom.effect.BT:Effect:Strong.name=强劲
+custom.effect.BT:Effect:Forceful.name=强力
+custom.effect.BT:Effect:Quick.name=迅捷
+custom.effect.BT:Effect:Nimble.name=灵巧
+custom.effect.BT:Effect:Zealous.name=狂热
+custom.effect.BT:Effect:Keen.name=锐利
+custom.effect.BT:Effect:Massive.name=巨大
+custom.effect.BT:Effect:Large.name=大
+custom.effect.BT:Effect:Demonic.name=恶魔
+custom.effect.BT:Effect:Agile.name=灵活
+custom.effect.BT:Effect:Deadly.name=致命
+custom.effect.BT:Effect:Unpleasant.name=粗鲁
+custom.effect.BT:Effect:Rapid.name=迅速
+custom.effect.BT:Effect:Godly.name=神级
+custom.effect.BT:Effect:Rusty.name=生锈
+custom.effect.BT:Effect:Superior.name=高端
+custom.effect.BT:Effect:Dangerous.name=危险
+custom.effect.BT:Effect:Savage.name=凶残
+custom.effect.BT:Effect:Murderous.name=残暴
+custom.effect.BT:Effect:Legendary.name=神话
