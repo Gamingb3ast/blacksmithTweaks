@@ -109,6 +109,7 @@ public class BT_EffectsConfig extends Configuration{
 	/**
 	Will recreate the default config file with all the normal effects
 	 */
+	//TODO: Come on dude, you can do better, remake the register effect method and have this shit not be so damn ugly
 	public void registerEffects(File configFile)
 	{
 		if(BT_Mod.effectConfigExists) {
