@@ -80,9 +80,9 @@ public class BT_Utils {
 	public static boolean isItemOnBlackList(ItemStack stk)
 	{
 		boolean output = false;
-		for(int i = 0; i < BT_CoreConfig.blacklist.length; i++)
+		for(int i = 0; i < BT_CoreConfig.blacklist.size(); i++)
 		{
-			if(BT_CoreConfig.blacklist[i] == stk.getItem()) {
+			if(ItemStack.areItemStacksEqual(BT_CoreConfig.blacklist.get(i), stk)) {
 				output = true;
 			}
 		}
@@ -93,9 +93,9 @@ public class BT_Utils {
 	public static boolean isItemOnWhiteList(ItemStack stk)
 	{
 		boolean output = false;
-		for(int i = 0; i < BT_CoreConfig.whitelist.length; i++)
+		for(int i = 0; i < BT_CoreConfig.whitelist.size(); i++)
 		{
-			if(BT_CoreConfig.whitelist[i] == stk.getItem()) {
+			if(ItemStack.areItemStacksEqual(BT_CoreConfig.whitelist.get(i), stk)) {
 				output = true;
 			}
 		}
@@ -108,7 +108,7 @@ public class BT_Utils {
 		if(!enable)
 			enable = isTConstructTool(stk);
 
-		return ((stk != null && stk.getItem() != null && !(stk.getItem() instanceof ItemBlock) && stk.getItem().isItemTool(stk)) && !isItemOnBlackList(stk)) || isItemOnWhiteList(stk) || enable;
+		return ((stk != null && stk.getItem() != null && !(stk.getItem() instanceof ItemBlock) && stk.getItem().isItemTool(stk)) && (!isItemOnBlackList(stk)) || isItemOnWhiteList(stk)) || enable;
 
 	}
 	

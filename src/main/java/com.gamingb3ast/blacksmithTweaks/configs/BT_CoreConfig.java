@@ -1,28 +1,23 @@
 package com.gamingb3ast.blacksmithTweaks.configs;
 
 import java.io.File;
-import java.util.Set;
+import java.util.ArrayList;
 
-import com.gamingb3ast.blacksmithTweaks.BT_Effect;
+import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.common.config.Property;
-import net.minecraftforge.common.config.Property.Type;
-import net.minecraft.item.Item;
-import DummyCore.Utils.DataStorage;
-import DummyCore.Utils.DummyData;
-import DummyCore.Utils.EnumRarityColor;
+
 import DummyCore.Utils.Notifier;
 
 
 public class BT_CoreConfig extends Configuration{
 
 	private static BT_CoreConfig INSTANCE = null;
-	private static int buffsCount = 0;
 
-	public static Item[] blacklist;
-	public static Item[] whitelist;
+	public static ArrayList<ItemStack> blacklist = new ArrayList<ItemStack>();;
+	public static ArrayList<ItemStack> whitelist = new ArrayList<ItemStack>();;
 	public static int buffApplicationMethod;
 	public static String CONFIG_GENERAL = "General";
 
@@ -65,7 +60,7 @@ public class BT_CoreConfig extends Configuration{
 
 		//BlackList
 		//whitelist = this.get(CONFIG_GENERAL, "whitelist", false, "Is list a whitelist?").getBoolean();
-		String[] blacklistItems = this.get(CONFIG_GENERAL, "Blacklist", "minecraft:book", "Items to blacklist. Ignores tinkers construct tools").getString().split(", ");
+		String[] blacklistItems = this.get(CONFIG_GENERAL, "Blacklist", "minecraft:book, GalaxySpace:item.BasicItems:1, adventurebackpack:*", "Items to blacklist. Ignores tinkers construct tools").getString().split(", ");
 		//Whitelist
 		String[] whitelistItems = this.get(CONFIG_GENERAL, "Whitelist", "minecraft:iron_helmet", "Items to whitelist. Ignores tinkers construct tools").getString().split(", ");
 		//Buff application type
@@ -105,27 +100,56 @@ public class BT_CoreConfig extends Configuration{
 		}
 		Notifier.notifyCustomMod("Blacksmith Tweaks", "Application method in use:: " + applicationString);
 
-			String mod, item;
-			blacklist = new Item[blacklistItems.length];
+			String mod, item, meta = "0";
 			for(int i = 0; i < blacklistItems.length; i++)
 			{
-				Notifier.notifyCustomMod("Blacksmith Tweaks", "Loaded Item " + blacklistItems[i]);
-				String[] modidAndName = blacklistItems[i].split(":");
-				mod = modidAndName[0];
-				item = modidAndName[1];
-				blacklist[i] = GameRegistry.findItem(mod, item);
+				try {
+					String[] modIDAndName = blacklistItems[i].split(":");
+					mod = modIDAndName[0];
+					item = modIDAndName[1];
+					if(modIDAndName.length == 3)
+						meta = modIDAndName[2];
+					if(item.equals("*")) {
+						for (Object obj : GameData.getItemRegistry().getKeys()) {
+							String itemName = obj.toString();
+							System.out.println("name " + itemName);
+							if(itemName.startsWith(mod + ":")) {
+								blacklist.add(new ItemStack(GameRegistry.findItem(mod, itemName.split(":")[1]), 0));
+								Notifier.notifyCustomMod("Blacksmith Tweaks", "Blacklisted Item " + new ItemStack(GameRegistry.findItem(mod, itemName.split(":")[1]), 0).getDisplayName());
+
+							}
+						}
+					}
+					else
+						blacklist.add(new ItemStack(GameRegistry.findItem(mod, item), 1, Integer.parseInt(meta)));
+					Notifier.notifyCustomMod("Blacksmith Tweaks", "Blacklisted Item " + new ItemStack(GameRegistry.findItem(mod, item), 1, Integer.parseInt(meta)).getDisplayName());
+				} catch (Exception e) {
+					Notifier.notifyCustomMod("Blacksmith Tweaks", "Failed to load item: " + blacklistItems[i] + " " + e.getLocalizedMessage());
+				}
 
 			}
-			whitelist = new Item[whitelistItems.length];
-			for(int i = 0; i < whitelistItems.length; i++)
-			{
-				Notifier.notifyCustomMod("Blacksmith Tweaks", "Loaded Item " + whitelistItems[i]);
-				String[] modidAndName = whitelistItems[i].split(":");
-				mod = modidAndName[0];
-				item = modidAndName[1];
-				whitelist[i] = GameRegistry.findItem(mod, item);
-
+		for(int i = 0; i < whitelistItems.length; i++) {
+			try {
+				String[] modIDAndName = whitelistItems[i].split(":");
+				mod = modIDAndName[0];
+				item = modIDAndName[1];
+				if (modIDAndName.length == 3)
+					meta = modIDAndName[2];
+				if (item.equals("*")) {
+					for (Object obj : GameData.getItemRegistry().getKeys()) {
+						String itemName = obj.toString();
+						if (itemName.startsWith(mod + ":")) {
+							whitelist.add(new ItemStack(GameRegistry.findItem(mod, itemName.split(":")[1]), 0));
+							Notifier.notifyCustomMod("Blacksmith Tweaks", "Whitelisted Item " + new ItemStack(GameRegistry.findItem(mod, itemName.split(":")[1]), 0).getDisplayName());
+						}
+					}
+				} else
+					whitelist.add(new ItemStack(GameRegistry.findItem(mod, item), 1, Integer.parseInt(meta)));
+				Notifier.notifyCustomMod("Blacksmith Tweaks", "Whitelisted Item " + new ItemStack(GameRegistry.findItem(mod, item), 1, Integer.parseInt(meta)).getDisplayName());
+			} catch (Exception e) {
+				Notifier.notifyCustomMod("Blacksmith Tweaks", "Failed to load item: " + whitelistItems[i] + " " + e.getLocalizedMessage());
 			}
+		}
 	}
 
 
