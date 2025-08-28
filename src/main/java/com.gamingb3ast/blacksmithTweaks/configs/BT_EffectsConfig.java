@@ -93,7 +93,7 @@ public class BT_EffectsConfig extends Configuration{
 				String hex = cat.get("color").getString();
 				String data = cat.get("dataArray").getString();
 				DummyData[] dat = DataStorage.parseData(data);
-				BT_Effect aaa = new BT_Effect(codeName, name, EnumRarityColor.getColorByHex(hex), dat).registerEffect();
+				new BT_Effect(codeName, name, EnumRarityColor.getColorByHex(hex), dat).registerEffect();
 				Notifier.notifyCustomMod("Blacksmith Tweaks", "Adding a new effect with name "+name+", rarity "+EnumRarityColor.getColorByHex(hex).getName() + " and data "+data);
 				++buffsCount;
 			}

@@ -5,7 +5,6 @@ import java.io.File;
 import DummyCore.Utils.DummyData;
 import DummyCore.Utils.EnumRarityColor;
 import DummyCore.Utils.MiscUtils;
-import DummyCore.Utils.Notifier;
 import com.gamingb3ast.blacksmithTweaks.anvil.BT_Anvil;
 import com.gamingb3ast.blacksmithTweaks.configs.BT_CoreConfig;
 import com.gamingb3ast.blacksmithTweaks.configs.BT_EffectsConfig;
