@@ -36,4 +36,9 @@
 dependencies {
     runtimeOnlyNonPublishable("com.github.GTNewHorizons:NotEnoughItems:2.7.78-GTNH:dev")
     api("curse.maven:project-230103:2256966")
+    compileOnly("com.github.GTNewHorizons:Backhand:1.7.0")
+    compileOnly("curse.maven:project-654404:5475047")
+    runtimeOnlyNonPublishable("com.github.GTNewHorizons:Backhand:1.7.0")
+    //runtimeOnlyNonPublishable("curse.maven:project-654404:5475047")
+
 }

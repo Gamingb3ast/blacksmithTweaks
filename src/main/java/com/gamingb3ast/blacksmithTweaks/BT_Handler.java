@@ -8,6 +8,7 @@ import DummyCore.Utils.EnumRarityColor;
 import DummyCore.Utils.MiscUtils;
 import com.gamingb3ast.blacksmithTweaks.network.BT_MessageShift;
 import com.gamingb3ast.blacksmithTweaks.network.BT_ShiftHandler;
+import cpw.mods.fml.common.Loader;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.EntityLiving;
@@ -34,6 +35,7 @@ import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.ItemCraftedEvent;
 import net.minecraft.entity.item.EntityXPOrb;
+import xonin.backhand.api.core.BackhandUtils;
 
 import static com.gamingb3ast.blacksmithTweaks.configs.BT_CoreConfig.buffApplicationMethod;
 import static com.gamingb3ast.blacksmithTweaks.BT_Utils.*;
@@ -473,10 +475,9 @@ public class BT_Handler{
 
 		if (p.ticksExisted < 80) return;
 
-
-
 		if (p.getCurrentEquippedItem() != null && BT_Utils.itemHasEffect(p.getCurrentEquippedItem())) {
 			ItemStack stack = p.getCurrentEquippedItem();
+
 			String dummyDataString = stack.getTagCompound().getCompoundTag("BT_TagList").getString("BT_Buffs");
 			DummyData[] d = DataStorage.parseData(dummyDataString);
 			for (int i1 = 0; i1 < d.length; ++i1) {
@@ -494,29 +495,31 @@ public class BT_Handler{
 				}
 			}
 		}
-		for (int aSlot = 0; aSlot < 4; aSlot++)
-		{
-			if (p.getCurrentArmor(aSlot) != null && BT_Utils.itemHasEffect(p.getCurrentArmor(aSlot)))
-			{
-				ItemStack stack = p.getCurrentArmor(aSlot);
+
+		ItemStack[] equippedItems = new ItemStack[6];
+		equippedItems[0] = p.getCurrentArmor(0);
+		equippedItems[1] = p.getCurrentArmor(1);
+		equippedItems[2] = p.getCurrentArmor(2);
+		equippedItems[3] = p.getCurrentArmor(3);
+		equippedItems[4] = p.getCurrentEquippedItem();
+		equippedItems[5] = (Loader.instance().getIndexedModList().containsKey("backhand") ? BackhandUtils.getOffhandItem(p) : null);
+		for(ItemStack stack : equippedItems) {
+			if (stack != null && BT_Utils.itemHasEffect(stack)) {
 				String dummyDataString = stack.getTagCompound().getCompoundTag("BT_TagList").getString("BT_Buffs");
 				DummyData[] d = DataStorage.parseData(dummyDataString);
-				for (int i1 = 0; i1 < d.length; ++i1)
-				{
+				for (int i1 = 0; i1 < d.length; ++i1) {
 					DummyData data = d[i1];
 					String name = data.fieldName;
 					double value = Double.parseDouble(data.fieldValue);
-					if (name.contains("swift"))
-					{
+					//TODO: Figure out why speed 4 is applied when only speed 2 should be applied
+					if (name.contains("swift")) {
 						speedValue += value;
 					}
-					if (name.contains("slow"))
-					{
-						slowValue+= value;
+					if (name.contains("slow")) {
+						slowValue += value;
 					}
-					if (name.contains("speed"))
-					{
-						hasteValue+=value;
+					if (name.contains("speed")) {
+						hasteValue += value;
 					}
 					if (name.contains("fear")) {
 						assignFleeTask(p, w, value);

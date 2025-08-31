@@ -8,12 +8,14 @@ import DummyCore.Utils.DataStorage;
 import DummyCore.Utils.DummyData;
 import DummyCore.Utils.MiscUtils;
 import com.gamingb3ast.blacksmithTweaks.configs.BT_CoreConfig;
+import cpw.mods.fml.common.Loader;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.*;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.StatCollector;
+import xonin.backhand.api.core.BackhandUtils;
 
 public class BT_Utils {
 	
@@ -117,7 +119,9 @@ public class BT_Utils {
             }
         }
 	}
-	
+	public static boolean isBackhandPresent() {
+		return Loader.instance().getIndexedModList().containsKey("backhand");
+	}
 	public static boolean isTConstructTool(ItemStack stk)
 	{
 		if(stk == null || stk.getItem() == null) return false;
