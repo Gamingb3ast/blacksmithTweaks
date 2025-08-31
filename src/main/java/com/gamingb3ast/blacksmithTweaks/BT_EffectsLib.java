@@ -20,10 +20,5 @@ public class BT_EffectsLib {
 	{
 		return effects_list.get(rand.nextInt(effects_list.size()));
 	}
-	
-	public static BT_Effect getRandomEffect(int type)
-	{
-		return effects_list.get(rand.nextInt(effects_list.size()));
-	}
 
 }
