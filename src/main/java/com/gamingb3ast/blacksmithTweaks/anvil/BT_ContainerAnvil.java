@@ -32,22 +32,22 @@ public class BT_ContainerAnvil extends Container{
 	    }
 
 		@Override
-		public boolean canInteractWith(EntityPlayer p_75145_1_) {
+		public boolean canInteractWith(EntityPlayer player) {
 			// TODO Auto-generated method stub
-			return inv.isUseableByPlayer(p_75145_1_);
+			return inv.isUseableByPlayer(player);
 		}
 
-	    public ItemStack transferStackInSlot(EntityPlayer p_82846_1_, int p_82846_2_)
+	    public ItemStack transferStackInSlot(EntityPlayer player, int index)
 	    {
 	        ItemStack itemstack = null;
-	        Slot slot = (Slot)this.inventorySlots.get(p_82846_2_);
+	        Slot slot = (Slot)this.inventorySlots.get(index);
 
 	        if (slot != null && slot.getHasStack())
 	        {
 	            ItemStack itemstack1 = slot.getStack();
 	            itemstack = itemstack1.copy();
 
-	            if (p_82846_2_ < inv.getSizeInventory())
+	            if (index < inv.getSizeInventory())
 	            {
 	                if (!this.mergeItemStack(itemstack1, inv.getSizeInventory(), 36+inv.getSizeInventory(), true))
 	                {
@@ -61,7 +61,7 @@ public class BT_ContainerAnvil extends Container{
 
 	                
 	            }
-	            else if (p_82846_2_ > inv.getSizeInventory())
+	            else if (index > inv.getSizeInventory())
 	            {
 	            	for(int i = 0; i < inv.getSizeInventory(); ++i)
 	            	{
@@ -75,7 +75,7 @@ public class BT_ContainerAnvil extends Container{
 	                    }
 	            	}
 	            }
-	            if (p_82846_2_ > inv.getSizeInventory() && p_82846_2_ < 27+inv.getSizeInventory())
+	            if (index > inv.getSizeInventory() && index < 27+inv.getSizeInventory())
 	            {
 	                if (!this.mergeItemStack(itemstack1, 27+inv.getSizeInventory(), 36+inv.getSizeInventory(), false))
 	                {
@@ -86,7 +86,7 @@ public class BT_ContainerAnvil extends Container{
 	                    return null;
 	                }
 	            }
-	            else if (p_82846_2_ > 27+inv.getSizeInventory() && p_82846_2_ < 36+inv.getSizeInventory() && !this.mergeItemStack(itemstack1, inv.getSizeInventory(), 27+inv.getSizeInventory(), false))
+	            else if (index > 27+inv.getSizeInventory() && index < 36+inv.getSizeInventory() && !this.mergeItemStack(itemstack1, inv.getSizeInventory(), 27+inv.getSizeInventory(), false))
 	            {
 	                if (itemstack1.stackSize == 0)
 	                {
@@ -112,7 +112,7 @@ public class BT_ContainerAnvil extends Container{
 	                return null;
 	            }
 
-	            slot.onPickupFromSlot(p_82846_1_, itemstack1);
+	            slot.onPickupFromSlot(player, itemstack1);
 	        }
 
 	        return itemstack;

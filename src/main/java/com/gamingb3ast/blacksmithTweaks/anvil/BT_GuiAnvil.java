@@ -31,7 +31,7 @@ public class BT_GuiAnvil extends GuiCommon{
 	    this.buttonList.add(new GuiButton(0,k+48,l+42,80,20,StatCollector.translateToLocal("gui.bt.anvil.reforge.name")));
     }
     
-    public void drawScreen(int p_73863_1_, int p_73863_2_, float p_73863_3_)
+    public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
     	boolean reforgable = this.isItemReforgable();
     	GuiButton btn = (GuiButton) this.buttonList.get(0);
@@ -45,7 +45,7 @@ public class BT_GuiAnvil extends GuiCommon{
 	    GL11.glPushMatrix();
 	    GL11.glScalef(0.25F, 0.25F, 0.25F);
         float f10 = 255.0F;
-        float f11 = ((float)Minecraft.getMinecraft().thePlayer.ticksExisted + p_73863_3_) / 2.0F;
+        float f11 = ((float)Minecraft.getMinecraft().thePlayer.ticksExisted + partialTicks) / 2.0F;
         float l = (int)((MathHelper.sin(f11 + 0.0F) + 1.0F) * 0.5F * f10);
         float i1 = (int)f10;
         float j1 = (int)((MathHelper.sin(f11 + 4.1887903F) + 1.0F) * 0.1F * f10);
@@ -80,7 +80,7 @@ public class BT_GuiAnvil extends GuiCommon{
 	    }
 	    GL11.glPopMatrix();
 	    GL11.glColor3f(1, 1, 1);
-	    super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
+	    super.drawScreen(mouseX, mouseY, partialTicks);
     }
     
     
