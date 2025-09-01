@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class BT_ShiftHandler {
+
     private static final Map<UUID, Boolean> playerShiftStates = new HashMap();
 
     public static void setPlayerShiftState(UUID playerId, boolean isShiftDown) {

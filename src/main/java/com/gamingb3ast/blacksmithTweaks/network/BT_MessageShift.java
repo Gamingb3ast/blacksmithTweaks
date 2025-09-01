@@ -1,12 +1,14 @@
 package com.gamingb3ast.blacksmithTweaks.network;
 
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import io.netty.buffer.ByteBuf;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import net.minecraft.entity.player.EntityPlayerMP;
 
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import io.netty.buffer.ByteBuf;
+
 public class BT_MessageShift implements IMessage {
+
     private boolean isShiftDown;
 
     // Default constructor required
@@ -27,6 +29,7 @@ public class BT_MessageShift implements IMessage {
     }
 
     public static class Handler implements IMessageHandler<BT_MessageShift, IMessage> {
+
         @Override
         public IMessage onMessage(BT_MessageShift message, MessageContext ctx) {
             if (ctx.side.isServer()) {
