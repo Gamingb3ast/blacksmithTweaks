@@ -15,8 +15,9 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIAvoidEntity;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
@@ -50,8 +51,7 @@ public class BT_Handler{
 
 		EntityPlayer player = event.player;
 		ItemStack item = event.crafting;
-		IInventory matrix = event.craftMatrix;
-		ChatComponentText message1 = new ChatComponentText("#---You worked hard to craft a flawless tool with no additional stats, you are now exhausted!---#");
+        ChatComponentText message1 = new ChatComponentText("#---You worked hard to craft a flawless tool with no additional stats, you are now exhausted!---#");
 		message1.getChatStyle().setColor(EnumChatFormatting.YELLOW);
 		ChatComponentText message2 = new ChatComponentText("#---TIP: Get 30 experience levels to prevent exhaustion when crafting tools!---#");
 		message2.getChatStyle().setColor(EnumChatFormatting.GREEN);
@@ -264,96 +264,113 @@ public class BT_Handler{
 		if(dms instanceof EntityDamageSource)
 		{
 			EntityDamageSource edms = (EntityDamageSource)dms;
-
-			if(edms.damageType.contains("player") && edms.getSourceOfDamage() instanceof EntityPlayer)
-			{
-				EntityPlayer p = (EntityPlayer) edms.getSourceOfDamage();
-				for(int aSlot = 0; aSlot < 4; aSlot++)
-				{
-					if (p.getCurrentArmor(aSlot) != null && BT_Utils.itemHasEffect(p.getCurrentArmor(aSlot))) {
-						ItemStack stack = p.getCurrentArmor(aSlot);
-						String dummyDataString = stack.getTagCompound().getCompoundTag("BT_TagList").getString("BT_Buffs");
-						DummyData[] d = DataStorage.parseData(dummyDataString);
-						for (int i1 = 0; i1 < d.length; ++i1)
-						{
-							DummyData data = d[i1];
-							String name = data.fieldName;
-							double value = Double.parseDouble(data.fieldValue);
-							if (name.contains("crit")) {
-								critValue+=value;
-							}
-						}
-					}
-				}
-				if(p.getCurrentEquippedItem() != null && BT_Utils.itemHasEffect(p.getCurrentEquippedItem()))
-				{
-					ItemStack stack = p.getCurrentEquippedItem();
+			if(edms.damageType.contains("player") && edms.getSourceOfDamage() instanceof EntityPlayer p) {
+				ItemStack stack = p.getCurrentEquippedItem();
+				if (stack != null && BT_Utils.itemHasEffect(stack)) {
 					String dummyDataString = stack.getTagCompound().getCompoundTag("BT_TagList").getString("BT_Buffs");
 					DummyData[] d = DataStorage.parseData(dummyDataString);
-					for(int i1 = 0; i1 < d.length; ++i1)
-					{
+					for (int i1 = 0; i1 < d.length; ++i1) {
 						DummyData data = d[i1];
 						String name = data.fieldName;
 						double value = Double.parseDouble(data.fieldValue);
-						if(name.contains("damage"))
-						{
+						if (name.contains("damage")) {
 							float dam = event.ammount;
-							if(value < 0)
-							{
+							if (value < 0) {
 								value = -value;
-								float mainDam = dam*=value;
+								float mainDam = (float) (dam * value);
 								event.ammount -= mainDam;
-							}else
-							{
-								float mainDam = dam*=value;
+							} else {
+								float mainDam = (float) (dam * value);
 								event.ammount += mainDam;
 							}
 						}
-						if(name.contains("life"))
-						{
-							if(p.worldObj.rand.nextDouble() <= value)
-							{
+						if (name.contains("life")) {
+							if (p.worldObj.rand.nextDouble() <= value) {
 								int heartAmount = p.worldObj.rand.nextInt(3);
 								p.heal(heartAmount);
-								event.ammount+=heartAmount;
+								event.ammount += heartAmount;
 
 							}
 						}
-						if(name.contains("crit"))
-						{
-							critValue += value;
+						if (name.contains("crit")) {
+							if (p.worldObj.rand.nextDouble() <= value) {
+								event.ammount *= 2.5F;
+							}
 
 						}
-						if(name.contains("speed"))
-						{
+						if (name.contains("speed")) {
 							MiscUtils.damageEntityIgnoreEvent(event.entityLiving, edms, event.ammount);
 							int damageResistance = 20;
-							damageResistance -= value*40;
+							damageResistance -= value * 40;
 							event.entityLiving.hurtResistantTime = damageResistance;
 							event.entityLiving.hurtTime = damageResistance;
-							p.swingProgress -= value*100;
-							p.swingProgressInt -= value*100;
+							p.swingProgress -= value * 100;
+							p.swingProgressInt -= value * 100;
 							event.setCanceled(true);
 						}
-						if(name.contains("poison"))
-						{
-							if(p.worldObj.rand.nextDouble() <= value || 0 <= value)
-							{
+						if (name.contains("poison")) {
+							if (p.worldObj.rand.nextDouble() <= value) {
 								event.entityLiving.addPotionEffect(new PotionEffect(19, 450, 3));
 							}
 						}
-						if(name.contains("bind"))
-						{
-							if(p.worldObj.rand.nextDouble() <= value)
-							{
+						if (name.contains("bind")) {
+							if (p.worldObj.rand.nextDouble() <= value) {
 								event.entityLiving.addPotionEffect((new PotionEffect(2, 200, 1000)));
 							}
 						}
 					}
 				}
-				if(p.worldObj.rand.nextDouble() <= critValue)
-				{
-					event.ammount*=2.5F;
+			}
+			else if(edms.damageType.contains("arrow") && edms.getSourceOfDamage() instanceof EntityArrow arrow && arrow.shootingEntity instanceof EntityPlayer p)
+			{
+				ItemStack[] equippedItems = new ItemStack[2];
+				equippedItems[0] = p.getCurrentEquippedItem();
+				equippedItems[1] = (Loader.instance().getIndexedModList().containsKey("backhand") ? BackhandUtils.getOffhandItem(p) : null);
+				for (ItemStack stack : equippedItems) {
+					if (stack != null && BT_Utils.itemHasEffect(stack) && stack.getItem() instanceof ItemBow) {
+						String dummyDataString = stack.getTagCompound().getCompoundTag("BT_TagList").getString("BT_Buffs");
+						DummyData[] d = DataStorage.parseData(dummyDataString);
+						for (int i1 = 0; i1 < d.length; ++i1) {
+							DummyData data = d[i1];
+							String name = data.fieldName;
+							double value = Double.parseDouble(data.fieldValue);
+							if (name.contains("damage")) {
+								float dam = event.ammount;
+								if (value < 0) {
+									value = -value;
+									float mainDam = (float) (dam * value);
+									event.ammount -= mainDam;
+								} else {
+									float mainDam = (float) (dam * value);
+									event.ammount += mainDam;
+								}
+							}
+							//TODO: Eventually add mixin alternatives for everything and also add a mixin based speed buff for the bow draw speed
+							if (name.contains("life")) {
+								if (p.worldObj.rand.nextDouble() <= value) {
+									int heartAmount = p.worldObj.rand.nextInt(3);
+									p.heal(heartAmount);
+									event.ammount += heartAmount;
+
+								}
+							}
+							if (name.contains("crit")) {
+								if (p.worldObj.rand.nextDouble() <= value) {
+									event.ammount *= 2.5F;
+								}
+							}
+							if (name.contains("poison")) {
+								if (p.worldObj.rand.nextDouble() <= value) {
+									event.entityLiving.addPotionEffect(new PotionEffect(19, 450, 3));
+								}
+							}
+						}
+
+					}
+				}
+
+				if (p.worldObj.rand.nextDouble() <= critValue) {
+					event.ammount *= 2.5F;
 				}
 			}
 			if(event.entityLiving instanceof EntityPlayer)
@@ -468,33 +485,11 @@ public class BT_Handler{
 		EntityPlayer p = event.entityPlayer;
 		World w = p.worldObj;
 		double speedValue = 0.0;
-		double slowValue = 0.0;
 		hasteValue = 0.0;
 
 
 
 		if (p.ticksExisted < 80) return;
-
-		if (p.getCurrentEquippedItem() != null && BT_Utils.itemHasEffect(p.getCurrentEquippedItem())) {
-			ItemStack stack = p.getCurrentEquippedItem();
-
-			String dummyDataString = stack.getTagCompound().getCompoundTag("BT_TagList").getString("BT_Buffs");
-			DummyData[] d = DataStorage.parseData(dummyDataString);
-			for (int i1 = 0; i1 < d.length; ++i1) {
-				DummyData data = d[i1];
-				String name = data.fieldName;
-				double value = Double.parseDouble(data.fieldValue);
-				if (name.contains("swift"))
-					speedValue += value;
-				else if (name.contains("slow"))
-					slowValue += value;
-				if (name.contains("fear")) {
-					assignFleeTask(p, w, value);
-				} else if (avoidPlayerTask != null && mob != null) {
-					removeFleeTask(avoidPlayerTask, mob, p);
-				}
-			}
-		}
 
 		ItemStack[] equippedItems = new ItemStack[6];
 		equippedItems[0] = p.getCurrentArmor(0);
@@ -511,12 +506,11 @@ public class BT_Handler{
 					DummyData data = d[i1];
 					String name = data.fieldName;
 					double value = Double.parseDouble(data.fieldValue);
-					//TODO: Figure out why speed 4 is applied when only speed 2 should be applied
 					if (name.contains("swift")) {
 						speedValue += value;
 					}
 					if (name.contains("slow")) {
-						slowValue += value;
+						speedValue += value;
 					}
 					if (name.contains("speed")) {
 						hasteValue += value;
@@ -529,13 +523,9 @@ public class BT_Handler{
 				}
 			}
 		}
-		if (speedValue > 0)
+		if (speedValue != 0)
 		{
 			p.addPotionEffect(new PotionEffect(1, 1, (int)(speedValue-1)));
-		}
-		else if (slowValue < 0)
-		{
-			p.addPotionEffect(new PotionEffect(2, 1, (int)((slowValue+1))));
 		}
 
 
