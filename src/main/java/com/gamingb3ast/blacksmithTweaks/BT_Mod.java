@@ -101,7 +101,7 @@ public class BT_Mod {
     // THIS IS NOT USED ANYMORE
     public void registerEffects() {
 
-        //spotless:off
+        // spotless:off
 		BT_Effect eaa = new BT_Effect("BT.Effect.Damaged", "Damaged", EnumRarityColor.BROKEN, new DummyData("damage", -0.2D)).registerEffect();
 		BT_Effect eab = new BT_Effect("BT.Effect.Dull", "Dull", EnumRarityColor.BROKEN, new DummyData("damage", -0.20D)).registerEffect();
 		BT_Effect eac = new BT_Effect("BT.Effect.Sluggish", "Sluggish", EnumRarityColor.BROKEN, new DummyData("speed", -0.46D), new DummyData("slow", -1)).registerEffect();

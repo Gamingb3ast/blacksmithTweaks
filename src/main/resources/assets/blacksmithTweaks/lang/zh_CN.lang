@@ -1,7 +1,10 @@
 ## 设置所有方块名称
 tile.bt.anvil.name=重铸铁砧
 ## 设置所有界面元素名称
-gui.bt.anvil.reforge.name=重铸
+gui.bt.anvil.reforge.name.element=重铸
+gui.bt.anvil.reforge.fullOutput.element=全力输出!
+gui.bt.anvil.reforge.noOutput.element=没有物品!
+gui.bt.anvil.reforge.levels.element= 经验水平
 ## 设置所有效果名称
 buff.bt.damage.name=伤害
 buff.bt.speed.name=速度

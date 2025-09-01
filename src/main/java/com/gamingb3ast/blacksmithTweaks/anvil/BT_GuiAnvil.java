@@ -29,8 +29,14 @@ public class BT_GuiAnvil extends GuiCommon {
         super.initGui();
         int k = (this.width - this.xSize) / 2;
         int l = (this.height - this.ySize) / 2;
-        this.buttonList
-            .add(new GuiButton(0, k + 48, l + 42, 80, 20, StatCollector.translateToLocal("gui.bt.anvil.reforge.name")));
+        this.buttonList.add(
+            new GuiButton(
+                0,
+                k + 48,
+                l + 42,
+                80,
+                20,
+                StatCollector.translateToLocal("gui.bt.anvil.reforge.name.element")));
     }
 
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
@@ -59,14 +65,30 @@ public class BT_GuiAnvil extends GuiCommon {
         if (this.genericTile != null) {
             BT_TileAnvil anvil = (BT_TileAnvil) this.genericTile;
             if (anvil.getStackInSlot(1) != null) {
-                this.fontRendererObj.drawStringWithShadow("Full Output!", k + 65, l1 + 26, 0xff4444);
+                this.fontRendererObj.drawStringWithShadow(
+                    StatCollector.translateToLocal("gui.bt.anvil.reforge.fullOutput.element"),
+                    k + 65,
+                    l1 + 26,
+                    0xff4444);
             } else if (anvil.getStackInSlot(0) == null) {
-                this.fontRendererObj.drawStringWithShadow("No item!", k + 70, l1 + 26, 0xff4444);
+                this.fontRendererObj.drawStringWithShadow(
+                    StatCollector.translateToLocal("gui.bt.anvil.reforge.noOutput.element"),
+                    k + 70,
+                    l1 + 26,
+                    0xff4444);
             } else {
                 int k1 = (int) l << 16 | (int) i1 << 8 | (int) j1;
                 int reqExp = this.getReforgeCost(anvil.getStackInSlot(0));
-                if (reforgable) this.fontRendererObj.drawStringWithShadow(reqExp + " Levels", k + 70, l1 + 26, k1);
-                else this.fontRendererObj.drawStringWithShadow(reqExp + " Levels", k + 70, l1 + 26, 0xff4444);
+                if (reforgable) this.fontRendererObj.drawStringWithShadow(
+                    reqExp + StatCollector.translateToLocal("gui.bt.anvil.reforge.levels.element"),
+                    k + 70,
+                    l1 + 26,
+                    k1);
+                else this.fontRendererObj.drawStringWithShadow(
+                    reqExp + StatCollector.translateToLocal("gui.bt.anvil.reforge.levels.element"),
+                    k + 70,
+                    l1 + 26,
+                    0xff4444);
             }
 
         }

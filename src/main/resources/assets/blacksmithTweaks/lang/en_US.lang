@@ -1,7 +1,10 @@
 ## Set all block names
 tile.bt.anvil.name=Reforging Anvil
 ## Set all Gui Element names
-gui.bt.anvil.reforge.name=Reforge
+gui.bt.anvil.reforge.name.element=Reforge
+gui.bt.anvil.reforge.fullOutput.element=Full Output!
+gui.bt.anvil.reforge.noOutput.element=No item!
+gui.bt.anvil.reforge.levels.element= Levels
 ## Set all Effect names
 buff.bt.damage.name=Damage
 buff.bt.speed.name=Speed
