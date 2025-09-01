@@ -515,7 +515,35 @@ public class BT_Handler {
         if (speedValue != 0) {
             p.addPotionEffect(new PotionEffect(1, 1, (int) (speedValue - 1)));
         }
-
+        ItemStack stack = p.getCurrentEquippedItem();
+        if (stack != null && stack.hasTagCompound()
+            && stack.getTagCompound()
+                .hasKey("BT_TagList")) {
+            NBTTagCompound tag = (NBTTagCompound) stack.getTagCompound()
+                .getTag("BT_TagList");
+            if (tag.hasKey("BT_CodeName")) {
+                if (BT_Utils.getEffectName(stack)
+                    .equals("LANG")) {
+                    String formatting = stack.getTagCompound()
+                        .getCompoundTag("display")
+                        .getString("Name")
+                        .substring(0, 4);
+                    String codeName = tag.getString("BT_CodeName");
+                    String originalName = stack.getTagCompound()
+                        .getCompoundTag("display")
+                        .getString("BT_OriginalName");
+                    if (originalName.isEmpty()) {
+                        originalName = StatCollector.translateToLocal(stack.getUnlocalizedName() + ".name");
+                    }
+                    stack.setStackDisplayName(
+                        formatting
+                            + StatCollector
+                                .translateToLocal(StatCollector.translateToLocal("custom.effect." + codeName + ".name"))
+                            + " "
+                            + originalName);
+                }
+            }
+        }
     }
 
     private void assignFleeTask(EntityPlayer p, World w, double value) {
