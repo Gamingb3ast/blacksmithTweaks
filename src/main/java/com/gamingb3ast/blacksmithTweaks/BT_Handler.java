@@ -3,6 +3,7 @@ package com.gamingb3ast.blacksmithTweaks;
 import static com.gamingb3ast.blacksmithTweaks.BT_Utils.*;
 import static com.gamingb3ast.blacksmithTweaks.configs.BT_CoreConfig.buffApplicationMethod;
 
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -504,10 +505,15 @@ public class BT_Handler {
                     if (name.contains("speed")) {
                         hasteValue += value;
                     }
-                    if (name.contains("fear")) {
-                        assignFleeTask(p, w, value);
-                    } else if (avoidPlayerTask != null && mob != null) {
-                        removeFleeTask(avoidPlayerTask, mob, p);
+                    try {
+                        if (name.contains("fear")) {
+                            assignFleeTask(p, w, value);
+                        } else if (avoidPlayerTask != null && mob != null) {
+                            removeFleeTask(avoidPlayerTask, mob, p);
+                        }
+                    } catch (ConcurrentModificationException e) {
+                        System.err.println("[BlacksmithTweaks] Error with fear buff: | " + e + " Why :( ");
+
                     }
                 }
             }

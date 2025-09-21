@@ -30,9 +30,10 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "blacksmithTweaks", useMetadata = true)
-public class BT_Mod {
+import static com.gamingb3ast.blacksmithTweaks.Tags.VERSION;
 
+@Mod(modid = "blacksmithTweaks", version = VERSION, useMetadata = true)
+public class BT_Mod {
     public static BT_Mod instance;
     public static boolean effectConfigExists;
 
