@@ -23,7 +23,7 @@ public class BT_Effect {
         buffs.addAll(Arrays.asList(effect));
 
     }
-    //TODO: Rework effects, start by looking at this file, and then move on to making the NBT data into a 16-bit attached to a byte for the value. Where each bit represents a different buff (0, 1 for active or not) and the byte represents the value (-100 to 100 inclusive is a percent and ±101, ±102, ±103...+n represent ±200, ±300...±100n to a maximum of ±12800)
+    //TODO: Rework effects, start by looking at this file, and then move on to making the NBT data into a 16-bit attached to a byte for the value. Where each bit represents a different buff (0, 1 for active or not) and the byte represents the value (-100 to 100 inclusive is a percent and ±101, ±102, ±103...+n represent ±110, ±120...±130...+10n)
     //TODO: This will cut down the nbt size from 17 bytes per buff to 16 bytes TOTAL. 153 bytes for legendary down to 16 bytes. 
     public BT_Effect registerEffect() {
         BT_EffectsLib.effects.put(codeName, this);
