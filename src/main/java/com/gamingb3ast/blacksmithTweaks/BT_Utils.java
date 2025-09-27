@@ -46,14 +46,14 @@ public class BT_Utils {
                 itemTag.setString("BT_OriginalName", stk.getDisplayName());
 
             NBTTagCompound display = new NBTTagCompound();
-            if (itemTag.hasKey("display")) {
-                display = itemTag.getCompoundTag("display");
+            if (itemTag.hasKey("BT_Display")) {
+                display = itemTag.getCompoundTag("BT_Display");
             }
             if (originalName == null || originalName.isEmpty())
                 display.setString("Name", effect.getColor() + effect.getName() + " " + stk.getDisplayName());
             else display.setString("Name", effect.getColor() + effect.getName() + " " + originalName);
             display.setString("EffectName", effect.getRealName());
-            itemTag.setTag("display", display);
+            itemTag.setTag("BT_Display", display);
             itemTag.setTag("BT_TagList", buffsTag);
             stk.setTagCompound(itemTag);
         }
@@ -61,7 +61,7 @@ public class BT_Utils {
 
     public static String getEffectName(ItemStack stack) {
         return stack.getTagCompound()
-            .getCompoundTag("display")
+            .getCompoundTag("BT_Display")
             .getString("EffectName");
     }
 

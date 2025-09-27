@@ -118,7 +118,6 @@ public class BT_CoreConfig extends Configuration {
                     for (Object obj : GameData.getItemRegistry()
                         .getKeys()) {
                         String itemName = obj.toString();
-                        System.out.println("name " + itemName);
                         if (itemName.startsWith(mod + ":")) {
                             blacklist.add(new ItemStack(GameRegistry.findItem(mod, itemName.split(":")[1]), 0));
                             Notifier.notifyCustomMod(

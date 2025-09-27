@@ -142,7 +142,6 @@ public class BT_Handler {
                 addRandomEffects(stack);
             }
         }
-
     }
 
     private int itemToBuffIndex;
@@ -164,12 +163,11 @@ public class BT_Handler {
                 if (BT_Utils.getEffectName(stack)
                     .equals("LANG")) {
                     String formatting = stack.getTagCompound()
-                        .getCompoundTag("display")
+                        .getCompoundTag("BT_Display")
                         .getString("Name")
                         .substring(0, 4);
                     String codeName = tag.getString("BT_CodeName");
                     String originalName = stack.getTagCompound()
-                        .getCompoundTag("display")
                         .getString("BT_OriginalName");
                     if (originalName.isEmpty()) {
                         originalName = StatCollector.translateToLocal(stack.getUnlocalizedName() + ".name");
@@ -531,12 +529,12 @@ public class BT_Handler {
                 if (BT_Utils.getEffectName(stack)
                     .equals("LANG")) {
                     String formatting = stack.getTagCompound()
-                        .getCompoundTag("display")
+                        .getCompoundTag("BT_Display")
                         .getString("Name")
                         .substring(0, 4);
                     String codeName = tag.getString("BT_CodeName");
                     String originalName = stack.getTagCompound()
-                        .getCompoundTag("display")
+                        .getCompoundTag("BT_Display")
                         .getString("BT_OriginalName");
                     if (originalName.isEmpty()) {
                         originalName = StatCollector.translateToLocal(stack.getUnlocalizedName() + ".name");
