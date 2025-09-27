@@ -15,9 +15,8 @@ public class BT_EventHandler {
     public void onClientPacketRecieved(DummyEvent_OnClientGUIButtonPress event) {
         if (event.client_ParentClassPath.equalsIgnoreCase("com.gamingb3ast.blacksmithTweaks.anvil.BT_GuiAnvil")) {
             TileEntity tile = event.presser.worldObj.getTileEntity(event.x, event.y, event.z);
-            if (tile instanceof BT_TileAnvil anvil
-                    && BT_CoreConfig.buffApplicationMethod <= 5
-                    && BT_CoreConfig.buffApplicationMethod > 0) {
+            if (tile instanceof BT_TileAnvil anvil && BT_CoreConfig.buffApplicationMethod <= 5
+                && BT_CoreConfig.buffApplicationMethod > 0) {
                 ItemStack stk = anvil.getStackInSlot(0)
                     .copy();
                 BT_Utils.addRandomEffects(stk);

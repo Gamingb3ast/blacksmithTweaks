@@ -1,5 +1,7 @@
 package com.gamingb3ast.blacksmithTweaks;
 
+import static com.gamingb3ast.blacksmithTweaks.Tags.VERSION;
+
 import java.io.File;
 
 import net.minecraft.init.Blocks;
@@ -30,10 +32,9 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-import static com.gamingb3ast.blacksmithTweaks.Tags.VERSION;
-
 @Mod(modid = "blacksmithTweaks", version = VERSION, useMetadata = true)
 public class BT_Mod {
+
     public static BT_Mod instance;
     public static boolean effectConfigExists;
 
