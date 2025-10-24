@@ -43,13 +43,11 @@ public class BT_Effect {
     }
 
     public String getName() {
-        return rarity.getRarityColor() + name;
-    }
-
-    public String getRealName() {
         return name;
     }
-
+    public String getRarity() {
+        return rarity.getRarityColor();
+    }
     public String getCodeName() {
         return codeName;
     }

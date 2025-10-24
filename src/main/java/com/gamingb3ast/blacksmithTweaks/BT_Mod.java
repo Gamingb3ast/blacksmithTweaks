@@ -4,6 +4,7 @@ import static com.gamingb3ast.blacksmithTweaks.Tags.VERSION;
 
 import java.io.File;
 
+import com.gamingb3ast.blacksmithTweaks.network.BT_MessageAnvilRename;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
@@ -58,6 +59,7 @@ public class BT_Mod {
         // TODO: Work on networking and get the GUI shift checker working
         network = NetworkRegistry.INSTANCE.newSimpleChannel("Blacksmith_Tweaks");
         network.registerMessage(BT_MessageShift.Handler.class, BT_MessageShift.class, 0, Side.SERVER);
+		network.registerMessage(BT_MessageAnvilRename.Handler.class, BT_MessageAnvilRename.class, 1, Side.SERVER);
         // com.gamingb3ast.blacksmithTweaks.network.registerMessage(new BT_MessageShift.Handler(),
         // BT_MessageShift.class, 0, Side.SERVER);
         MinecraftForge.EVENT_BUS.register(new BT_EventHandler());

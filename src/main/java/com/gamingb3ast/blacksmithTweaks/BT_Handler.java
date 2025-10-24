@@ -6,6 +6,7 @@ import static com.gamingb3ast.blacksmithTweaks.configs.BT_CoreConfig.buffApplica
 import java.util.ConcurrentModificationException;
 import java.util.List;
 
+import com.gamingb3ast.blacksmithTweaks.network.BT_MessageAnvilRename;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.EntityLiving;
@@ -15,6 +16,7 @@ import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.ContainerRepair;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -149,39 +151,32 @@ public class BT_Handler {
     @SubscribeEvent
     public void event_ItemTooltipEvent(ItemTooltipEvent event) {
         ItemStack stack = event.itemStack;
+        Container container = event.entityPlayer.openContainer;
+
         if (buffApplicationMethod == 4) {
-            List<ItemStack> inventory = event.entityPlayer.openContainer.getInventory();
+            List<ItemStack> inventory = container.getInventory();
             if (!itemHasEffect(stack) && isItemBuffable(stack)) {
                 itemToBuffIndex = inventory.indexOf(stack);
             }
         }
         if (stack.hasTagCompound() && stack.getTagCompound()
-            .hasKey("BT_TagList")) {
-            NBTTagCompound tag = (NBTTagCompound) stack.getTagCompound()
-                .getTag("BT_TagList");
-            if (tag.hasKey("BT_CodeName")) {
-                if (BT_Utils.getEffectName(stack)
-                    .equals("LANG")) {
-                    String formatting = stack.getTagCompound()
-                        .getCompoundTag("BT_Display")
-                        .getString("Name")
-                        .substring(0, 4);
-                    String codeName = tag.getString("BT_CodeName");
-                    String originalName = stack.getTagCompound()
-                        .getString("BT_OriginalName");
-                    if (originalName.isEmpty()) {
-                        originalName = StatCollector.translateToLocal(stack.getUnlocalizedName() + ".name");
-                    }
-                    stack.setStackDisplayName(
-                        formatting
-                            + StatCollector
-                                .translateToLocal(StatCollector.translateToLocal("custom.effect." + codeName + ".name"))
-                            + " "
-                            + originalName);
-                }
+                .hasKey("BT_TagList")) {
+
+            NBTTagCompound itemTag = stack.getTagCompound(); //This line causes the Anvil Data to go back to the data before the rename, why?
+            NBTTagCompound effectsTag = (NBTTagCompound) stack.getTagCompound().getTag("BT_TagList");
+            NBTTagCompound displayTag = itemTag.getCompoundTag("BT_Display");
+
+            //Renaming item
+            if (container instanceof ContainerRepair && stack.equals(container.getSlot(2).getStack()) && !StatCollector.translateToLocal(stack.getUnlocalizedName()+".name").equals(stack.getDisplayName())) {
+                displayTag.setString("BT_AnvilName", stack.getDisplayName());
+                itemTag.setTag("BT_Display", displayTag);
+                BT_Mod.network.sendToServer(new BT_MessageAnvilRename(2, itemTag)); // slot 2
             }
-            if (tag.hasKey("BT_Buffs")) {
-                String s = tag.getString("BT_Buffs");
+            else {
+                stack.setStackDisplayName(BT_Utils.getDisplayName(stack));
+            }
+            if (effectsTag.hasKey("BT_Buffs")) {
+                String s = effectsTag.getString("BT_Buffs");
                 DummyData[] d = DataStorage.parseData(s);
                 for (DummyData data : d) {
                     String name = data.fieldName;
@@ -194,7 +189,6 @@ public class BT_Handler {
                 }
             }
         }
-
     }
 
     @SubscribeEvent
@@ -251,8 +245,10 @@ public class BT_Handler {
     public void event_LivingHurtEvent(LivingHurtEvent event) {
         double critValue = 0.0;
         DamageSource dms = event.source;
-        if (dms instanceof EntityDamageSource edms) {
-            if (edms.damageType.contains("player") && edms.getSourceOfDamage() instanceof EntityPlayer p) {
+        if (dms instanceof EntityDamageSource) {
+            EntityDamageSource edms = (EntityDamageSource) dms;
+            if (edms.damageType.contains("player") && edms.getSourceOfDamage() instanceof EntityPlayer) {
+                EntityPlayer p = (EntityPlayer) (edms.getSourceOfDamage());
                 ItemStack stack = p.getCurrentEquippedItem();
                 if (stack != null && BT_Utils.itemHasEffect(stack)) {
                     String dummyDataString = stack.getTagCompound()
@@ -309,8 +305,9 @@ public class BT_Handler {
                         }
                     }
                 }
-            } else if (edms.damageType.contains("arrow") && edms.getSourceOfDamage() instanceof EntityArrow arrow
-                && arrow.shootingEntity instanceof EntityPlayer p) {
+            } else if (edms.damageType.contains("arrow") && edms.getSourceOfDamage() instanceof EntityArrow
+                && ((EntityArrow)(edms.getSourceOfDamage())).shootingEntity instanceof EntityPlayer) {
+                    EntityPlayer p = (EntityPlayer) ((EntityArrow)(edms.getSourceOfDamage())).shootingEntity;
                     ItemStack[] equippedItems = new ItemStack[2];
                     equippedItems[0] = p.getCurrentEquippedItem();
                     equippedItems[1] = (Loader.instance()
@@ -365,8 +362,8 @@ public class BT_Handler {
                         event.ammount *= 2.5F;
                     }
                 }
-            if (event.entityLiving instanceof EntityPlayer p) {
-
+            if (event.entityLiving instanceof EntityPlayer) {
+                EntityPlayer p = (EntityPlayer) event.entityLiving;
                 World w = p.worldObj;
                 for (int aSlot = 0; aSlot < 4; aSlot++) {
                     if (p.getCurrentArmor(aSlot) != null && BT_Utils.itemHasEffect(p.getCurrentArmor(aSlot))) {
@@ -474,7 +471,7 @@ public class BT_Handler {
         double speedValue = 0.0;
         hasteValue = 0.0;
 
-        if (p.ticksExisted < 80) return;
+        if (p.ticksExisted < 80 || w == null) return;
 
         ItemStack[] equippedItems = new ItemStack[6];
         equippedItems[0] = p.getCurrentArmor(0);
@@ -522,31 +519,8 @@ public class BT_Handler {
         ItemStack stack = p.getCurrentEquippedItem();
         if (stack != null && stack.hasTagCompound()
             && stack.getTagCompound()
-                .hasKey("BT_TagList")) {
-            NBTTagCompound tag = (NBTTagCompound) stack.getTagCompound()
-                .getTag("BT_TagList");
-            if (tag.hasKey("BT_CodeName")) {
-                if (BT_Utils.getEffectName(stack)
-                    .equals("LANG")) {
-                    String formatting = stack.getTagCompound()
-                        .getCompoundTag("BT_Display")
-                        .getString("Name")
-                        .substring(0, 4);
-                    String codeName = tag.getString("BT_CodeName");
-                    String originalName = stack.getTagCompound()
-                        .getCompoundTag("BT_Display")
-                        .getString("BT_OriginalName");
-                    if (originalName.isEmpty()) {
-                        originalName = StatCollector.translateToLocal(stack.getUnlocalizedName() + ".name");
-                    }
-                    stack.setStackDisplayName(
-                        formatting
-                            + StatCollector
-                                .translateToLocal(StatCollector.translateToLocal("custom.effect." + codeName + ".name"))
-                            + " "
-                            + originalName);
-                }
-            }
+                .hasKey("BT_Display")) {
+            stack.setStackDisplayName(BT_Utils.getDisplayName(stack));
         }
     }
 
