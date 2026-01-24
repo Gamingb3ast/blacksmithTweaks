@@ -7,6 +7,7 @@ import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.UUID;
 
+import com.gamingb3ast.blacksmithTweaks.configs.BT_CoreConfig;
 import com.gamingb3ast.blacksmithTweaks.network.BT_MessageAnvilRename;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -172,7 +173,7 @@ public class BT_Handler {
         if (stack.hasTagCompound() && stack.getTagCompound()
                 .hasKey("BT_TagList")) {
 
-            NBTTagCompound itemTag = stack.getTagCompound(); //This line causes the Anvil Data to go back to the data before the rename, why?
+            NBTTagCompound itemTag = stack.getTagCompound();
             NBTTagCompound effectsTag = (NBTTagCompound) stack.getTagCompound().getTag("BT_TagList");
             NBTTagCompound displayTag = itemTag.getCompoundTag("BT_Display");
 
@@ -180,7 +181,7 @@ public class BT_Handler {
             if (container instanceof ContainerRepair && stack.equals(container.getSlot(2).getStack()) && !StatCollector.translateToLocal(stack.getUnlocalizedName()+".name").equals(stack.getDisplayName())) {
                 displayTag.setString("BT_AnvilName", stack.getDisplayName());
                 itemTag.setTag("BT_Display", displayTag);
-                BT_Mod.network.sendToServer(new BT_MessageAnvilRename(2, itemTag)); // slot 2
+                BT_Mod.network.sendToServer(new BT_MessageAnvilRename(2, itemTag));
             }
             else {
                 stack.setStackDisplayName(BT_Utils.getDisplayName(stack));
@@ -450,9 +451,10 @@ public class BT_Handler {
         if (attr == null) return;
         AttributeModifier mod = attr.getModifier(speedUUID);
         if (mod == null) return;
-
-        System.out.println(((attr.getAttributeValue() / player.capabilities.getWalkSpeed() + 1.0F) / 2.0F));
-        event.newfov = 1.0F + (float)((attr.getAttributeValue() / player.capabilities.getWalkSpeed() + 1.0F) / 2.0F)/5.0F;
+        if(mod.getAmount() < 0)
+            event.newfov = 1.0F + (float)(mod.getAmount() / player.capabilities.getWalkSpeed()) / BT_CoreConfig.FOVEffectsStrength;
+        else
+            event.newfov = 1.0F + (float)(mod.getAmount() / player.capabilities.getWalkSpeed()) / BT_CoreConfig.FOVEffectsStrength;
     }
 
 
@@ -490,6 +492,8 @@ public class BT_Handler {
                     }
                     if (name.contains("slow")) {
                         playerSpeedModifier += value;
+                        //TODO: Make these effects also increase/decrease jump height, but make this change less noticeable and limited,
+                        // it would be bad if players couldn't even jump up one block. It would be good to prevent spring jumping
                     }
                     if (name.contains("speed")) {
                         hasteValue += value;

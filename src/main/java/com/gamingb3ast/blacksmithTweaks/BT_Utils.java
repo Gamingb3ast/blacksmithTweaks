@@ -42,7 +42,9 @@ public class BT_Utils {
             if (itemTag.hasKey("BT_Display")) {
                 displayTag = itemTag.getCompoundTag("BT_Display");
             }
-
+            if(!stk.getDisplayName().equals(StatCollector.translateToLocal(stk.getUnlocalizedName() + ".name"))) {
+                displayTag.setString("BT_AnvilName", stk.getDisplayName());
+            }
             displayTag.setString("BT_CodeName", effect.getCodeName()); //Used for localization
             displayTag.setString("BT_EffectName", effect.getRarity() + effect.getName()); //Used for localization, if no localization then just the name of the effect.
             itemTag.setTag("BT_Display", displayTag);
@@ -55,7 +57,7 @@ public class BT_Utils {
         String effectName = getNonFormattedEffectName(stack);
         String anvilName = getAnvilName(stack); //Anvil name will ONLY exist if renamed in anvil, uhhhhhhh, idk how to do that for reforged anvil not overwritting but I'll FIGURE IT OUT (Prolly compare to unlocalized name, etc.)
         String originalName = StatCollector.translateToLocal(stack.getUnlocalizedName() + ".name"); //IF ANVIL NAME NULL (Not anviled) Then translate, otherwise use anvilName
-        if (!anvilName.equals(originalName))
+        if (!anvilName.equals(originalName) && !anvilName.isEmpty())
             originalName = "§o" + anvilName;
         if(effectName.contains("LANG"))
             effectName = StatCollector.translateToLocal("custom.effect." + getCodeName(stack) + ".name");

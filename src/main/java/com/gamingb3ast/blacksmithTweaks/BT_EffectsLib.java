@@ -19,6 +19,7 @@ public class BT_EffectsLib {
 
     public static BT_Effect getRandomEffect() {
         return effects_list.get(rand.nextInt(effects_list.size()));
+        //TODO: Make this a weighted random, that would allow for so many possibilities, imagine having most buffs just be a simple duarbility, speed, encumbering slowdown, or ligth speed up. With rare chances for stuff like poison and lifesteal.
     }
 
 }

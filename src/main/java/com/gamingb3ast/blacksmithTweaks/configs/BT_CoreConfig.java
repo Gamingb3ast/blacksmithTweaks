@@ -15,8 +15,9 @@ public class BT_CoreConfig extends Configuration {
 
     private static BT_CoreConfig INSTANCE = null;
 
-    public static ArrayList<ItemStack> blacklist = new ArrayList<ItemStack>();;
-    public static ArrayList<ItemStack> whitelist = new ArrayList<ItemStack>();;
+    public static ArrayList<ItemStack> blacklist = new ArrayList<ItemStack>();
+    public static ArrayList<ItemStack> whitelist = new ArrayList<ItemStack>();
+    public static int FOVEffectsStrength;
     public static int buffApplicationMethod;
     public static String CONFIG_GENERAL = "General";
 
@@ -48,8 +49,9 @@ public class BT_CoreConfig extends Configuration {
                         "You can create a blacklist and whitelist for items which will be given buffs, simply do this by adding the item name to the list as shown in the config.\n"+
                         "Please note that the whitelist overrides the blacklist!\n");
 
+        //FOVEffects
+        FOVEffectsStrength = this.get(CONFIG_GENERAL, "FOVEffectsStrength", 50, "The strength of FOV effects for swift and slow buffs, inversely proportional to FOV changes (bigger number means lesser changes)").getInt();
         // BlackList
-        // whitelist = this.get(CONFIG_GENERAL, "whitelist", false, "Is list a whitelist?").getBoolean();
         String[] blacklistItems = this
             .get(
                 CONFIG_GENERAL,
@@ -68,7 +70,7 @@ public class BT_CoreConfig extends Configuration {
             .getString()
             .split(", ");
         // Buff application type
-        int buffApplicationType = this.get(
+        buffApplicationMethod = this.get(
             CONFIG_GENERAL,
             "Buff Application Type",
             2,
@@ -80,9 +82,8 @@ public class BT_CoreConfig extends Configuration {
             "5: Buffs are only applied via reforging com.gamingb3ast.blacksmithTweaks.anvil (This will be more relevant in a future update)\n"+
             "Any other number will result in buff application being disabled\n"+ "WARNING: SOME OF THESE WILL NOT WORK WITH CERTAIN MODS, THIS CONFIG OPTION EXISTS SO YOU CAN HAVE ALTERNATIVES IN CASE OF BUGS OR CRASHES").getInt();
 
-        buffApplicationMethod = buffApplicationType;
         String applicationString = "Buff application disabled";
-        switch (buffApplicationType) {
+        switch (buffApplicationMethod) {
             case 1:
                 applicationString = "Classic";
                 break;
