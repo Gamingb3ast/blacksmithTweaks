@@ -53,7 +53,8 @@ public class BT_EffectsConfig extends Configuration {
                         "Then you need to write this name again, this time without # chars, and add {} after it.\n"+
                         "Now, there are 3 fields you need to write in this {}.\n"+
                         "The first one is 'name'. This says, what name will be actually shown in-game(the tool prefix).\n"+
-                        "Second one is 'color'. You should put one hex number there. You can choose from this number set: 8,f,a,2,9,d,e,6,b,3,c,4. These represent the rarity of your effect. You can learn more about rarities in DummyCore code, in EnumRarityColor file.\n"+
+                        "The second one is 'color'. You should put one hex number there. You can choose from this number set: 8,f,a,2,9,d,e,6,b,3,c,4. These can be used to represent the rarity of your effect. You can learn more about rarities in DummyCore code, in EnumRarityColor file.\n"+
+                        "The third one is 'weight'. This one is optional and can be used to make the effect appear more frequently or infrequently. Only accepts integers, negative numbers are switched to positive. This is just a weighted average system. If not specified will use '1'.\n"+
                         "The last one is 'dataArray'. This represents the effects, that will be applied to your buff. There are 9 effects by now - 'damage','speed','durability', 'swift', 'slow', 'lifesteal', 'fear', 'poison' and 'crit'.\n"+
                         "To write this data you need to follow the simple rules: after : put ||, then put an actual name of one of the 10 possible effects. Then put : again, and after that write your value. It can be below 0, should never be an integer unless specified\n"+
                         "This value is percentage-based, and it scales, as 1 = 100%, and 0.25 = 25%. Some effects only except integer values, such as 'swift', 'fear', and 'slow', THESE ARE THE ONLY EFFECTS THAT ACCEPT INTEGER VALUES, PLEASE GIVE THE CORRECT TYPE OF NUMBER TO THE CORRECT EFFECT. \n"+
@@ -63,6 +64,7 @@ public class BT_EffectsConfig extends Configuration {
         exampleCat.setComment("This is an example effect, any effect using this identifier will not be loaded");
         exampleCat.put("name", new Property("name", "Example", Type.STRING));
         exampleCat.put("color", new Property("color", "8", Type.STRING));
+        exampleCat.put("weight", new Property("weight", "1", Type.INTEGER));
         DummyData durDat = new DummyData("durability", 1D);
         DummyData slowDat = new DummyData("slow", 0.1D);
         DataStorage.addDataToString(durDat);
@@ -84,13 +86,18 @@ public class BT_EffectsConfig extends Configuration {
                 String data = cat.get("dataArray")
                     .getString();
                 DummyData[] dat = DataStorage.parseData(data);
-                new BT_Effect(codeName, name, EnumRarityColor.getColorByHex(hex), dat).registerEffect();
+                int weight = 1;
+                if(cat.containsKey("weight"))
+                     weight = Math.abs(cat.get("weight").getInt());
+                new BT_Effect(codeName, name, EnumRarityColor.getColorByHex(hex), weight, dat).registerEffect();
                 Notifier.notifyCustomMod(
                     "Blacksmith Tweaks",
                     "Adding a new effect with name " + name
                         + ", rarity "
                         + EnumRarityColor.getColorByHex(hex)
                             .getName()
+                        + ", weight "
+                        + weight
                         + " and data "
                         + data);
                 ++buffsCount;
@@ -112,7 +119,8 @@ public class BT_EffectsConfig extends Configuration {
         if (BT_Mod.effectConfigExists) {
             ConfigCategory ea0Cat = this.getCategory("BT:Effect:Durable");
             ea0Cat.put("name", new Property("name", "LANG", Type.STRING));
-            ea0Cat.put("color", new Property("color", "f", Type.STRING)); // BROKEN
+            ea0Cat.put("color", new Property("color", "f", Type.STRING));
+            ea0Cat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData ea0Data = new DummyData("durability", .15D);
             DataStorage.addDataToString(ea0Data);
             String ea0Str = DataStorage.getDataString();
@@ -120,7 +128,8 @@ public class BT_EffectsConfig extends Configuration {
 
             ConfigCategory eaaCat = this.getCategory("BT:Effect:Damaged");
             eaaCat.put("name", new Property("name", "LANG", Type.STRING));
-            eaaCat.put("color", new Property("color", "8", Type.STRING)); // BROKEN
+            eaaCat.put("color", new Property("color", "8", Type.STRING));
+            eaaCat.put("weight", new Property("weight", "10", Type.INTEGER));
             DummyData eaaData = new DummyData("damage", -0.2D);
             DataStorage.addDataToString(eaaData);
             String eaaStr = DataStorage.getDataString();
@@ -128,7 +137,8 @@ public class BT_EffectsConfig extends Configuration {
 
             ConfigCategory eabCat = this.getCategory("BT:Effect:Dull");
             eabCat.put("name", new Property("name", "LANG", Type.STRING));
-            eabCat.put("color", new Property("color", "8", Type.STRING)); // BROKEN
+            eabCat.put("color", new Property("color", "8", Type.STRING));
+            eabCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData eabData = new DummyData("damage", -0.20D);
             DataStorage.addDataToString(eabData);
             String eabStr = DataStorage.getDataString();
@@ -136,7 +146,8 @@ public class BT_EffectsConfig extends Configuration {
 
             ConfigCategory eacCat = this.getCategory("BT:Effect:Sluggish");
             eacCat.put("name", new Property("name", "LANG", Type.STRING));
-            eacCat.put("color", new Property("color", "8", Type.STRING)); // BROKEN
+            eacCat.put("color", new Property("color", "8", Type.STRING));
+            eacCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData eacData = new DummyData("speed", -0.46D);
             DummyData eacSlow = new DummyData("slow", -0.25D);
             DataStorage.addDataToString(eacData);
@@ -146,7 +157,8 @@ public class BT_EffectsConfig extends Configuration {
 
             ConfigCategory eadCat = this.getCategory("BT:Effect:Slow");
             eadCat.put("name", new Property("name", "LANG", Type.STRING));
-            eadCat.put("color", new Property("color", "8", Type.STRING)); // BROKEN
+            eadCat.put("color", new Property("color", "8", Type.STRING));
+            eadCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData eadData = new DummyData("speed", -0.3D);
             DataStorage.addDataToString(eadData);
             String eadStr = DataStorage.getDataString();
@@ -154,7 +166,8 @@ public class BT_EffectsConfig extends Configuration {
 
             ConfigCategory eaeCat = this.getCategory("BT:Effect:Lazy");
             eaeCat.put("name", new Property("name", "LANG", Type.STRING));
-            eaeCat.put("color", new Property("color", "8", Type.STRING)); // BROKEN
+            eaeCat.put("color", new Property("color", "8", Type.STRING));
+            eaeCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData eaeData = new DummyData("speed", -0.16D);
             DataStorage.addDataToString(eaeData);
             String eaeStr = DataStorage.getDataString();
@@ -162,7 +175,8 @@ public class BT_EffectsConfig extends Configuration {
 
             ConfigCategory eafCat = this.getCategory("BT:Effect:Cracky");
             eafCat.put("name", new Property("name", "LANG", Type.STRING));
-            eafCat.put("color", new Property("color", "8", Type.STRING)); // BROKEN
+            eafCat.put("color", new Property("color", "8", Type.STRING));
+            eafCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData eafData = new DummyData("durability", -0.2D);
             DataStorage.addDataToString(eafData);
             String eafStr = DataStorage.getDataString();
@@ -170,7 +184,8 @@ public class BT_EffectsConfig extends Configuration {
 
             ConfigCategory eagCat = this.getCategory("BT:Effect:Broken");
             eagCat.put("name", new Property("name", "LANG", Type.STRING));
-            eagCat.put("color", new Property("color", "8", Type.STRING)); // BROKEN
+            eagCat.put("color", new Property("color", "8", Type.STRING));
+            eagCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData eagData = new DummyData("damage", -0.4D);
             DummyData eagSpeed = new DummyData("speed", -0.4D);
             DataStorage.addDataToString(eagData);
@@ -180,7 +195,8 @@ public class BT_EffectsConfig extends Configuration {
 
             ConfigCategory eahCat = this.getCategory("BT:Effect:Annoying");
             eahCat.put("name", new Property("name", "LANG", Type.STRING));
-            eahCat.put("color", new Property("color", "8", Type.STRING)); // BROKEN
+            eahCat.put("color", new Property("color", "8", Type.STRING));
+            eahCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData eahData = new DummyData("damage", -0.2D);
             DummyData eahSpeed = new DummyData("speed", -0.3D);
             DataStorage.addDataToString(eahData);
@@ -190,7 +206,8 @@ public class BT_EffectsConfig extends Configuration {
 
             ConfigCategory eaiCat = this.getCategory("BT:Effect:Shoddy");
             eaiCat.put("name", new Property("name", "LANG", Type.STRING));
-            eaiCat.put("color", new Property("color", "8", Type.STRING)); // BROKEN
+            eaiCat.put("color", new Property("color", "8", Type.STRING));
+            eaiCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData eaiData = new DummyData("damage", -0.2D);
             DummyData eaiSpeed = new DummyData("speed", -0.3D);
             DataStorage.addDataToString(eaiData);
@@ -200,7 +217,8 @@ public class BT_EffectsConfig extends Configuration {
 
             ConfigCategory eajCat = this.getCategory("BT:Effect:Terrible");
             eajCat.put("name", new Property("name", "LANG", Type.STRING));
-            eajCat.put("color", new Property("color", "8", Type.STRING)); // BROKEN
+            eajCat.put("color", new Property("color", "8", Type.STRING));
+            eajCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData eajData = new DummyData("damage", -0.2D);
             DummyData eajSpeed = new DummyData("speed", -0.15D);
             DummyData eajDurability = new DummyData("durability", -0.08D);
@@ -212,7 +230,8 @@ public class BT_EffectsConfig extends Configuration {
 
             ConfigCategory eakCat = this.getCategory("BT:Effect:Unhappy");
             eakCat.put("name", new Property("name", "LANG", Type.STRING));
-            eakCat.put("color", new Property("color", "8", Type.STRING)); // BROKEN
+            eakCat.put("color", new Property("color", "8", Type.STRING));
+            eakCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData eakData = new DummyData("damage", -0.15D);
             DummyData eakSpeed = new DummyData("speed", -0.2D);
             DummyData eakDurability = new DummyData("durability", -0.1D);
@@ -224,7 +243,8 @@ public class BT_EffectsConfig extends Configuration {
 
             ConfigCategory ealCat = this.getCategory("BT:Effect:Heavy");
             ealCat.put("name", new Property("name", "LANG", Type.STRING));
-            ealCat.put("color", new Property("color", "f", Type.STRING)); // COMMON
+            ealCat.put("color", new Property("color", "f", Type.STRING));
+            ealCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData ealData = new DummyData("damage", 0.15D);
             DummyData ealSpeed = new DummyData("speed", -0.3D);
             DummyData ealSlow = new DummyData("slow", -0.3D);
@@ -236,7 +256,8 @@ public class BT_EffectsConfig extends Configuration {
 
             ConfigCategory eamCat = this.getCategory("BT:Effect:Light");
             eamCat.put("name", new Property("name", "LANG", Type.STRING));
-            eamCat.put("color", new Property("color", "f", Type.STRING)); // COMMON
+            eamCat.put("color", new Property("color", "f", Type.STRING));
+            eamCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData eamData = new DummyData("damage", -0.15D);
             DummyData eamSpeed = new DummyData("speed", 0.3D);
             DummyData eamSwift = new DummyData("swift", 0.10D);
@@ -248,7 +269,8 @@ public class BT_EffectsConfig extends Configuration {
 
             ConfigCategory eanCat = this.getCategory("BT:Effect:Ruthless");
             eanCat.put("name", new Property("name", "LANG", Type.STRING));
-            eanCat.put("color", new Property("color", "f", Type.STRING)); // COMMON
+            eanCat.put("color", new Property("color", "f", Type.STRING));
+            eanCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData eanData = new DummyData("damage", 0.2D);
             DummyData eanSpeed = new DummyData("speed", -0.15D);
             DummyData eanFear = new DummyData("fear", 1);
@@ -260,7 +282,8 @@ public class BT_EffectsConfig extends Configuration {
 
             ConfigCategory eaoCat = this.getCategory("BT:Effect:Shameful");
             eaoCat.put("name", new Property("name", "LANG", Type.STRING));
-            eaoCat.put("color", new Property("color", "f", Type.STRING)); // COMMON
+            eaoCat.put("color", new Property("color", "f", Type.STRING));
+            eaoCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData eaoData = new DummyData("damage", -0.2D);
             DummyData eaoSpeed = new DummyData("speed", -0.4D);
             DummyData eaoDurability = new DummyData("durability", 0.15D);
@@ -272,7 +295,8 @@ public class BT_EffectsConfig extends Configuration {
 
             ConfigCategory eapCat = this.getCategory("BT:Effect:Bulky");
             eapCat.put("name", new Property("name", "LANG", Type.STRING));
-            eapCat.put("color", new Property("color", "a", Type.STRING)); // GOOD
+            eapCat.put("color", new Property("color", "a", Type.STRING));
+            eapCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData eapData = new DummyData("damage", 0.15D);
             DummyData eapSpeed = new DummyData("speed", -0.2D);
             DummyData eapDurability = new DummyData("durability", 0.1D);
@@ -288,7 +312,8 @@ public class BT_EffectsConfig extends Configuration {
 
             ConfigCategory eaqCat = this.getCategory("BT:Effect:Nasty");
             eaqCat.put("name", new Property("name", "LANG", Type.STRING));
-            eaqCat.put("color", new Property("color", "a", Type.STRING)); // GOOD
+            eaqCat.put("color", new Property("color", "a", Type.STRING));
+            eaqCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData eaqData = new DummyData("damage", 0.05D);
             DummyData eaqSpeed = new DummyData("speed", 0.1D);
             DummyData eaqDurability = new DummyData("durability", 0.1D);
@@ -300,7 +325,8 @@ public class BT_EffectsConfig extends Configuration {
 
             ConfigCategory earCat = this.getCategory("BT:Effect:Sharp");
             earCat.put("name", new Property("name", "LANG", Type.STRING));
-            earCat.put("color", new Property("color", "2", Type.STRING)); // UNCOMMON
+            earCat.put("color", new Property("color", "2", Type.STRING));
+            earCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData earData = new DummyData("damage", 0.2D);
             DataStorage.addDataToString(earData);
             String earStr = DataStorage.getDataString();
@@ -308,7 +334,8 @@ public class BT_EffectsConfig extends Configuration {
 
             ConfigCategory easCat = this.getCategory("BT:Effect:Pointy");
             easCat.put("name", new Property("name", "LANG", Type.STRING));
-            easCat.put("color", new Property("color", "2", Type.STRING)); // UNCOMMON
+            easCat.put("color", new Property("color", "2", Type.STRING));
+            easCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData easData = new DummyData("damage", 0.1D);
             DataStorage.addDataToString(easData);
             String easStr = DataStorage.getDataString();
@@ -316,7 +343,8 @@ public class BT_EffectsConfig extends Configuration {
 
             ConfigCategory eatCat = this.getCategory("BT:Effect:Hurtful");
             eatCat.put("name", new Property("name", "LANG", Type.STRING));
-            eatCat.put("color", new Property("color", "2", Type.STRING)); // UNCOMMON
+            eatCat.put("color", new Property("color", "2", Type.STRING));
+            eatCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData eatData = new DummyData("damage", 0.15D);
             DataStorage.addDataToString(eatData);
             String eatStr = DataStorage.getDataString();
@@ -324,7 +352,8 @@ public class BT_EffectsConfig extends Configuration {
 
             ConfigCategory eauCat = this.getCategory("BT:Effect:Strong");
             eauCat.put("name", new Property("name", "LANG", Type.STRING));
-            eauCat.put("color", new Property("color", "2", Type.STRING)); // UNCOMMON
+            eauCat.put("color", new Property("color", "2", Type.STRING));
+            eauCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData eauData = new DummyData("durability", 0.15D);
             DataStorage.addDataToString(eauData);
             String eauStr = DataStorage.getDataString();
@@ -332,7 +361,8 @@ public class BT_EffectsConfig extends Configuration {
 
             ConfigCategory eavCat = this.getCategory("BT:Effect:Forceful");
             eavCat.put("name", new Property("name", "LANG", Type.STRING));
-            eavCat.put("color", new Property("color", "2", Type.STRING)); // UNCOMMON
+            eavCat.put("color", new Property("color", "2", Type.STRING));
+            eavCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData eavData = new DummyData("durability", 0.15D);
             DummyData eavBind = new DummyData("bind", 0.4);
             DataStorage.addDataToString(eavData);
@@ -342,7 +372,8 @@ public class BT_EffectsConfig extends Configuration {
 
             ConfigCategory eawCat = this.getCategory("BT:Effect:Quick");
             eawCat.put("name", new Property("name", "LANG", Type.STRING));
-            eawCat.put("color", new Property("color", "2", Type.STRING)); // UNCOMMON
+            eawCat.put("color", new Property("color", "2", Type.STRING));
+            eawCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData eawData = new DummyData("speed", 0.2D);
             DummyData eawSwift = new DummyData("swift", 0.15D);
             DummyData eawDamage = new DummyData("damage", -0.1);
@@ -354,7 +385,8 @@ public class BT_EffectsConfig extends Configuration {
 
             ConfigCategory eaxCat = this.getCategory("BT:Effect:Nimble");
             eaxCat.put("name", new Property("name", "LANG", Type.STRING));
-            eaxCat.put("color", new Property("color", "2", Type.STRING)); // UNCOMMON
+            eaxCat.put("color", new Property("color", "2", Type.STRING));
+            eaxCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData eaxData = new DummyData("speed", 0.15D);
             DummyData eaxSwift = new DummyData("swift", 0.20D);
             DummyData eaxDamage = new DummyData("damage", -0.05);
@@ -366,7 +398,8 @@ public class BT_EffectsConfig extends Configuration {
 
             ConfigCategory eayCat = this.getCategory("BT:Effect:Zealous");
             eayCat.put("name", new Property("name", "LANG", Type.STRING));
-            eayCat.put("color", new Property("color", "2", Type.STRING)); // UNCOMMON
+            eayCat.put("color", new Property("color", "2", Type.STRING));
+            eayCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData eayCrit = new DummyData("crit", 0.25D);
             DummyData eayFear = new DummyData("fear", 1);
             DummyData eayLifesteal = new DummyData("lifesteal", 0.30);
@@ -378,7 +411,8 @@ public class BT_EffectsConfig extends Configuration {
 
             ConfigCategory eazCat = this.getCategory("BT:Effect:Keen");
             eazCat.put("name", new Property("name", "LANG", Type.STRING));
-            eazCat.put("color", new Property("color", "2", Type.STRING)); // UNCOMMON
+            eazCat.put("color", new Property("color", "2", Type.STRING));
+            eazCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData eazCrit = new DummyData("crit", 0.30D);
             DataStorage.addDataToString(eazCrit);
             String eazStr = DataStorage.getDataString();
@@ -387,6 +421,7 @@ public class BT_EffectsConfig extends Configuration {
             ConfigCategory massiveCat = this.getCategory("BT:Effect:Massive");
             massiveCat.put("name", new Property("name", "LANG", Type.STRING));
             massiveCat.put("color", new Property("color", "a", Type.STRING));
+            massiveCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData massiveDat1 = new DummyData("speed", -0.15D);
             DummyData massiveDat2 = new DummyData("bind", 0.6);
             DataStorage.addDataToString(massiveDat1);
@@ -397,6 +432,7 @@ public class BT_EffectsConfig extends Configuration {
             ConfigCategory largeCat = this.getCategory("BT:Effect:Large");
             largeCat.put("name", new Property("name", "LANG", Type.STRING));
             largeCat.put("color", new Property("color", "a", Type.STRING));
+            largeCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData largeDat1 = new DummyData("speed", -0.1D);
             DummyData largeDat2 = new DummyData("bind", 0.5);
             DataStorage.addDataToString(largeDat1);
@@ -407,6 +443,7 @@ public class BT_EffectsConfig extends Configuration {
             ConfigCategory demonicCat = this.getCategory("BT:Effect:Demonic");
             demonicCat.put("name", new Property("name", "LANG", Type.STRING));
             demonicCat.put("color", new Property("color", "9", Type.STRING));
+            demonicCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData demonicDat1 = new DummyData("speed", 0.4D);
             DummyData demonicDat2 = new DummyData("damage", 0.15D);
             DummyData demonicDat3 = new DummyData("crit", 0.15D);
@@ -425,6 +462,7 @@ public class BT_EffectsConfig extends Configuration {
             ConfigCategory agileCat = this.getCategory("BT:Effect:Agile");
             agileCat.put("name", new Property("name", "LANG", Type.STRING));
             agileCat.put("color", new Property("color", "9", Type.STRING));
+            agileCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData agileDat1 = new DummyData("speed", 0.3D);
             DummyData agileDat2 = new DummyData("crit", 0.15D);
             DummyData agileDat3 = new DummyData("swift", 0.18D);
@@ -437,6 +475,7 @@ public class BT_EffectsConfig extends Configuration {
             ConfigCategory deadlyCat = this.getCategory("BT:Effect:Deadly");
             deadlyCat.put("name", new Property("name", "LANG", Type.STRING));
             deadlyCat.put("color", new Property("color", "9", Type.STRING));
+            deadlyCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData deadlyDat1 = new DummyData("damage", 0.1D);
             DummyData deadlyDat2 = new DummyData("speed", 0.16D);
             DataStorage.addDataToString(deadlyDat1);
@@ -447,6 +486,7 @@ public class BT_EffectsConfig extends Configuration {
             ConfigCategory unpleasantCat = this.getCategory("BT:Effect:Unpleasant");
             unpleasantCat.put("name", new Property("name", "LANG", Type.STRING));
             unpleasantCat.put("color", new Property("color", "9", Type.STRING));
+            unpleasantCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData unpleasantDat1 = new DummyData("damage", 0.05D);
             DummyData unpleasantDat2 = new DummyData("durability", 0.15D);
             DummyData unpleasantDat3 = new DummyData("fear", 1);
@@ -459,6 +499,7 @@ public class BT_EffectsConfig extends Configuration {
             ConfigCategory rapidCat = this.getCategory("BT:Effect:Rapid");
             rapidCat.put("name", new Property("name", "LANG", Type.STRING));
             rapidCat.put("color", new Property("color", "9", Type.STRING));
+            rapidCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData rapidDat1 = new DummyData("speed", 0.25D);
             DummyData rapidDat2 = new DummyData("durability", 0.10D);
             DataStorage.addDataToString(rapidDat1);
@@ -469,6 +510,7 @@ public class BT_EffectsConfig extends Configuration {
             ConfigCategory godlyCat = this.getCategory("BT:Effect:Godly");
             godlyCat.put("name", new Property("name", "LANG", Type.STRING));
             godlyCat.put("color", new Property("color", "d", Type.STRING));
+            godlyCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData godlyDat1 = new DummyData("damage", 0.15D);
             DummyData godlyDat2 = new DummyData("crit", 0.25D);
             DummyData godlyDat3 = new DummyData("lifesteal", 0.50D);
@@ -485,6 +527,7 @@ public class BT_EffectsConfig extends Configuration {
             ConfigCategory rustyCat = this.getCategory("BT:Effect:Rusty");
             rustyCat.put("name", new Property("name", "LANG", Type.STRING));
             rustyCat.put("color", new Property("color", "d", Type.STRING));
+            rustyCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData rustyDat1 = new DummyData("damage", -0.08D);
             DummyData rustyDat2 = new DummyData("durability", -0.1D);
             DummyData rustyDat3 = new DummyData("poison", 0.60D);
@@ -497,6 +540,7 @@ public class BT_EffectsConfig extends Configuration {
             ConfigCategory superiorCat = this.getCategory("BT:Effect:Superior");
             superiorCat.put("name", new Property("name", "LANG", Type.STRING));
             superiorCat.put("color", new Property("color", "d", Type.STRING));
+            superiorCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData superiorDat1 = new DummyData("damage", 0.15D);
             DummyData superiorDat2 = new DummyData("crit", 0.3D);
             DummyData superiorDat3 = new DummyData("durability", 0.15D);
@@ -511,6 +555,7 @@ public class BT_EffectsConfig extends Configuration {
             ConfigCategory dangerousCat = this.getCategory("BT:Effect:Dangerous");
             dangerousCat.put("name", new Property("name", "LANG", Type.STRING));
             dangerousCat.put("color", new Property("color", "d", Type.STRING));
+            dangerousCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData dangerousDat1 = new DummyData("damage", 0.20D);
             DummyData dangerousDat2 = new DummyData("lifesteal", 0.60D);
             DummyData dangerousDat3 = new DummyData("crit", 0.22D);
@@ -531,6 +576,7 @@ public class BT_EffectsConfig extends Configuration {
             ConfigCategory savageCat = this.getCategory("BT:Effect:Savage");
             savageCat.put("name", new Property("name", "LANG", Type.STRING));
             savageCat.put("color", new Property("color", "d", Type.STRING));
+            savageCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData savageDat1 = new DummyData("damage", 0.15D);
             DummyData savageDat2 = new DummyData("speed", 0.42D);
             DummyData savageDat3 = new DummyData("durability", 0.20D);
@@ -547,6 +593,7 @@ public class BT_EffectsConfig extends Configuration {
             ConfigCategory murderousCat = this.getCategory("BT:Effect:Murderous");
             murderousCat.put("name", new Property("name", "LANG", Type.STRING));
             murderousCat.put("color", new Property("color", "d", Type.STRING));
+            murderousCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData murderousDat1 = new DummyData("damage", 0.17D);
             DummyData murderousDat2 = new DummyData("crit", 0.35D);
             DummyData murderousDat3 = new DummyData("fear", 1);
@@ -567,6 +614,7 @@ public class BT_EffectsConfig extends Configuration {
             ConfigCategory legendaryCat = this.getCategory("BT:Effect:Legendary");
             legendaryCat.put("name", new Property("name", "LANG", Type.STRING));
             legendaryCat.put("color", new Property("color", "6", Type.STRING));
+            legendaryCat.put("weight", new Property("weight", "1", Type.INTEGER));
             DummyData legendaryDat1 = new DummyData("damage", 0.25D);
             DummyData legendaryDat2 = new DummyData("lifesteal", 0.70D);
             DummyData legendaryDat3 = new DummyData("speed", 0.5D);

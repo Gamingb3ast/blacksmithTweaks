@@ -1,6 +1,9 @@
 package com.gamingb3ast.blacksmithTweaks;
 
+import java.util.Arrays;
 import java.util.List;
+
+import DummyCore.Utils.Notifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.*;
 import net.minecraft.item.Item;
@@ -29,7 +32,7 @@ public class BT_Utils {
                 itemTag.removeTag("BT_TagList");
             }
             //Add new effects
-            BT_Effect effect = BT_EffectsLib.getRandomEffect();
+            BT_Effect effect = BT_EffectsLib.getWeightedRandomEffect();
             List<DummyData> l = effect.getEffects();
             for (DummyData d : l) {
                 DataStorage.addDataToString(d);
@@ -42,7 +45,7 @@ public class BT_Utils {
             if (itemTag.hasKey("BT_Display")) {
                 displayTag = itemTag.getCompoundTag("BT_Display");
             }
-            if(!stk.getDisplayName().equals(StatCollector.translateToLocal(stk.getUnlocalizedName() + ".name"))) {
+            if(!stk.getDisplayName().equals(StatCollector.translateToLocal(stk.getUnlocalizedName() + ".name")) && !itemTag.hasKey("BT_Display")) {
                 displayTag.setString("BT_AnvilName", stk.getDisplayName());
             }
             displayTag.setString("BT_CodeName", effect.getCodeName()); //Used for localization
@@ -54,16 +57,27 @@ public class BT_Utils {
     }
 
     public static String getDisplayName(ItemStack stack) {
-        String effectName = getNonFormattedEffectName(stack);
-        String anvilName = getAnvilName(stack); //Anvil name will ONLY exist if renamed in anvil, uhhhhhhh, idk how to do that for reforged anvil not overwritting but I'll FIGURE IT OUT (Prolly compare to unlocalized name, etc.)
-        String originalName = StatCollector.translateToLocal(stack.getUnlocalizedName() + ".name"); //IF ANVIL NAME NULL (Not anviled) Then translate, otherwise use anvilName
-        if (!anvilName.equals(originalName) && !anvilName.isEmpty())
-            originalName = "§o" + anvilName;
-        if(effectName.contains("LANG"))
-            effectName = StatCollector.translateToLocal("custom.effect." + getCodeName(stack) + ".name");
-        return getColorFormatting(stack)
-                        + effectName + " "
-                        + originalName;
+        try {
+            String effectName = getNonFormattedEffectName(stack);
+            String anvilName = getAnvilName(stack); //Anvil name will ONLY exist if renamed in anvil, uhhhhhhh, idk how to do that for reforged anvil not overwritting but I'll FIGURE IT OUT (Prolly compare to unlocalized name, etc.)
+            String originalName = StatCollector.translateToLocal(stack.getUnlocalizedName() + ".name"); //IF ANVIL NAME NULL (Not anviled) Then translate, otherwise use anvilName
+            if (!anvilName.equals(originalName) && !anvilName.isEmpty())
+                originalName = "§o" + anvilName;
+            if (effectName.contains("LANG"))
+                effectName = StatCollector.translateToLocal("custom.effect." + getCodeName(stack) + ".name");
+            return getColorFormatting(stack)
+                    + effectName + " "
+                    + originalName;
+        }
+        catch(Exception e) {
+            Notifier.notifyErrorCustomMod(
+                    "Blacksmith Tweaks",
+                    "ERROR: Failed to get display name | \n"
+                    + Arrays.toString(e.getStackTrace()) + " " + e.getMessage()
+                    + "\n Item info | " + stack.getTagCompound().toString() + " " + stack.getTagCompound().getCompoundTag("BT_Display").toString()
+                    + "\n THIS IS A BUG, PLEASE REPORT");
+            return "NULL ERROR, CHECK LOGS AND ATTEMPT TO RENAME OR REFORGE";
+        }
     }
     public static String getNonFormattedEffectName(ItemStack stack) {
         return stack.getTagCompound()
