@@ -43,16 +43,10 @@ public class BT_CoreConfig extends Configuration {
     public void loadCFG() {
 
         ConfigCategory help = this.getCategory("Help");
-        help.setComment(
-            """
-                 Using this cfg file you can configure black/white lists and other mechanics of the mod \
-
-                 Use the Effects.cfg file to configure the actual buffs, help and examples can be found at the bottom of the file\
-
-                 You can create a blacklist and whitelist for items which will be given buffs, simply do this by adding the item name to the list as shown in the config.\
-
-                 Please note that the whitelist overrides the blacklist!\
-                """);
+        help.setComment("Using this cfg file you can configure black/white lists and other mechanics of the mod \n"+
+                        "Use the Effects.cfg file to configure the actual buffs, help and examples can be found at the bottom of the file\n"+
+                        "You can create a blacklist and whitelist for items which will be given buffs, simply do this by adding the item name to the list as shown in the config.\n"+
+                        "Please note that the whitelist overrides the blacklist!\n");
 
         // BlackList
         // whitelist = this.get(CONFIG_GENERAL, "whitelist", false, "Is list a whitelist?").getBoolean();
@@ -78,32 +72,32 @@ public class BT_CoreConfig extends Configuration {
             CONFIG_GENERAL,
             "Buff Application Type",
             2,
-            """
-                This is the method that will be used to apply buffs to tools and armor. The different types are the following: \
-
-                 1: Classic. Buffs are applied when crafting the item, holding shift will prevent buffs from being applied but will give you negative status effects unless you are above level 30 (Inventory refresh required to see buffs applied to an item)\
-
-                 2: Crafting Reworked. Buffs are always applied when crafting the item, shifting will do nothing \
-
-                 3: Container. An alternative system, it runs through every item in the currently opened/updated container and applies buffs to the valid items. Also skips items that were debuffed in the reforging com.gamingb3ast.blacksmithTweaks.anvil\
-
-                 4: Tooltip Container. Alternative to Container, a hybrid between container update and item hover events, will apply to any valid item even if it was in a chest. The only exception being if you de-buffed the item using the reforging com.gamingb3ast.blacksmithTweaks.anvil (Is a bit more optimized via single slot checking)\
-
-                 5: Buffs are only applied via reforging com.gamingb3ast.blacksmithTweaks.anvil (This will be more relevant in a future update)\
-
-                 Any other number will result in buff application being disabled\
-
-                 WARNING: SOME OF THESE WILL NOT WORK WITH CERTAIN MODS, THIS CONFIG OPTION EXISTS SO YOU CAN HAVE ALTERNATIVES IN CASE OF BUGS OR CRASHES""")
-            .getInt();
+            "This is the method that will be used to apply buffs to tools and armor. The different types are the following: \n"+
+            "1: Classic. Buffs are applied when crafting the item, holding shift will prevent buffs from being applied but will give you negative status effects unless you are above level 30 (Inventory refresh required to see buffs applied to an item)\n"+
+            "2: Crafting Reworked. Buffs are always applied when crafting the item, shifting will do nothing \n"+
+            "3: Container. An alternative system, it runs through every item in the currently opened/updated container and applies buffs to the valid items. Also skips items that were debuffed in the reforging com.gamingb3ast.blacksmithTweaks.anvil\n"+
+            "4: Tooltip Container. Alternative to Container, a hybrid between container update and item hover events, will apply to any valid item even if it was in a chest. The only exception being if you de-buffed the item using the reforging com.gamingb3ast.blacksmithTweaks.anvil (Is a bit more optimized via single slot checking)\n"+
+            "5: Buffs are only applied via reforging com.gamingb3ast.blacksmithTweaks.anvil (This will be more relevant in a future update)\n"+
+            "Any other number will result in buff application being disabled\n"+ "WARNING: SOME OF THESE WILL NOT WORK WITH CERTAIN MODS, THIS CONFIG OPTION EXISTS SO YOU CAN HAVE ALTERNATIVES IN CASE OF BUGS OR CRASHES").getInt();
 
         buffApplicationMethod = buffApplicationType;
-        String applicationString = switch (buffApplicationType) {
-            case 1 -> "Classic";
-            case 2 -> "Crafting Reworked";
-            case 3 -> "Container";
-            case 4 -> "Tooltip Container";
-            case 5 -> "Buffs are only applied via reforging com.gamingb3ast.blacksmithTweaks.anvil";
-            default -> "Buff application disabled";
+        String applicationString = "Buff application disabled";
+        switch (buffApplicationType) {
+            case 1:
+                applicationString = "Classic";
+                break;
+            case 2:
+                applicationString = "Crafting Reworked";
+                break;
+            case 3:
+                applicationString = "Container";
+                break;
+            case 4:
+                applicationString = "Tooltip Container";
+                break;
+            case 5:
+                applicationString = "Buffs are only applied via reforging com.gamingb3ast.blacksmithTweaks.anvil";
+                break;
         };
         Notifier.notifyCustomMod("Blacksmith Tweaks", "Application method in use:: " + applicationString);
 

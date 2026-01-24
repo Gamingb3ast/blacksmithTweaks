@@ -5,6 +5,7 @@ import static com.gamingb3ast.blacksmithTweaks.Tags.VERSION;
 import java.io.File;
 
 import com.gamingb3ast.blacksmithTweaks.network.BT_MessageAnvilRename;
+import cpw.mods.fml.common.Loader;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
@@ -45,6 +46,7 @@ public class BT_Mod {
         serverSide = "com.gamingb3ast.blacksmithTweaks.BT_ServerProxy",
         clientSide = "com.gamingb3ast.blacksmithTweaks.BT_ClientProxy")
     public static BT_ServerProxy proxy;
+	public static boolean backhandLoaded;
 
     @EventHandler
     public void preinit(FMLPreInitializationEvent event) {
@@ -63,6 +65,9 @@ public class BT_Mod {
         // com.gamingb3ast.blacksmithTweaks.network.registerMessage(new BT_MessageShift.Handler(),
         // BT_MessageShift.class, 0, Side.SERVER);
         MinecraftForge.EVENT_BUS.register(new BT_EventHandler());
+		backhandLoaded = Loader.instance()
+				.getIndexedModList()
+				.containsKey("backhand");
 
     }
 
@@ -77,13 +82,10 @@ public class BT_Mod {
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        // GameRegistry.registerCraftingHandler(new BT_Handler());
         FMLCommonHandler.instance()
             .bus()
             .register(new BT_Handler());
         MinecraftForge.EVENT_BUS.register(new BT_Handler());
-        // TickRegistry.registerTickHandler(new BT_TickHandler(), Side.SERVER);
-        // registerEffects();
 
         anvil = new BT_Anvil();
     }

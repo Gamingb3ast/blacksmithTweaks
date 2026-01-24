@@ -14,7 +14,6 @@ import com.gamingb3ast.blacksmithTweaks.configs.BT_CoreConfig;
 import DummyCore.Utils.DataStorage;
 import DummyCore.Utils.DummyData;
 import DummyCore.Utils.MiscUtils;
-import cpw.mods.fml.common.Loader;
 
 public class BT_Utils {
 
@@ -45,7 +44,7 @@ public class BT_Utils {
             }
 
             displayTag.setString("BT_CodeName", effect.getCodeName()); //Used for localization
-            displayTag.setString("BT_EffectName", effect.getName()); //Used for localization, if no localization then just the name of the effect.
+            displayTag.setString("BT_EffectName", effect.getRarity() + effect.getName()); //Used for localization, if no localization then just the name of the effect.
             itemTag.setTag("BT_Display", displayTag);
             itemTag.setTag("BT_TagList", effectTag);
             stk.setTagCompound(itemTag);
@@ -133,12 +132,6 @@ public class BT_Utils {
                 }
             }
         }
-    }
-
-    public static boolean isBackhandPresent() {
-        return Loader.instance()
-            .getIndexedModList()
-            .containsKey("backhand");
     }
 
     public static boolean isTConstructTool(ItemStack stk) {

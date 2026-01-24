@@ -48,35 +48,23 @@ public class BT_EffectsConfig extends Configuration {
     public void loadCFG() {
 
         ConfigCategory help = this.getCategory("Help");
-        help.setComment(
-            """
-                 Using this .cfg file you can add your own effects, which will be applied to tools. \
-
-                 Adding your own effect is very simple. Below you can see the example of how it's done. You need to create a custom category, using # chars, then write the code effect name(make sure your name is unique, otherwise your effect will most likely be ignored).\
-
-                 Then you need to write this name again, this time without # chars, and add {} after it.\
-
-                 Now, there are 3 fields you need to write in this {}.\
-
-                 The first one is 'name'. This says, what name will be actually shown in-game(the tool prefix).\
-
-                 Second one is 'color'. You should put one hex number there. You can choose from this number set: 8,f,a,2,9,d,e,6,b,3,c,4. These represent the rarity of your effect. You can learn more about rarities in DummyCore code, in EnumRarityColor file.\
-
-                 The last one is 'dataArray'. This represents the effects, that will be applied to your buff. There are 9 effects by now - 'damage','speed','durability', 'swift', 'slow', 'lifesteal', 'fear', 'poison' and 'crit'.\
-
-                 To write this data you need to follow the simple rules: after : put ||, then put an actual name of one of the 10 possible effects. Then put : again, and after that write your value. It can be below 0, should never be an integer unless specified\
-
-                 This value is percentage-based, and it scales, as 1 = 100%, and 0.25 = 25%. Some effects only except integer values, such as 'swift', 'fear', and 'slow', THESE ARE THE ONLY EFFECTS THAT ACCEPT INTEGER VALUES, PLEASE GIVE THE CORRECT TYPE OF NUMBER TO THE CORRECT EFFECT. \
-
-                 If you want to add more than one effect, just put || after the value you have last written, and start writing another data string. But remember, that || represents the beginning of the new datastring, so something like |||| will most likely lead to crash.\
-                """);
+        help.setComment("Using this .cfg file you can add your own effects, which will be applied to tools. \n" +
+                        "Adding your own effect is very simple. Below you can see the example of how it's done. You need to create a custom category, using # chars, then write the code effect name(make sure your name is unique, otherwise your effect will most likely be ignored).\n" +
+                        "Then you need to write this name again, this time without # chars, and add {} after it.\n"+
+                        "Now, there are 3 fields you need to write in this {}.\n"+
+                        "The first one is 'name'. This says, what name will be actually shown in-game(the tool prefix).\n"+
+                        "Second one is 'color'. You should put one hex number there. You can choose from this number set: 8,f,a,2,9,d,e,6,b,3,c,4. These represent the rarity of your effect. You can learn more about rarities in DummyCore code, in EnumRarityColor file.\n"+
+                        "The last one is 'dataArray'. This represents the effects, that will be applied to your buff. There are 9 effects by now - 'damage','speed','durability', 'swift', 'slow', 'lifesteal', 'fear', 'poison' and 'crit'.\n"+
+                        "To write this data you need to follow the simple rules: after : put ||, then put an actual name of one of the 10 possible effects. Then put : again, and after that write your value. It can be below 0, should never be an integer unless specified\n"+
+                        "This value is percentage-based, and it scales, as 1 = 100%, and 0.25 = 25%. Some effects only except integer values, such as 'swift', 'fear', and 'slow', THESE ARE THE ONLY EFFECTS THAT ACCEPT INTEGER VALUES, PLEASE GIVE THE CORRECT TYPE OF NUMBER TO THE CORRECT EFFECT. \n"+
+                        "If you want to add more than one effect, just put || after the value you have last written, and start writing another data string. But remember, that || represents the beginning of the new datastring, so something like |||| will most likely lead to crash.\n");
 
         ConfigCategory exampleCat = this.getCategory("BT:Effect:exampleEffect");
         exampleCat.setComment("This is an example effect, any effect using this identifier will not be loaded");
         exampleCat.put("name", new Property("name", "Example", Type.STRING));
         exampleCat.put("color", new Property("color", "8", Type.STRING));
         DummyData durDat = new DummyData("durability", 1D);
-        DummyData slowDat = new DummyData("slow", 1);
+        DummyData slowDat = new DummyData("slow", 0.1D);
         DataStorage.addDataToString(durDat);
         DataStorage.addDataToString(slowDat);
         String str = DataStorage.getDataString();
@@ -150,7 +138,7 @@ public class BT_EffectsConfig extends Configuration {
             eacCat.put("name", new Property("name", "LANG", Type.STRING));
             eacCat.put("color", new Property("color", "8", Type.STRING)); // BROKEN
             DummyData eacData = new DummyData("speed", -0.46D);
-            DummyData eacSlow = new DummyData("slow", -1);
+            DummyData eacSlow = new DummyData("slow", -0.25D);
             DataStorage.addDataToString(eacData);
             DataStorage.addDataToString(eacSlow);
             String eacStr = DataStorage.getDataString();
@@ -239,7 +227,7 @@ public class BT_EffectsConfig extends Configuration {
             ealCat.put("color", new Property("color", "f", Type.STRING)); // COMMON
             DummyData ealData = new DummyData("damage", 0.15D);
             DummyData ealSpeed = new DummyData("speed", -0.3D);
-            DummyData ealSlow = new DummyData("slow", -1);
+            DummyData ealSlow = new DummyData("slow", -0.3D);
             DataStorage.addDataToString(ealData);
             DataStorage.addDataToString(ealSpeed);
             DataStorage.addDataToString(ealSlow);
@@ -251,7 +239,7 @@ public class BT_EffectsConfig extends Configuration {
             eamCat.put("color", new Property("color", "f", Type.STRING)); // COMMON
             DummyData eamData = new DummyData("damage", -0.15D);
             DummyData eamSpeed = new DummyData("speed", 0.3D);
-            DummyData eamSwift = new DummyData("swift", 1);
+            DummyData eamSwift = new DummyData("swift", 0.10D);
             DataStorage.addDataToString(eamData);
             DataStorage.addDataToString(eamSpeed);
             DataStorage.addDataToString(eamSwift);
@@ -288,7 +276,7 @@ public class BT_EffectsConfig extends Configuration {
             DummyData eapData = new DummyData("damage", 0.15D);
             DummyData eapSpeed = new DummyData("speed", -0.2D);
             DummyData eapDurability = new DummyData("durability", 0.1D);
-            DummyData eapSlow = new DummyData("slow", -1);
+            DummyData eapSlow = new DummyData("slow", -0.3D);
             DummyData eapBind = new DummyData("bind", 0.4);
             DataStorage.addDataToString(eapData);
             DataStorage.addDataToString(eapSpeed);
@@ -356,7 +344,7 @@ public class BT_EffectsConfig extends Configuration {
             eawCat.put("name", new Property("name", "LANG", Type.STRING));
             eawCat.put("color", new Property("color", "2", Type.STRING)); // UNCOMMON
             DummyData eawData = new DummyData("speed", 0.2D);
-            DummyData eawSwift = new DummyData("swift", 1);
+            DummyData eawSwift = new DummyData("swift", 0.15D);
             DummyData eawDamage = new DummyData("damage", -0.1);
             DataStorage.addDataToString(eawData);
             DataStorage.addDataToString(eawSwift);
@@ -368,7 +356,7 @@ public class BT_EffectsConfig extends Configuration {
             eaxCat.put("name", new Property("name", "LANG", Type.STRING));
             eaxCat.put("color", new Property("color", "2", Type.STRING)); // UNCOMMON
             DummyData eaxData = new DummyData("speed", 0.15D);
-            DummyData eaxSwift = new DummyData("swift", 1);
+            DummyData eaxSwift = new DummyData("swift", 0.20D);
             DummyData eaxDamage = new DummyData("damage", -0.05);
             DataStorage.addDataToString(eaxData);
             DataStorage.addDataToString(eaxSwift);
@@ -424,7 +412,7 @@ public class BT_EffectsConfig extends Configuration {
             DummyData demonicDat3 = new DummyData("crit", 0.15D);
             DummyData demonicDat4 = new DummyData("lifesteal", 0.40D);
             DummyData demonicDat5 = new DummyData("fear", 1);
-            DummyData demonicDat6 = new DummyData("swift", 1);
+            DummyData demonicDat6 = new DummyData("swift", 0.25D);
             DataStorage.addDataToString(demonicDat1);
             DataStorage.addDataToString(demonicDat2);
             DataStorage.addDataToString(demonicDat3);
@@ -439,7 +427,7 @@ public class BT_EffectsConfig extends Configuration {
             agileCat.put("color", new Property("color", "9", Type.STRING));
             DummyData agileDat1 = new DummyData("speed", 0.3D);
             DummyData agileDat2 = new DummyData("crit", 0.15D);
-            DummyData agileDat3 = new DummyData("swift", 1);
+            DummyData agileDat3 = new DummyData("swift", 0.18D);
             DataStorage.addDataToString(agileDat1);
             DataStorage.addDataToString(agileDat2);
             DataStorage.addDataToString(agileDat3);
@@ -485,7 +473,7 @@ public class BT_EffectsConfig extends Configuration {
             DummyData godlyDat2 = new DummyData("crit", 0.25D);
             DummyData godlyDat3 = new DummyData("lifesteal", 0.50D);
             DummyData godlyDat4 = new DummyData("durability", 0.15D);
-            DummyData godlyDat5 = new DummyData("swift", 2);
+            DummyData godlyDat5 = new DummyData("swift", 0.5D);
             DataStorage.addDataToString(godlyDat1);
             DataStorage.addDataToString(godlyDat2);
             DataStorage.addDataToString(godlyDat3);
@@ -512,7 +500,7 @@ public class BT_EffectsConfig extends Configuration {
             DummyData superiorDat1 = new DummyData("damage", 0.15D);
             DummyData superiorDat2 = new DummyData("crit", 0.3D);
             DummyData superiorDat3 = new DummyData("durability", 0.15D);
-            DummyData superiorDat4 = new DummyData("swift", 1);
+            DummyData superiorDat4 = new DummyData("swift", 0.45D);
             DataStorage.addDataToString(superiorDat1);
             DataStorage.addDataToString(superiorDat2);
             DataStorage.addDataToString(superiorDat3);
@@ -528,7 +516,7 @@ public class BT_EffectsConfig extends Configuration {
             DummyData dangerousDat3 = new DummyData("crit", 0.22D);
             DummyData dangerousDat4 = new DummyData("fear", 1);
             DummyData dangerousDat5 = new DummyData("speed", 0.3D);
-            DummyData dangerousDat6 = new DummyData("swift", 1);
+            DummyData dangerousDat6 = new DummyData("swift", 0.35D);
             DummyData dangerousDat7 = new DummyData("poison", 0.60D);
             DataStorage.addDataToString(dangerousDat1);
             DataStorage.addDataToString(dangerousDat2);
@@ -546,7 +534,7 @@ public class BT_EffectsConfig extends Configuration {
             DummyData savageDat1 = new DummyData("damage", 0.15D);
             DummyData savageDat2 = new DummyData("speed", 0.42D);
             DummyData savageDat3 = new DummyData("durability", 0.20D);
-            DummyData savageDat4 = new DummyData("swift", 2);
+            DummyData savageDat4 = new DummyData("swift", 0.60D);
             DummyData savageDat5 = new DummyData("poison", 0.60D);
             DataStorage.addDataToString(savageDat1);
             DataStorage.addDataToString(savageDat2);
@@ -563,7 +551,7 @@ public class BT_EffectsConfig extends Configuration {
             DummyData murderousDat2 = new DummyData("crit", 0.35D);
             DummyData murderousDat3 = new DummyData("fear", 1);
             DummyData murderousDat4 = new DummyData("speed", 0.18D);
-            DummyData murderousDat5 = new DummyData("swift", 2);
+            DummyData murderousDat5 = new DummyData("swift", 0.65D);
             DummyData murderousDat6 = new DummyData("poison", 0.60D);
             DummyData murderousDat7 = new DummyData("bind", 0.4);
             DataStorage.addDataToString(murderousDat1);
@@ -585,7 +573,7 @@ public class BT_EffectsConfig extends Configuration {
             DummyData legendaryDat4 = new DummyData("fear", 1);
             DummyData legendaryDat5 = new DummyData("crit", 0.45D);
             DummyData legendaryDat6 = new DummyData("durability", 0.35D);
-            DummyData legendaryDat7 = new DummyData("swift", 2);
+            DummyData legendaryDat7 = new DummyData("swift", 1.0D);
             DummyData legendaryDat8 = new DummyData("poison", 0.60D);
             DummyData legendaryDat9 = new DummyData("bind", 0.4);
             DataStorage.addDataToString(legendaryDat1);

@@ -5,12 +5,20 @@ import static com.gamingb3ast.blacksmithTweaks.configs.BT_CoreConfig.buffApplica
 
 import java.util.ConcurrentModificationException;
 import java.util.List;
+import java.util.UUID;
 
 import com.gamingb3ast.blacksmithTweaks.network.BT_MessageAnvilRename;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAvoidEntity;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,6 +36,8 @@ import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
+import net.minecraftforge.client.ForgeHooksClient;
+import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.*;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
@@ -40,7 +50,6 @@ import DummyCore.Utils.DataStorage;
 import DummyCore.Utils.DummyData;
 import DummyCore.Utils.EnumRarityColor;
 import DummyCore.Utils.MiscUtils;
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.ItemCraftedEvent;
@@ -53,6 +62,7 @@ public class BT_Handler {
 
         EntityPlayer player = event.player;
         ItemStack item = event.crafting;
+        if(player == null || player.worldObj == null || item == null) return;
         ChatComponentText message1 = new ChatComponentText(
             "#---You worked hard to craft a flawless tool with no additional stats, you are now exhausted!---#");
         message1.getChatStyle()
@@ -78,7 +88,7 @@ public class BT_Handler {
                 BT_ShiftHandler.setPlayerShiftState(event.player.getUniqueID(), isShiftDown); // Update locally
             }
         }
-        if (!player.worldObj.isRemote && item != null) {
+        else {
             boolean isShiftDown = BT_ShiftHandler.isPlayerShiftDown(player.getUniqueID());
             if (buffApplicationMethod == 1) {
                 if (isShiftDown) {
@@ -310,9 +320,7 @@ public class BT_Handler {
                     EntityPlayer p = (EntityPlayer) ((EntityArrow)(edms.getSourceOfDamage())).shootingEntity;
                     ItemStack[] equippedItems = new ItemStack[2];
                     equippedItems[0] = p.getCurrentEquippedItem();
-                    equippedItems[1] = (Loader.instance()
-                        .getIndexedModList()
-                        .containsKey("backhand") ? BackhandUtils.getOffhandItem(p) : null);
+                    equippedItems[1] = (BT_Mod.backhandLoaded ? BackhandUtils.getOffhandItem(p) : null);
                     for (ItemStack stack : equippedItems) {
                         if (stack != null && BT_Utils.itemHasEffect(stack) && stack.getItem() instanceof ItemBow) {
                             String dummyDataString = stack.getTagCompound()
@@ -391,36 +399,7 @@ public class BT_Handler {
                                         ((EntityLiving) edms.getSourceOfDamage())
                                             .addPotionEffect((new PotionEffect(2, 200, 1000)));
                                 }
-                            } /*
-                               * if (name.contains("damage"))
-                               * {
-                               * if (value > 0 && w.rand.nextDouble() < value) {
-                               * if (edms.getSourceOfDamage() instanceof EntityMob)
-                               * ((EntityLiving)edms.getSourceOfDamage()).addPotionEffect((new PotionEffect(7, 1, 1)));
-                               * }
-                               * if (value < 0 && w.rand.nextDouble() < -value) {
-                               * event.ammount -= event.ammount*value;
-                               * }
-                               * }
-                               * if (name.contains("poison"))
-                               * {
-                               * if(p.worldObj.rand.nextDouble() <= value) {
-                               * if (edms.getSourceOfDamage() instanceof EntityMob) {
-                               * ((EntityLiving) edms.getSourceOfDamage()).addPotionEffect((new PotionEffect(19, 450,
-                               * 3)));
-                               * }
-                               * }
-                               * }
-                               * if (name.contains("life"))
-                               * {
-                               * if(p.worldObj.rand.nextDouble() <= value/3)
-                               * {
-                               * p.addPotionEffect(new PotionEffect(6, 1, 1));
-                               * if (edms.getSourceOfDamage() instanceof EntityMob)
-                               * ((EntityLiving)edms.getSourceOfDamage()).addPotionEffect(new PotionEffect(7, 1, 1));
-                               * }
-                               * }
-                               */
+                            }
 
                         }
                     }
@@ -460,18 +439,35 @@ public class BT_Handler {
             event.newSpeed = speed + mainSpeed;
         }
     }
+    UUID speedUUID = UUID.fromString("c0a80123-4567-89ab-cdef-0123456789ab");
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public void onFOVUpdate(FOVUpdateEvent event) {
+        EntityPlayer player = event.entity;
+
+        IAttributeInstance attr =
+                player.getEntityAttribute(SharedMonsterAttributes.movementSpeed);
+        if (attr == null) return;
+        AttributeModifier mod = attr.getModifier(speedUUID);
+        if (mod == null) return;
+
+        System.out.println(((attr.getAttributeValue() / player.capabilities.getWalkSpeed() + 1.0F) / 2.0F));
+        event.newfov = 1.0F + (float)((attr.getAttributeValue() / player.capabilities.getWalkSpeed() + 1.0F) / 2.0F)/5.0F;
+    }
+
+
 
     EntityAIAvoidEntity avoidPlayerTask;
     private EntityMob mob = null;
 
     @SubscribeEvent
-    public void PlayerTickEvent(PlayerEvent event) {
-        EntityPlayer p = event.entityPlayer;
-        World w = p.worldObj;
-        double speedValue = 0.0;
+    public void PlayerTickEvent(TickEvent.PlayerTickEvent event) {
+        EntityPlayer p = event.player;
+        World w = p != null ? p.worldObj : null;
+        float playerSpeedModifier = 0.0F;
         hasteValue = 0.0;
 
-        if (p.ticksExisted < 80 || w == null) return;
+        if (p == null || p.ticksExisted < 80 || w == null) return;
 
         ItemStack[] equippedItems = new ItemStack[6];
         equippedItems[0] = p.getCurrentArmor(0);
@@ -479,9 +475,7 @@ public class BT_Handler {
         equippedItems[2] = p.getCurrentArmor(2);
         equippedItems[3] = p.getCurrentArmor(3);
         equippedItems[4] = p.getCurrentEquippedItem();
-        equippedItems[5] = (Loader.instance()
-            .getIndexedModList()
-            .containsKey("backhand") ? BackhandUtils.getOffhandItem(p) : null);
+        equippedItems[5] = (BT_Mod.backhandLoaded ? BackhandUtils.getOffhandItem(p) : null);
         for (ItemStack stack : equippedItems) {
             if (stack != null && BT_Utils.itemHasEffect(stack)) {
                 String dummyDataString = stack.getTagCompound()
@@ -490,12 +484,12 @@ public class BT_Handler {
                 DummyData[] d = DataStorage.parseData(dummyDataString);
                 for (DummyData data : d) {
                     String name = data.fieldName;
-                    double value = Double.parseDouble(data.fieldValue);
+                    float value = (float) Double.parseDouble(data.fieldValue);
                     if (name.contains("swift")) {
-                        speedValue += value;
+                        playerSpeedModifier += value;
                     }
                     if (name.contains("slow")) {
-                        speedValue += value;
+                        playerSpeedModifier += value;
                     }
                     if (name.contains("speed")) {
                         hasteValue += value;
@@ -513,9 +507,19 @@ public class BT_Handler {
                 }
             }
         }
-        if (speedValue != 0) {
-            p.addPotionEffect(new PotionEffect(1, 1, (int) (speedValue - 1)));
+        AttributeModifier speedModifier = new AttributeModifier(speedUUID, "BT_SWIFT", playerSpeedModifier, 2);
+        IAttributeInstance attr = p.getEntityAttribute(SharedMonsterAttributes.movementSpeed);
+        if (playerSpeedModifier != 0.0) {
+            if (attr != null) {
+                attr.removeModifier(speedModifier);
+                attr.applyModifier(speedModifier);
+                if(p instanceof EntityPlayerSP)
+                    ForgeHooksClient.getOffsetFOV((EntityPlayerSP) p, 1.0F);
+            }
         }
+        else
+            attr.removeModifier(speedModifier);
+
         ItemStack stack = p.getCurrentEquippedItem();
         if (stack != null && stack.hasTagCompound()
             && stack.getTagCompound()
