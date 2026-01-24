@@ -48,17 +48,18 @@ public class BT_EffectsConfig extends Configuration {
     public void loadCFG() {
 
         ConfigCategory help = this.getCategory("Help");
-        help.setComment("Using this .cfg file you can add your own effects, which will be applied to tools. \n" +
-                        "Adding your own effect is very simple. Below you can see the example of how it's done. You need to create a custom category, using # chars, then write the code effect name(make sure your name is unique, otherwise your effect will most likely be ignored).\n" +
-                        "Then you need to write this name again, this time without # chars, and add {} after it.\n"+
-                        "Now, there are 3 fields you need to write in this {}.\n"+
-                        "The first one is 'name'. This says, what name will be actually shown in-game(the tool prefix).\n"+
-                        "The second one is 'color'. You should put one hex number there. You can choose from this number set: 8,f,a,2,9,d,e,6,b,3,c,4. These can be used to represent the rarity of your effect. You can learn more about rarities in DummyCore code, in EnumRarityColor file.\n"+
-                        "The third one is 'weight'. This one is optional and can be used to make the effect appear more frequently or infrequently. Only accepts integers, negative numbers are switched to positive. This is just a weighted average system. If not specified will use '1'.\n"+
-                        "The last one is 'dataArray'. This represents the effects, that will be applied to your buff. There are 9 effects by now - 'damage','speed','durability', 'swift', 'slow', 'lifesteal', 'fear', 'poison' and 'crit'.\n"+
-                        "To write this data you need to follow the simple rules: after : put ||, then put an actual name of one of the 10 possible effects. Then put : again, and after that write your value. It can be below 0, should never be an integer unless specified\n"+
-                        "This value is percentage-based, and it scales, as 1 = 100%, and 0.25 = 25%. Some effects only except integer values, such as 'swift', 'fear', and 'slow', THESE ARE THE ONLY EFFECTS THAT ACCEPT INTEGER VALUES, PLEASE GIVE THE CORRECT TYPE OF NUMBER TO THE CORRECT EFFECT. \n"+
-                        "If you want to add more than one effect, just put || after the value you have last written, and start writing another data string. But remember, that || represents the beginning of the new datastring, so something like |||| will most likely lead to crash.\n");
+        help.setComment(
+            "Using this .cfg file you can add your own effects, which will be applied to tools. \n"
+                + "Adding your own effect is very simple. Below you can see the example of how it's done. You need to create a custom category, using # chars, then write the code effect name(make sure your name is unique, otherwise your effect will most likely be ignored).\n"
+                + "Then you need to write this name again, this time without # chars, and add {} after it.\n"
+                + "Now, there are 3 fields you need to write in this {}.\n"
+                + "The first one is 'name'. This says, what name will be actually shown in-game(the tool prefix).\n"
+                + "The second one is 'color'. You should put one hex number there. You can choose from this number set: 8,f,a,2,9,d,e,6,b,3,c,4. These can be used to represent the rarity of your effect. You can learn more about rarities in DummyCore code, in EnumRarityColor file.\n"
+                + "The third one is 'weight'. This one is optional and can be used to make the effect appear more frequently or infrequently. Only accepts integers, negative numbers are switched to positive. This is just a weighted average system. If not specified will use '1'.\n"
+                + "The last one is 'dataArray'. This represents the effects, that will be applied to your buff. There are 9 effects by now - 'damage','speed','durability', 'swift', 'slow', 'lifesteal', 'fear', 'poison' and 'crit'.\n"
+                + "To write this data you need to follow the simple rules: after : put ||, then put an actual name of one of the 10 possible effects. Then put : again, and after that write your value. It can be below 0, should never be an integer unless specified\n"
+                + "This value is percentage-based, and it scales, as 1 = 100%, and 0.25 = 25%. Some effects only except integer values, such as 'swift', 'fear', and 'slow', THESE ARE THE ONLY EFFECTS THAT ACCEPT INTEGER VALUES, PLEASE GIVE THE CORRECT TYPE OF NUMBER TO THE CORRECT EFFECT. \n"
+                + "If you want to add more than one effect, just put || after the value you have last written, and start writing another data string. But remember, that || represents the beginning of the new datastring, so something like |||| will most likely lead to crash.\n");
 
         ConfigCategory exampleCat = this.getCategory("BT:Effect:exampleEffect");
         exampleCat.setComment("This is an example effect, any effect using this identifier will not be loaded");
@@ -87,8 +88,9 @@ public class BT_EffectsConfig extends Configuration {
                     .getString();
                 DummyData[] dat = DataStorage.parseData(data);
                 int weight = 1;
-                if(cat.containsKey("weight"))
-                     weight = Math.abs(cat.get("weight").getInt());
+                if (cat.containsKey("weight")) weight = Math.abs(
+                    cat.get("weight")
+                        .getInt());
                 new BT_Effect(codeName, name, EnumRarityColor.getColorByHex(hex), weight, dat).registerEffect();
                 Notifier.notifyCustomMod(
                     "Blacksmith Tweaks",

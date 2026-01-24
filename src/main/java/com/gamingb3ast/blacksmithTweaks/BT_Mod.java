@@ -4,8 +4,6 @@ import static com.gamingb3ast.blacksmithTweaks.Tags.VERSION;
 
 import java.io.File;
 
-import com.gamingb3ast.blacksmithTweaks.network.BT_MessageAnvilRename;
-import cpw.mods.fml.common.Loader;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
@@ -16,12 +14,14 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import com.gamingb3ast.blacksmithTweaks.anvil.BT_Anvil;
 import com.gamingb3ast.blacksmithTweaks.configs.BT_CoreConfig;
 import com.gamingb3ast.blacksmithTweaks.configs.BT_EffectsConfig;
+import com.gamingb3ast.blacksmithTweaks.network.BT_MessageAnvilRename;
 import com.gamingb3ast.blacksmithTweaks.network.BT_MessageShift;
 
 import DummyCore.Utils.DummyData;
 import DummyCore.Utils.EnumRarityColor;
 import DummyCore.Utils.MiscUtils;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.SidedProxy;
@@ -46,7 +46,7 @@ public class BT_Mod {
         serverSide = "com.gamingb3ast.blacksmithTweaks.BT_ServerProxy",
         clientSide = "com.gamingb3ast.blacksmithTweaks.BT_ClientProxy")
     public static BT_ServerProxy proxy;
-	public static boolean backhandLoaded;
+    public static boolean backhandLoaded;
 
     @EventHandler
     public void preinit(FMLPreInitializationEvent event) {
@@ -61,13 +61,13 @@ public class BT_Mod {
         // TODO: Work on networking and get the GUI shift checker working
         network = NetworkRegistry.INSTANCE.newSimpleChannel("Blacksmith_Tweaks");
         network.registerMessage(BT_MessageShift.Handler.class, BT_MessageShift.class, 0, Side.SERVER);
-		network.registerMessage(BT_MessageAnvilRename.Handler.class, BT_MessageAnvilRename.class, 1, Side.SERVER);
+        network.registerMessage(BT_MessageAnvilRename.Handler.class, BT_MessageAnvilRename.class, 1, Side.SERVER);
         // com.gamingb3ast.blacksmithTweaks.network.registerMessage(new BT_MessageShift.Handler(),
         // BT_MessageShift.class, 0, Side.SERVER);
         MinecraftForge.EVENT_BUS.register(new BT_EventHandler());
-		backhandLoaded = Loader.instance()
-				.getIndexedModList()
-				.containsKey("backhand");
+        backhandLoaded = Loader.instance()
+            .getIndexedModList()
+            .containsKey("backhand");
 
     }
 

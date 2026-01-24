@@ -7,11 +7,6 @@ import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.UUID;
 
-import com.gamingb3ast.blacksmithTweaks.configs.BT_CoreConfig;
-import com.gamingb3ast.blacksmithTweaks.network.BT_MessageAnvilRename;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
@@ -44,6 +39,8 @@ import net.minecraftforge.event.entity.player.*;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 
+import com.gamingb3ast.blacksmithTweaks.configs.BT_CoreConfig;
+import com.gamingb3ast.blacksmithTweaks.network.BT_MessageAnvilRename;
 import com.gamingb3ast.blacksmithTweaks.network.BT_MessageShift;
 import com.gamingb3ast.blacksmithTweaks.network.BT_ShiftHandler;
 
@@ -54,6 +51,9 @@ import DummyCore.Utils.MiscUtils;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.ItemCraftedEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import xonin.backhand.api.core.BackhandUtils;
 
 public class BT_Handler {
@@ -63,7 +63,7 @@ public class BT_Handler {
 
         EntityPlayer player = event.player;
         ItemStack item = event.crafting;
-        if(player == null || player.worldObj == null || item == null) return;
+        if (player == null || player.worldObj == null || item == null) return;
         ChatComponentText message1 = new ChatComponentText(
             "#---You worked hard to craft a flawless tool with no additional stats, you are now exhausted!---#");
         message1.getChatStyle()
@@ -88,8 +88,7 @@ public class BT_Handler {
                 BT_Mod.network.sendToServer(new BT_MessageShift(isShiftDown));
                 BT_ShiftHandler.setPlayerShiftState(event.player.getUniqueID(), isShiftDown); // Update locally
             }
-        }
-        else {
+        } else {
             boolean isShiftDown = BT_ShiftHandler.isPlayerShiftDown(player.getUniqueID());
             if (buffApplicationMethod == 1) {
                 if (isShiftDown) {
@@ -171,19 +170,23 @@ public class BT_Handler {
             }
         }
         if (stack.hasTagCompound() && stack.getTagCompound()
-                .hasKey("BT_TagList")) {
+            .hasKey("BT_TagList")) {
 
             NBTTagCompound itemTag = stack.getTagCompound();
-            NBTTagCompound effectsTag = (NBTTagCompound) stack.getTagCompound().getTag("BT_TagList");
+            NBTTagCompound effectsTag = (NBTTagCompound) stack.getTagCompound()
+                .getTag("BT_TagList");
             NBTTagCompound displayTag = itemTag.getCompoundTag("BT_Display");
 
-            //Renaming item
-            if (container instanceof ContainerRepair && stack.equals(container.getSlot(2).getStack()) && !StatCollector.translateToLocal(stack.getUnlocalizedName()+".name").equals(stack.getDisplayName())) {
+            // Renaming item
+            if (container instanceof ContainerRepair && stack.equals(
+                container.getSlot(2)
+                    .getStack())
+                && !StatCollector.translateToLocal(stack.getUnlocalizedName() + ".name")
+                    .equals(stack.getDisplayName())) {
                 displayTag.setString("BT_AnvilName", stack.getDisplayName());
                 itemTag.setTag("BT_Display", displayTag);
                 BT_Mod.network.sendToServer(new BT_MessageAnvilRename(2, itemTag));
-            }
-            else {
+            } else {
                 stack.setStackDisplayName(BT_Utils.getDisplayName(stack));
             }
             if (effectsTag.hasKey("BT_Buffs")) {
@@ -317,8 +320,8 @@ public class BT_Handler {
                     }
                 }
             } else if (edms.damageType.contains("arrow") && edms.getSourceOfDamage() instanceof EntityArrow
-                && ((EntityArrow)(edms.getSourceOfDamage())).shootingEntity instanceof EntityPlayer) {
-                    EntityPlayer p = (EntityPlayer) ((EntityArrow)(edms.getSourceOfDamage())).shootingEntity;
+                && ((EntityArrow) (edms.getSourceOfDamage())).shootingEntity instanceof EntityPlayer) {
+                    EntityPlayer p = (EntityPlayer) ((EntityArrow) (edms.getSourceOfDamage())).shootingEntity;
                     ItemStack[] equippedItems = new ItemStack[2];
                     equippedItems[0] = p.getCurrentEquippedItem();
                     equippedItems[1] = (BT_Mod.backhandLoaded ? BackhandUtils.getOffhandItem(p) : null);
@@ -440,24 +443,21 @@ public class BT_Handler {
             event.newSpeed = speed + mainSpeed;
         }
     }
+
     UUID speedUUID = UUID.fromString("c0a80123-4567-89ab-cdef-0123456789ab");
+
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onFOVUpdate(FOVUpdateEvent event) {
         EntityPlayer player = event.entity;
 
-        IAttributeInstance attr =
-                player.getEntityAttribute(SharedMonsterAttributes.movementSpeed);
+        IAttributeInstance attr = player.getEntityAttribute(SharedMonsterAttributes.movementSpeed);
         if (attr == null) return;
         AttributeModifier mod = attr.getModifier(speedUUID);
         if (mod == null) return;
-        if(mod.getAmount() < 0)
-            event.newfov = 1.0F + (float)(mod.getAmount() / player.capabilities.getWalkSpeed()) / BT_CoreConfig.FOVEffectsStrength;
-        else
-            event.newfov = 1.0F + (float)(mod.getAmount() / player.capabilities.getWalkSpeed()) / BT_CoreConfig.FOVEffectsStrength;
+        event.newfov = 1.0F
+            + (float) (mod.getAmount() / player.capabilities.getWalkSpeed()) / BT_CoreConfig.FOVEffectsStrength;
     }
-
-
 
     EntityAIAvoidEntity avoidPlayerTask;
     private EntityMob mob = null;
@@ -492,8 +492,10 @@ public class BT_Handler {
                     }
                     if (name.contains("slow")) {
                         playerSpeedModifier += value;
-                        //TODO: Make these effects also increase/decrease jump height, but make this change less noticeable and limited,
-                        // it would be bad if players couldn't even jump up one block. It would be good to prevent spring jumping
+                        // TODO: Make these effects also increase/decrease jump height, but make this change less
+                        // noticeable and limited,
+                        // it would be bad if players couldn't even jump up one block. It would be good to prevent
+                        // spring jumping
                     }
                     if (name.contains("speed")) {
                         hasteValue += value;
@@ -517,12 +519,9 @@ public class BT_Handler {
             if (attr != null) {
                 attr.removeModifier(speedModifier);
                 attr.applyModifier(speedModifier);
-                if(p instanceof EntityPlayerSP)
-                    ForgeHooksClient.getOffsetFOV((EntityPlayerSP) p, 1.0F);
+                if (p instanceof EntityPlayerSP) ForgeHooksClient.getOffsetFOV((EntityPlayerSP) p, 1.0F);
             }
-        }
-        else
-            attr.removeModifier(speedModifier);
+        } else attr.removeModifier(speedModifier);
 
         ItemStack stack = p.getCurrentEquippedItem();
         if (stack != null && stack.hasTagCompound()

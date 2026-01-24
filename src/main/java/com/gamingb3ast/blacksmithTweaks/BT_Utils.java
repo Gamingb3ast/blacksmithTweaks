@@ -3,7 +3,6 @@ package com.gamingb3ast.blacksmithTweaks;
 import java.util.Arrays;
 import java.util.List;
 
-import DummyCore.Utils.Notifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.*;
 import net.minecraft.item.Item;
@@ -17,6 +16,7 @@ import com.gamingb3ast.blacksmithTweaks.configs.BT_CoreConfig;
 import DummyCore.Utils.DataStorage;
 import DummyCore.Utils.DummyData;
 import DummyCore.Utils.MiscUtils;
+import DummyCore.Utils.Notifier;
 
 public class BT_Utils {
 
@@ -25,13 +25,14 @@ public class BT_Utils {
             MiscUtils.createNBTTag(stk);
             NBTTagCompound itemTag = stk.getTagCompound();
             NBTTagCompound effectTag = new NBTTagCompound();
-            NBTTagCompound displayTag = (itemTag.hasKey("BT_Display") ? itemTag.getCompoundTag("BT_Display") : new NBTTagCompound());
+            NBTTagCompound displayTag = (itemTag.hasKey("BT_Display") ? itemTag.getCompoundTag("BT_Display")
+                : new NBTTagCompound());
 
-            //Remove old effects
+            // Remove old effects
             if (itemTag.hasKey("BT_TagList")) {
                 itemTag.removeTag("BT_TagList");
             }
-            //Add new effects
+            // Add new effects
             BT_Effect effect = BT_EffectsLib.getWeightedRandomEffect();
             List<DummyData> l = effect.getEffects();
             for (DummyData d : l) {
@@ -40,16 +41,20 @@ public class BT_Utils {
             String data = DataStorage.getDataString();
             effectTag.setString("BT_Buffs", data);
 
-            //Naming and localization
-            //Get prior display info
+            // Naming and localization
+            // Get prior display info
             if (itemTag.hasKey("BT_Display")) {
                 displayTag = itemTag.getCompoundTag("BT_Display");
             }
-            if(!stk.getDisplayName().equals(StatCollector.translateToLocal(stk.getUnlocalizedName() + ".name")) && !itemTag.hasKey("BT_Display")) {
+            if (!stk.getDisplayName()
+                .equals(StatCollector.translateToLocal(stk.getUnlocalizedName() + ".name"))
+                && !itemTag.hasKey("BT_Display")) {
                 displayTag.setString("BT_AnvilName", stk.getDisplayName());
             }
-            displayTag.setString("BT_CodeName", effect.getCodeName()); //Used for localization
-            displayTag.setString("BT_EffectName", effect.getRarity() + effect.getName()); //Used for localization, if no localization then just the name of the effect.
+            displayTag.setString("BT_CodeName", effect.getCodeName()); // Used for localization
+            displayTag.setString("BT_EffectName", effect.getRarity() + effect.getName()); // Used for localization, if
+                                                                                          // no localization then just
+                                                                                          // the name of the effect.
             itemTag.setTag("BT_Display", displayTag);
             itemTag.setTag("BT_TagList", effectTag);
             stk.setTagCompound(itemTag);
@@ -59,45 +64,54 @@ public class BT_Utils {
     public static String getDisplayName(ItemStack stack) {
         try {
             String effectName = getNonFormattedEffectName(stack);
-            String anvilName = getAnvilName(stack); //Anvil name will ONLY exist if renamed in anvil, uhhhhhhh, idk how to do that for reforged anvil not overwritting but I'll FIGURE IT OUT (Prolly compare to unlocalized name, etc.)
-            String originalName = StatCollector.translateToLocal(stack.getUnlocalizedName() + ".name"); //IF ANVIL NAME NULL (Not anviled) Then translate, otherwise use anvilName
-            if (!anvilName.equals(originalName) && !anvilName.isEmpty())
-                originalName = "§o" + anvilName;
+            String anvilName = getAnvilName(stack);
+
+            String originalName = StatCollector.translateToLocal(stack.getUnlocalizedName() + ".name");
+            if (!anvilName.equals(originalName) && !anvilName.isEmpty()) originalName = "§o" + anvilName;
             if (effectName.contains("LANG"))
                 effectName = StatCollector.translateToLocal("custom.effect." + getCodeName(stack) + ".name");
-            return getColorFormatting(stack)
-                    + effectName + " "
-                    + originalName;
-        }
-        catch(Exception e) {
+            return getColorFormatting(stack) + effectName + " " + originalName;
+        } catch (Exception e) {
             Notifier.notifyErrorCustomMod(
-                    "Blacksmith Tweaks",
-                    "ERROR: Failed to get display name | \n"
-                    + Arrays.toString(e.getStackTrace()) + " " + e.getMessage()
-                    + "\n Item info | " + stack.getTagCompound().toString() + " " + stack.getTagCompound().getCompoundTag("BT_Display").toString()
+                "Blacksmith Tweaks",
+                "ERROR: Failed to get display name | \n" + Arrays.toString(e.getStackTrace())
+                    + " "
+                    + e.getMessage()
+                    + "\n Item info | "
+                    + stack.getTagCompound()
+                        .toString()
+                    + " "
+                    + stack.getTagCompound()
+                        .getCompoundTag("BT_Display")
+                        .toString()
                     + "\n THIS IS A BUG, PLEASE REPORT");
             return "NULL ERROR, CHECK LOGS AND ATTEMPT TO RENAME OR REFORGE";
         }
     }
+
     public static String getNonFormattedEffectName(ItemStack stack) {
         return stack.getTagCompound()
             .getCompoundTag("BT_Display")
             .getString("BT_EffectName");
     }
+
     public static String getColorFormatting(ItemStack stack) {
         return stack.getTagCompound()
-                .getCompoundTag("BT_Display")
-                .getString("BT_EffectName").substring(0, 2);
+            .getCompoundTag("BT_Display")
+            .getString("BT_EffectName")
+            .substring(0, 2);
     }
+
     public static String getCodeName(ItemStack stack) {
         return stack.getTagCompound()
-                .getCompoundTag("BT_Display")
-                .getString("BT_CodeName");
+            .getCompoundTag("BT_Display")
+            .getString("BT_CodeName");
     }
+
     public static String getAnvilName(ItemStack stack) {
         return stack.getTagCompound()
-                .getCompoundTag("BT_Display")
-                .getString("BT_AnvilName");
+            .getCompoundTag("BT_Display")
+            .getString("BT_AnvilName");
     }
 
     public static boolean isItemOnBlackList(ItemStack stk) {

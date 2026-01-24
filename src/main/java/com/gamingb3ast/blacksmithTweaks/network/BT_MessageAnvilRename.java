@@ -1,15 +1,17 @@
 package com.gamingb3ast.blacksmithTweaks.network;
 
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 
 public class BT_MessageAnvilRename implements IMessage {
+
     private int slotIndex;
     private NBTTagCompound tag;
 
@@ -53,7 +55,8 @@ public class BT_MessageAnvilRename implements IMessage {
                     int idx = message.slotIndex;
                     if (idx >= 0 && idx < player.openContainer.inventorySlots.size()) {
                         // getSlot returns a Slot; getStack may be null
-                        ItemStack stack = player.openContainer.getSlot(idx).getStack();
+                        ItemStack stack = player.openContainer.getSlot(idx)
+                            .getStack();
                         if (stack != null) {
                             // set the whole tag compound (replace) — optionally you can merge instead
                             stack.setTagCompound((NBTTagCompound) message.tag.copy());
