@@ -1,8 +1,8 @@
 package com.gamingb3ast.blacksmithTweaks;
 
 import java.util.Arrays;
-import java.util.List;
 
+import com.gamingb3ast.blacksmithTweaks.api.BT_EffectAPI;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.*;
 import net.minecraft.item.Item;
@@ -13,13 +13,12 @@ import net.minecraft.util.StatCollector;
 
 import com.gamingb3ast.blacksmithTweaks.configs.BT_CoreConfig;
 
-import DummyCore.Utils.DataStorage;
-import DummyCore.Utils.DummyData;
+
 import DummyCore.Utils.MiscUtils;
 import DummyCore.Utils.Notifier;
 
 public class BT_Utils {
-
+    //TODO: Move this to API.
     public static void addRandomEffects(ItemStack stk) {
         if (isItemBuffable(stk)) {
             MiscUtils.createNBTTag(stk);
@@ -29,18 +28,12 @@ public class BT_Utils {
                 : new NBTTagCompound());
 
             // Remove old effects
-            if (itemTag.hasKey("BT_TagList")) {
-                itemTag.removeTag("BT_TagList");
+            if (itemTag.hasKey("BT_ValuesList")) {
+                itemTag.removeTag("BT_BuffList");
             }
             // Add new effects
-            BT_Effect effect = BT_EffectsLib.getWeightedRandomEffect();
-            List<DummyData> l = effect.getEffects();
-            for (DummyData d : l) {
-                DataStorage.addDataToString(d);
-            }
-            String data = DataStorage.getDataString();
-            effectTag.setString("BT_Buffs", data);
-
+            BT_Effect effect = BT_EffectAPI.getWeightedRandomEffect();
+            effectTag.setByteArray("BT_Values", effect.buffValues);
             // Naming and localization
             // Get prior display info
             if (itemTag.hasKey("BT_Display")) {
@@ -56,9 +49,12 @@ public class BT_Utils {
                                                                                           // no localization then just
                                                                                           // the name of the effect.
             itemTag.setTag("BT_Display", displayTag);
-            itemTag.setTag("BT_TagList", effectTag);
+            itemTag.setTag("BT_BuffList", effectTag);
             stk.setTagCompound(itemTag);
         }
+    }
+    public static void addBuff(String buff, float value) {
+        //TODO: Implement this as API.
     }
 
     public static String getDisplayName(ItemStack stack) {
@@ -142,10 +138,10 @@ public class BT_Utils {
 
     public static boolean itemHasEffect(ItemStack stack) {
         if (stack.hasTagCompound() && stack.getTagCompound()
-            .hasKey("BT_TagList")) {
+            .hasKey("BT_BuffList")) {
             NBTTagCompound tag = (NBTTagCompound) stack.getTagCompound()
-                .getTag("BT_TagList");
-            return tag.hasKey("BT_Buffs");
+                .getTag("BT_BuffList");
+            return tag.hasKey("BT_Values");
         }
         return false;
     }

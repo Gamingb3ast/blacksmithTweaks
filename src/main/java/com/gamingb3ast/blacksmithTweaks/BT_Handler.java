@@ -1,5 +1,6 @@
 package com.gamingb3ast.blacksmithTweaks;
 
+import static com.gamingb3ast.blacksmithTweaks.BT_Buff.*;
 import static com.gamingb3ast.blacksmithTweaks.BT_Utils.*;
 import static com.gamingb3ast.blacksmithTweaks.configs.BT_CoreConfig.buffApplicationMethod;
 
@@ -7,7 +8,7 @@ import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.UUID;
 
-import net.minecraft.block.Block;
+import com.gamingb3ast.blacksmithTweaks.api.BT_EffectAPI;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.EntityLiving;
@@ -27,7 +28,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.DamageSource;
+
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
@@ -44,8 +45,7 @@ import com.gamingb3ast.blacksmithTweaks.network.BT_MessageAnvilRename;
 import com.gamingb3ast.blacksmithTweaks.network.BT_MessageShift;
 import com.gamingb3ast.blacksmithTweaks.network.BT_ShiftHandler;
 
-import DummyCore.Utils.DataStorage;
-import DummyCore.Utils.DummyData;
+
 import DummyCore.Utils.EnumRarityColor;
 import DummyCore.Utils.MiscUtils;
 import cpw.mods.fml.common.eventhandler.EventPriority;
@@ -56,6 +56,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import xonin.backhand.api.core.BackhandUtils;
 
+//TODO: Test this completely
 public class BT_Handler {
 
     @SubscribeEvent
@@ -169,12 +170,11 @@ public class BT_Handler {
                 itemToBuffIndex = inventory.indexOf(stack);
             }
         }
-        if (stack.hasTagCompound() && stack.getTagCompound()
-            .hasKey("BT_TagList")) {
+        if (BT_Utils.itemHasEffect(stack)) {
 
             NBTTagCompound itemTag = stack.getTagCompound();
             NBTTagCompound effectsTag = (NBTTagCompound) stack.getTagCompound()
-                .getTag("BT_TagList");
+                .getTag("BT_BuffList");
             NBTTagCompound displayTag = itemTag.getCompoundTag("BT_Display");
 
             // Renaming item
@@ -189,17 +189,15 @@ public class BT_Handler {
             } else {
                 stack.setStackDisplayName(BT_Utils.getDisplayName(stack));
             }
-            if (effectsTag.hasKey("BT_Buffs")) {
-                String s = effectsTag.getString("BT_Buffs");
-                DummyData[] d = DataStorage.parseData(s);
-                for (DummyData data : d) {
-                    String name = data.fieldName;
+            //Display tooltips
+            byte[] bytes = effectsTag.getByteArray("BT_Values");
+            for (int i = 0; i < bytes.length; i++) {
+                if(BT_EffectAPI.isBuffActive(bytes, BT_Buff.values()[i])) {
+                    String name = BT_Buff.values()[i].getName();
                     String mainName = BT_Utils.translateBuffName(name);
-                    double da = Double.parseDouble(data.fieldValue);
-                    da *= 100;
-                    if (da > 0)
-                        event.toolTip.add(EnumRarityColor.GOOD.getRarityColor() + "+" + (int) da + "% " + mainName);
-                    else event.toolTip.add(EnumRarityColor.ULTIMATE.getRarityColor() + (int) da + "% " + mainName);
+                    if (bytes[i] > 0)
+                        event.toolTip.add(EnumRarityColor.GOOD.getRarityColor() + "+" + bytes[i] + "% " + mainName);
+                    else event.toolTip.add(EnumRarityColor.ULTIMATE.getRarityColor() + bytes[i] + "% " + mainName);
                 }
             }
         }
@@ -211,21 +209,20 @@ public class BT_Handler {
         World w = p.worldObj;
         if (p.getCurrentEquippedItem() != null && BT_Utils.itemHasEffect(p.getCurrentEquippedItem()) && !w.isRemote) {
             ItemStack stack = p.getCurrentEquippedItem();
-            String dummyDataString = stack.getTagCompound()
-                .getCompoundTag("BT_TagList")
-                .getString("BT_Buffs");
-            DummyData[] d = DataStorage.parseData(dummyDataString);
-            for (DummyData data : d) {
-                String name = data.fieldName;
-                double value = Double.parseDouble(data.fieldValue);
-                if (name.contains("durability")) {
-                    if (value > 0 && w.rand.nextDouble() < value && stack.getItemDamage() > 0) {
-                        stack.setItemDamage(stack.getItemDamage() - 1);
-                    }
-                    if (value < 0 && w.rand.nextDouble() < -value) {
-                        stack.setItemDamage(stack.getItemDamage() + 1);
-                    }
+            byte[] bytes = stack.getTagCompound()
+                .getCompoundTag("BT_BuffList")
+                .getByteArray("BT_Values");
+
+            if (BT_EffectAPI.isBuffActive(bytes, DURABILITY)) {
+
+                float value = BT_EffectAPI.getBuffValue(bytes, DURABILITY) / 100F;
+                if (value > 0 && w.rand.nextFloat() < value && stack.getItemDamage() > 0) {
+                    stack.setItemDamage(stack.getItemDamage() - 1);
                 }
+                if (value < 0 && w.rand.nextFloat() < -value) {
+                    stack.setItemDamage(stack.getItemDamage() + 1);
+                }
+
             }
         }
     }
@@ -236,20 +233,18 @@ public class BT_Handler {
         World w = p.worldObj;
         if (p.getCurrentEquippedItem() != null && BT_Utils.itemHasEffect(p.getCurrentEquippedItem()) && !w.isRemote) {
             ItemStack stack = p.getCurrentEquippedItem();
-            String dummyDataString = stack.getTagCompound()
-                .getCompoundTag("BT_TagList")
-                .getString("BT_Buffs");
-            DummyData[] d = DataStorage.parseData(dummyDataString);
-            for (DummyData data : d) {
-                String name = data.fieldName;
-                double value = Double.parseDouble(data.fieldValue);
-                if (name.contains("durability")) {
-                    if (value > 0 && w.rand.nextDouble() < value && stack.getItemDamage() > 0) {
-                        stack.setItemDamage(stack.getItemDamage() - 1);
-                    }
-                    if (value < 0 && w.rand.nextDouble() < -value) {
-                        stack.setItemDamage(stack.getItemDamage() + 1);
-                    }
+            byte[] bytes = stack.getTagCompound()
+                    .getCompoundTag("BT_BuffList")
+                    .getByteArray("BT_Values");
+
+            if (BT_EffectAPI.isBuffActive(bytes, DURABILITY)) {
+                float value = BT_EffectAPI.getBuffValue(bytes, DURABILITY) / 100F;
+
+                if (value > 0 && w.rand.nextFloat() < value && stack.getItemDamage() > 0) {
+                    stack.setItemDamage(stack.getItemDamage() - 1);
+                }
+                if (value < 0 && w.rand.nextFloat() < -value) {
+                    stack.setItemDamage(stack.getItemDamage() + 1);
                 }
             }
         }
@@ -257,65 +252,71 @@ public class BT_Handler {
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public void event_LivingHurtEvent(LivingHurtEvent event) {
-        double critValue = 0.0;
-        DamageSource dms = event.source;
-        if (dms instanceof EntityDamageSource) {
-            EntityDamageSource edms = (EntityDamageSource) dms;
+        if (event.source instanceof EntityDamageSource) {
+            EntityDamageSource edms = (EntityDamageSource) event.source;
             if (edms.damageType.contains("player") && edms.getSourceOfDamage() instanceof EntityPlayer) {
                 EntityPlayer p = (EntityPlayer) (edms.getSourceOfDamage());
                 ItemStack stack = p.getCurrentEquippedItem();
+
                 if (stack != null && BT_Utils.itemHasEffect(stack)) {
-                    String dummyDataString = stack.getTagCompound()
-                        .getCompoundTag("BT_TagList")
-                        .getString("BT_Buffs");
-                    DummyData[] d = DataStorage.parseData(dummyDataString);
-                    for (DummyData data : d) {
-                        String name = data.fieldName;
-                        double value = Double.parseDouble(data.fieldValue);
-                        if (name.contains("damage")) {
-                            float dam = event.ammount;
-                            if (value < 0) {
-                                value = -value;
-                                float mainDam = (float) (dam * value);
-                                event.ammount -= mainDam;
-                            } else {
-                                float mainDam = (float) (dam * value);
-                                event.ammount += mainDam;
-                            }
-                        }
-                        if (name.contains("life")) {
-                            if (p.worldObj.rand.nextDouble() <= value) {
-                                int heartAmount = p.worldObj.rand.nextInt(3);
-                                p.heal(heartAmount);
-                                event.ammount += heartAmount;
+                    byte[] bytes = stack.getTagCompound()
+                            .getCompoundTag("BT_BuffList")
+                            .getByteArray("BT_Values");
 
-                            }
+                    if (BT_EffectAPI.isBuffActive(bytes, DAMAGE)) {
+                        float value = BT_EffectAPI.getBuffValue(bytes, DAMAGE)/100F;
+
+                        if (value < 0) {
+                            value = -value;
+                            float mainDam = event.ammount * value;
+                            event.ammount -= mainDam;
+                        } else {
+                            float mainDam = event.ammount * value;
+                            event.ammount += mainDam;
                         }
-                        if (name.contains("crit")) {
-                            if (p.worldObj.rand.nextDouble() <= value) {
-                                event.ammount *= 2.5F;
-                            }
+                    }
+                    if (BT_EffectAPI.isBuffActive(bytes, LIFESTEAL)) {
+                        float value = BT_EffectAPI.getBuffValue(bytes, LIFESTEAL)/100F;
+
+                        if (p.worldObj.rand.nextFloat() <= value) {
+                            int heartAmount = p.worldObj.rand.nextInt(3);
+                            p.heal(heartAmount);
+                            event.ammount += heartAmount;
 
                         }
-                        if (name.contains("speed")) {
-                            MiscUtils.damageEntityIgnoreEvent(event.entityLiving, edms, event.ammount);
-                            int damageResistance = 20;
-                            damageResistance -= (int) (value * 40);
-                            event.entityLiving.hurtResistantTime = damageResistance;
-                            event.entityLiving.hurtTime = damageResistance;
-                            p.swingProgress -= (float) (value * 100);
-                            p.swingProgressInt -= (int) (value * 100);
-                            event.setCanceled(true);
+                    }
+                    if (BT_EffectAPI.isBuffActive(bytes, CRIT)) {
+                        float value = BT_EffectAPI.getBuffValue(bytes, CRIT)/100F;
+
+                        if (p.worldObj.rand.nextFloat() <= value) {
+                            event.ammount *= 2.5F;
                         }
-                        if (name.contains("poison")) {
-                            if (p.worldObj.rand.nextDouble() <= value) {
-                                event.entityLiving.addPotionEffect(new PotionEffect(19, 450, 3));
-                            }
+
+                    }
+                    if (BT_EffectAPI.isBuffActive(bytes, SPEED)) {
+                        float value = BT_EffectAPI.getBuffValue(bytes, SPEED)/100F;
+
+                        MiscUtils.damageEntityIgnoreEvent(event.entityLiving, edms, event.ammount);
+                        int damageResistance = 20;
+                        damageResistance -= (int) (value * 40);
+                        event.entityLiving.hurtResistantTime = damageResistance;
+                        event.entityLiving.hurtTime = damageResistance;
+                        p.swingProgress -= value * 100;
+                        p.swingProgressInt -= (int) (value * 100);
+                        event.setCanceled(true);
+                    }
+                    if (BT_EffectAPI.isBuffActive(bytes, POISON)) {
+                        float value = BT_EffectAPI.getBuffValue(bytes, POISON)/100F;
+
+                        if (p.worldObj.rand.nextFloat() <= value) {
+                            event.entityLiving.addPotionEffect(new PotionEffect(19, 450, 3));
                         }
-                        if (name.contains("bind")) {
-                            if (p.worldObj.rand.nextDouble() <= value) {
-                                event.entityLiving.addPotionEffect((new PotionEffect(2, 200, 1000)));
-                            }
+                    }
+                    if (BT_EffectAPI.isBuffActive(bytes, BIND)) {
+                        float value = BT_EffectAPI.getBuffValue(bytes, BIND)/100F;
+
+                        if (p.worldObj.rand.nextFloat() <= value) {
+                            event.entityLiving.addPotionEffect((new PotionEffect(2, 200, 1000)));
                         }
                     }
                 }
@@ -325,86 +326,78 @@ public class BT_Handler {
                     ItemStack[] equippedItems = new ItemStack[2];
                     equippedItems[0] = p.getCurrentEquippedItem();
                     equippedItems[1] = (BT_Mod.backhandLoaded ? BackhandUtils.getOffhandItem(p) : null);
+
                     for (ItemStack stack : equippedItems) {
                         if (stack != null && BT_Utils.itemHasEffect(stack) && stack.getItem() instanceof ItemBow) {
-                            String dummyDataString = stack.getTagCompound()
-                                .getCompoundTag("BT_TagList")
-                                .getString("BT_Buffs");
-                            DummyData[] d = DataStorage.parseData(dummyDataString);
-                            for (DummyData data : d) {
-                                String name = data.fieldName;
-                                double value = Double.parseDouble(data.fieldValue);
-                                if (name.contains("damage")) {
-                                    float dam = event.ammount;
-                                    if (value < 0) {
-                                        value = -value;
-                                        float mainDam = (float) (dam * value);
-                                        event.ammount -= mainDam;
-                                    } else {
-                                        float mainDam = (float) (dam * value);
-                                        event.ammount += mainDam;
-                                    }
-                                }
-                                // TODO: Eventually add mixin alternatives for everything and also add a mixin based
-                                // speed buff for the bow draw speed
-                                if (name.contains("life")) {
-                                    if (p.worldObj.rand.nextDouble() <= value) {
-                                        int heartAmount = p.worldObj.rand.nextInt(3);
-                                        p.heal(heartAmount);
-                                        event.ammount += heartAmount;
+                            byte[] bytes = stack.getTagCompound()
+                                    .getCompoundTag("BT_BuffList")
+                                    .getByteArray("BT_Values");
 
-                                    }
-                                }
-                                if (name.contains("crit")) {
-                                    if (p.worldObj.rand.nextDouble() <= value) {
-                                        event.ammount *= 2.5F;
-                                    }
-                                }
-                                if (name.contains("poison")) {
-                                    if (p.worldObj.rand.nextDouble() <= value) {
-                                        event.entityLiving.addPotionEffect(new PotionEffect(19, 450, 3));
-                                    }
+                            if (BT_EffectAPI.isBuffActive(bytes, DAMAGE)) {
+                                float value = BT_EffectAPI.getBuffValue(bytes, DAMAGE)/100F;
+                                if (value < 0) {
+                                    value = -value;
+                                    float mainDam = event.ammount * value;
+                                    event.ammount -= mainDam;
+                                } else {
+                                    float mainDam = event.ammount * value;
+                                    event.ammount += mainDam;
                                 }
                             }
+                            // TODO: Eventually add mixin alternatives for everything and also add a mixin based
+                            // speed buff for the bow draw speed
+                            if (BT_EffectAPI.isBuffActive(bytes, LIFESTEAL)) {
+                                float value = BT_EffectAPI.getBuffValue(bytes, LIFESTEAL)/100F;
+                                if (p.worldObj.rand.nextFloat() <= value) {
+                                    int heartAmount = p.worldObj.rand.nextInt(3);
+                                    p.heal(heartAmount);
+                                    event.ammount += heartAmount;
 
+                                }
+                            }
+                            if (BT_EffectAPI.isBuffActive(bytes, CRIT)) {
+                                float value = BT_EffectAPI.getBuffValue(bytes, CRIT)/100F;
+                                if (p.worldObj.rand.nextFloat() <= value) {
+                                    event.ammount *= 2.5F;
+                                }
+                            }
+                            if (BT_EffectAPI.isBuffActive(bytes, POISON)) {
+                                float value = BT_EffectAPI.getBuffValue(bytes, POISON)/100F;
+                                if (p.worldObj.rand.nextFloat() <= value) {
+                                    event.entityLiving.addPotionEffect(new PotionEffect(19, 450, 3));
+                                }
+                            }
                         }
-                    }
-
-                    if (p.worldObj.rand.nextDouble() <= critValue) {
-                        event.ammount *= 2.5F;
                     }
                 }
             if (event.entityLiving instanceof EntityPlayer) {
                 EntityPlayer p = (EntityPlayer) event.entityLiving;
                 World w = p.worldObj;
+
                 for (int aSlot = 0; aSlot < 4; aSlot++) {
                     if (p.getCurrentArmor(aSlot) != null && BT_Utils.itemHasEffect(p.getCurrentArmor(aSlot))) {
                         ItemStack stack = p.getCurrentArmor(aSlot);
-                        String dummyDataString = stack.getTagCompound()
-                            .getCompoundTag("BT_TagList")
-                            .getString("BT_Buffs");
-                        DummyData[] d = DataStorage.parseData(dummyDataString);
-                        for (DummyData data : d) {
-                            String name = data.fieldName;
-                            double value = Double.parseDouble(data.fieldValue);
+                        byte[] bytes = stack.getTagCompound()
+                                .getCompoundTag("BT_BuffList")
+                                .getByteArray("BT_Values");
 
-                            if (name.contains("durability")) {
-                                if (value > 0 && w.rand.nextDouble() < value && stack.getItemDamage() > 0) {
-                                    stack.setItemDamage(stack.getItemDamage() - 1);
-                                }
-                                if (value < 0 && w.rand.nextDouble() < -value) {
-                                    stack.setItemDamage(stack.getItemDamage() + 1);
-                                }
-
+                        if (BT_EffectAPI.isBuffActive(bytes, DURABILITY)) {
+                            float value = BT_EffectAPI.getBuffValue(bytes, DURABILITY) / 100F;
+                            if (value > 0 && w.rand.nextFloat() < value && stack.getItemDamage() > 0) {
+                                stack.setItemDamage(stack.getItemDamage() - 1);
                             }
-                            if (name.contains("bind")) {
-                                if (p.worldObj.rand.nextDouble() <= value) {
-                                    if (edms.getSourceOfDamage() instanceof EntityMob)
-                                        ((EntityLiving) edms.getSourceOfDamage())
-                                            .addPotionEffect((new PotionEffect(2, 200, 1000)));
-                                }
+                            if (value < 0 && w.rand.nextFloat() < -value) {
+                                stack.setItemDamage(stack.getItemDamage() + 1);
                             }
 
+                        }
+                        if (BT_EffectAPI.isBuffActive(bytes, BIND)) {
+                            float value = BT_EffectAPI.getBuffValue(bytes, BIND) / 100F;
+                            if (p.worldObj.rand.nextFloat() <= value) {
+                                if (edms.getSourceOfDamage() instanceof EntityMob)
+                                    ((EntityLiving) edms.getSourceOfDamage())
+                                        .addPotionEffect((new PotionEffect(2, 200, 1000)));
+                            }
                         }
                     }
                 }
@@ -412,34 +405,30 @@ public class BT_Handler {
         }
     }
 
-    private static double hasteValue = 0.0;
+    private static float hasteValue = 0.0F;
 
     @SubscribeEvent
     public void event_BreakSpeed(BreakSpeed event) {
         EntityPlayer p = event.entityPlayer;
-        World w = p.worldObj;
-        Block b = event.block;
         if (p.getCurrentEquippedItem() != null && BT_Utils.itemHasEffect(p.getCurrentEquippedItem())) {
             ItemStack stack = p.getCurrentEquippedItem();
-            String dummyDataString = stack.getTagCompound()
-                .getCompoundTag("BT_TagList")
-                .getString("BT_Buffs");
-            DummyData[] d = DataStorage.parseData(dummyDataString);
-            for (DummyData data : d) {
-                String name = data.fieldName;
-                double value = Double.parseDouble(data.fieldValue);
-                if (name.contains("speed")) {
-                    hasteValue += value;
-                }
+
+            byte[] bytes = stack.getTagCompound()
+                    .getCompoundTag("BT_BuffList")
+                    .getByteArray("BT_Values");
+
+            if (BT_EffectAPI.isBuffActive(bytes, SPEED)) {
+                float value = BT_EffectAPI.getBuffValue(bytes, SPEED) / 100F;
+                hasteValue += value;
             }
         }
         float speed = event.originalSpeed;
         if (hasteValue < 0) {
             hasteValue = -hasteValue;
-            float mainSpeed = (float) (speed * hasteValue);
+            float mainSpeed = speed * hasteValue;
             event.newSpeed = speed - mainSpeed;
         } else {
-            float mainSpeed = (float) (speed * hasteValue);
+            float mainSpeed = speed * hasteValue;
             event.newSpeed = speed + mainSpeed;
         }
     }
@@ -467,7 +456,7 @@ public class BT_Handler {
         EntityPlayer p = event.player;
         World w = p != null ? p.worldObj : null;
         float playerSpeedModifier = 0.0F;
-        hasteValue = 0.0;
+        hasteValue = 0.0F;
 
         if (p == null || p.ticksExisted < 80 || w == null) return;
 
@@ -478,38 +467,40 @@ public class BT_Handler {
         equippedItems[3] = p.getCurrentArmor(3);
         equippedItems[4] = p.getCurrentEquippedItem();
         equippedItems[5] = (BT_Mod.backhandLoaded ? BackhandUtils.getOffhandItem(p) : null);
+
         for (ItemStack stack : equippedItems) {
             if (stack != null && BT_Utils.itemHasEffect(stack)) {
-                String dummyDataString = stack.getTagCompound()
-                    .getCompoundTag("BT_TagList")
-                    .getString("BT_Buffs");
-                DummyData[] d = DataStorage.parseData(dummyDataString);
-                for (DummyData data : d) {
-                    String name = data.fieldName;
-                    float value = (float) Double.parseDouble(data.fieldValue);
-                    if (name.contains("swift")) {
-                        playerSpeedModifier += value;
-                    }
-                    if (name.contains("slow")) {
-                        playerSpeedModifier += value;
-                        // TODO: Make these effects also increase/decrease jump height, but make this change less
-                        // noticeable and limited,
-                        // it would be bad if players couldn't even jump up one block. It would be good to prevent
-                        // spring jumping
-                    }
-                    if (name.contains("speed")) {
-                        hasteValue += value;
-                    }
-                    try {
-                        if (name.contains("fear")) {
-                            assignFleeTask(p, w, value);
-                        } else if (avoidPlayerTask != null && mob != null) {
-                            removeFleeTask(avoidPlayerTask, mob, p);
-                        }
-                    } catch (ConcurrentModificationException e) {
-                        System.err.println("[BlacksmithTweaks] Error with fear buff: | " + e + " Why :( ");
+            byte[] bytes = stack.getTagCompound()
+                    .getCompoundTag("BT_BuffList")
+                    .getByteArray("BT_Values");
 
+
+                if (BT_EffectAPI.isBuffActive(bytes, SWIFT)) {
+                    float value = BT_EffectAPI.getBuffValue(bytes, SWIFT) / 100F;
+                    playerSpeedModifier += value;
+                }
+                if (BT_EffectAPI.isBuffActive(bytes, SLOW)) {
+                    float value = BT_EffectAPI.getBuffValue(bytes, SLOW) / 100F;
+                    playerSpeedModifier += value;
+                    // TODO: Make these effects also increase/decrease jump height, but make this change less
+                    // noticeable and limited,
+                    // it would be bad if players couldn't even jump up one block. It would be good to prevent
+                    // spring jumping
+                }
+                if (BT_EffectAPI.isBuffActive(bytes, SPEED)) {
+                    float value = BT_EffectAPI.getBuffValue(bytes, SPEED) / 100F;
+                    hasteValue += value;
+                }
+                try {
+                    if (BT_EffectAPI.isBuffActive(bytes, FEAR)) {
+                        float value = BT_EffectAPI.getBuffValue(bytes, FEAR) / 100F;
+                        assignFleeTask(p, w, value);
+                    } else if (avoidPlayerTask != null && mob != null) {
+                        removeFleeTask(avoidPlayerTask, mob, p);
                     }
+                } catch (ConcurrentModificationException e) {
+                    System.err.println("[BlacksmithTweaks] Error with fear buff: | " + e + " Why :( ");
+
                 }
             }
         }
@@ -531,7 +522,7 @@ public class BT_Handler {
         }
     }
 
-    private void assignFleeTask(EntityPlayer p, World w, double value) {
+    private void assignFleeTask(EntityPlayer p, World w, float value) {
         if (p.ticksExisted % 50 == 0) {
             for (Object obj : w.loadedEntityList) {
                 if (obj instanceof EntityMob) {
@@ -548,35 +539,24 @@ public class BT_Handler {
     }
 
     private void removeFleeTask(EntityAIAvoidEntity task, EntityMob mob, EntityPlayer p) {
-        // Armor
-        for (int aSlot = 0; aSlot < 4; aSlot++) {
-            if (p.getCurrentArmor(aSlot) != null && BT_Utils.itemHasEffect(p.getCurrentArmor(aSlot))) {
-                ItemStack stack = p.getCurrentArmor(aSlot);
-                String dummyDataString = stack.getTagCompound()
-                    .getCompoundTag("BT_TagList")
-                    .getString("BT_Buffs");
-                DummyData[] d = DataStorage.parseData(dummyDataString);
-                for (DummyData data : d) {
-                    String name = data.fieldName;
-                    double value = Double.parseDouble(data.fieldValue);
-                    if (name.contains("fear")) {
-                        mob.tasks.removeTask(task);
-                        return;
-                    }
-                }
-            }
-        }
-        // Hand
-        if (p.getCurrentEquippedItem() != null && BT_Utils.itemHasEffect(p.getCurrentEquippedItem())) {
-            ItemStack stack = p.getCurrentEquippedItem();
-            String dummyDataString = stack.getTagCompound()
-                .getCompoundTag("BT_TagList")
-                .getString("BT_Buffs");
-            DummyData[] d = DataStorage.parseData(dummyDataString);
-            for (DummyData data : d) {
-                String name = data.fieldName;
-                if (name.contains("fear")) {
+        ItemStack[] equippedItems = new ItemStack[6];
+        equippedItems[0] = p.getCurrentArmor(0);
+        equippedItems[1] = p.getCurrentArmor(1);
+        equippedItems[2] = p.getCurrentArmor(2);
+        equippedItems[3] = p.getCurrentArmor(3);
+        equippedItems[4] = p.getCurrentEquippedItem();
+        equippedItems[5] = (BT_Mod.backhandLoaded ? BackhandUtils.getOffhandItem(p) : null);
+
+        for (ItemStack stack : equippedItems) {
+            if (stack != null && BT_Utils.itemHasEffect(stack)) {
+                byte[] bytes = stack.getTagCompound()
+                        .getCompoundTag("BT_BuffList")
+                        .getByteArray("BT_Values");
+
+
+                if (BT_EffectAPI.isBuffActive(bytes, FEAR)) {
                     mob.tasks.removeTask(task);
+                    return;
                 }
             }
         }

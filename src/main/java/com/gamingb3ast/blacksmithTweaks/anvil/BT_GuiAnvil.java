@@ -114,10 +114,9 @@ public class BT_GuiAnvil extends GuiCommon {
     public int getReforgeCost(ItemStack stk) {
         if (!BT_Utils.itemHasEffect(stk)) return 5;
         NBTTagCompound primalTag = MiscUtils.getStackTag(stk);
-        NBTTagCompound tag = primalTag.getCompoundTag("BT_TagList");
-        if (tag.hasKey("BT_Buffs")) {
-            DummyData[] data = DataStorage.parseData(tag.getString("BT_Buffs"));
-            return data.length * 2;
+        NBTTagCompound tag = primalTag.getCompoundTag("BT_BuffList");
+        if (tag.hasKey("BT_Values")) {
+            return tag.getByteArray("BT_Values").length * 2; //TODO: Make this configurable and also consider the weight of the effect (gotten from effectslist in effects lib)
         }
         return 0;
     }

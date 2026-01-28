@@ -4,6 +4,7 @@ import static com.gamingb3ast.blacksmithTweaks.Tags.VERSION;
 
 import java.io.File;
 
+import com.gamingb3ast.blacksmithTweaks.api.BT_EffectAPI;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
@@ -77,7 +78,7 @@ public class BT_Mod {
 
     @EventHandler
     public static void onServerStarted(FMLServerStartedEvent event) {
-        BT_EffectsLib.rand = MinecraftServer.getServer().worldServers[0].rand;
+        BT_EffectAPI.rand = MinecraftServer.getServer().worldServers[0].rand;
     }
 
     @EventHandler

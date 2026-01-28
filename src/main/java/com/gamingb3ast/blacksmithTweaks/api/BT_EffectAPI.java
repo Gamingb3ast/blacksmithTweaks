@@ -1,21 +1,19 @@
-package com.gamingb3ast.blacksmithTweaks;
+package com.gamingb3ast.blacksmithTweaks.api;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Random;
 
 import DummyCore.Utils.Notifier;
+import com.gamingb3ast.blacksmithTweaks.BT_Buff;
+import com.gamingb3ast.blacksmithTweaks.BT_Effect;
 
-public class BT_EffectsLib {
+public class BT_EffectAPI {
 
     public static Random rand = new Random(4255467434637L);
 
-    public static Hashtable<String, BT_Effect> effects = new Hashtable<>();
     public static int totalWeight = 0;
     public static List<BT_Effect> effects_list = new ArrayList<>();
-
-    public static List<BT_Effect> tools_effects_list = new ArrayList<>();
 
     public static BT_Effect getRandomEffect() {
         return effects_list.get(rand.nextInt(effects_list.size()));
@@ -36,6 +34,15 @@ public class BT_EffectsLib {
                 "Failed to get weighted random after multiple attempts (How did you manage this??) Using nonWeightedRandom");
             return getRandomEffect();
         }
+    }
+    public static void setBuffValue(byte[] valueArray, BT_Buff buff, byte value) {
+        valueArray[buff.ordinal()]=value;
+    }
+    public static byte getBuffValue(byte[] valueArray, BT_Buff buff) {
+        return valueArray[buff.ordinal()];
+    }
+    public static boolean isBuffActive(byte[] valueArray, BT_Buff buff) {
+        return valueArray[buff.ordinal()] != 0;
     }
 
 }
