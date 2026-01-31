@@ -1,11 +1,11 @@
-## 设置所有方块名称
+## Set all block names
 tile.bt.anvil.name=重铸铁砧
-## 设置所有界面元素名称
+## Set all Gui Element names
 gui.bt.anvil.reforge.name.element=重铸
-gui.bt.anvil.reforge.fullOutput.element=全力输出!
-gui.bt.anvil.reforge.noOutput.element=没有物品!
-gui.bt.anvil.reforge.levels.element= 经验水平
-## 设置所有效果名称
+gui.bt.anvil.reforge.fullOutput.element=完整输出！
+gui.bt.anvil.reforge.noOutput.element=无物品！
+gui.bt.anvil.reforge.levels.element= 等级
+## Set all Effect names
 buff.bt.damage.name=伤害
 buff.bt.speed.name=速度
 buff.bt.slow.name=缓慢
@@ -16,7 +16,7 @@ buff.bt.bind.name=束缚
 buff.bt.crit.name=暴击
 buff.bt.lifesteal.name=吸血
 buff.bt.poison.name=中毒
-## 设置所有自定义效果名称
+## Set all Custom Effect names
 custom.effect.BT:Effect:Durable.name=耐用
 custom.effect.BT:Effect:Damaged.name=破损
 custom.effect.BT:Effect:Dull.name=钝
