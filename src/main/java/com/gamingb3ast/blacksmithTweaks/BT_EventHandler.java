@@ -1,10 +1,10 @@
 package com.gamingb3ast.blacksmithTweaks;
 
-import com.gamingb3ast.blacksmithTweaks.api.BT_ItemAPI;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
 import com.gamingb3ast.blacksmithTweaks.anvil.BT_TileAnvil;
+import com.gamingb3ast.blacksmithTweaks.api.BT_ItemAPI;
 import com.gamingb3ast.blacksmithTweaks.configs.BT_CoreConfig;
 
 import DummyCore.Events.DummyEvent_OnClientGUIButtonPress;

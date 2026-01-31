@@ -4,8 +4,6 @@ import static com.gamingb3ast.blacksmithTweaks.Tags.VERSION;
 
 import java.io.File;
 
-import com.gamingb3ast.blacksmithTweaks.api.BT_Effect;
-import com.gamingb3ast.blacksmithTweaks.api.BT_EffectAPI;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
@@ -14,6 +12,8 @@ import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import com.gamingb3ast.blacksmithTweaks.anvil.BT_Anvil;
+import com.gamingb3ast.blacksmithTweaks.api.BT_Effect;
+import com.gamingb3ast.blacksmithTweaks.api.BT_EffectAPI;
 import com.gamingb3ast.blacksmithTweaks.configs.BT_CoreConfig;
 import com.gamingb3ast.blacksmithTweaks.configs.BT_EffectsConfig;
 import com.gamingb3ast.blacksmithTweaks.network.BT_MessageAnvilRename;

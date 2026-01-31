@@ -7,9 +7,6 @@ import static com.gamingb3ast.blacksmithTweaks.configs.BT_CoreConfig.buffApplica
 import java.util.List;
 import java.util.UUID;
 
-import com.gamingb3ast.blacksmithTweaks.api.BT_Buff;
-import com.gamingb3ast.blacksmithTweaks.api.BT_EffectAPI;
-import com.gamingb3ast.blacksmithTweaks.api.BT_ItemAPI;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.EntityCreature;
@@ -30,7 +27,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ChatComponentText;
-
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
@@ -42,11 +38,13 @@ import net.minecraftforge.event.entity.player.*;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 
+import com.gamingb3ast.blacksmithTweaks.api.BT_Buff;
+import com.gamingb3ast.blacksmithTweaks.api.BT_EffectAPI;
+import com.gamingb3ast.blacksmithTweaks.api.BT_ItemAPI;
 import com.gamingb3ast.blacksmithTweaks.configs.BT_CoreConfig;
 import com.gamingb3ast.blacksmithTweaks.network.BT_MessageAnvilRename;
 import com.gamingb3ast.blacksmithTweaks.network.BT_MessageShift;
 import com.gamingb3ast.blacksmithTweaks.network.BT_ShiftHandler;
-
 
 import DummyCore.Utils.EnumRarityColor;
 import DummyCore.Utils.MiscUtils;
@@ -178,14 +176,14 @@ public class BT_Handler {
 
                 NBTTagCompound itemTag = stack.getTagCompound();
                 NBTTagCompound effectsTag = (NBTTagCompound) stack.getTagCompound()
-                        .getTag("BT_BuffList");
+                    .getTag("BT_BuffList");
                 NBTTagCompound displayTag = itemTag.getCompoundTag("BT_Display");
 
                 // Renaming item
                 if (container instanceof ContainerRepair && stack.equals(
-                        container.getSlot(2)
-                                .getStack())
-                        && !StatCollector.translateToLocal(stack.getUnlocalizedName() + ".name")
+                    container.getSlot(2)
+                        .getStack())
+                    && !StatCollector.translateToLocal(stack.getUnlocalizedName() + ".name")
                         .equals(stack.getDisplayName())) {
                     displayTag.setString("BT_AnvilName", stack.getDisplayName());
                     itemTag.setTag("BT_Display", displayTag);
@@ -193,7 +191,7 @@ public class BT_Handler {
                 } else {
                     stack.setStackDisplayName(BT_ItemAPI.getDisplayName(stack));
                 }
-                //Display tooltips
+                // Display tooltips
                 byte[] bytes = effectsTag.getByteArray("BT_Values");
                 for (int i = 0; i < bytes.length; i++) {
                     if (BT_EffectAPI.isBuffActive(bytes, BT_Buff.values()[i])) {
@@ -239,8 +237,8 @@ public class BT_Handler {
         if (p.getCurrentEquippedItem() != null && BT_ItemAPI.itemHasEffect(p.getCurrentEquippedItem()) && !w.isRemote) {
             ItemStack stack = p.getCurrentEquippedItem();
             byte[] bytes = stack.getTagCompound()
-                    .getCompoundTag("BT_BuffList")
-                    .getByteArray("BT_Values");
+                .getCompoundTag("BT_BuffList")
+                .getByteArray("BT_Values");
 
             if (BT_EffectAPI.isBuffActive(bytes, DURABILITY)) {
                 float value = BT_EffectAPI.getBuffValue(bytes, DURABILITY) / 100F;
@@ -265,11 +263,11 @@ public class BT_Handler {
 
                 if (stack != null && BT_ItemAPI.itemHasEffect(stack)) {
                     byte[] bytes = stack.getTagCompound()
-                            .getCompoundTag("BT_BuffList")
-                            .getByteArray("BT_Values");
+                        .getCompoundTag("BT_BuffList")
+                        .getByteArray("BT_Values");
 
                     if (BT_EffectAPI.isBuffActive(bytes, DAMAGE)) {
-                        float value = BT_EffectAPI.getBuffValue(bytes, DAMAGE)/100F;
+                        float value = BT_EffectAPI.getBuffValue(bytes, DAMAGE) / 100F;
 
                         if (value < 0) {
                             value = -value;
@@ -281,7 +279,7 @@ public class BT_Handler {
                         }
                     }
                     if (BT_EffectAPI.isBuffActive(bytes, LIFESTEAL)) {
-                        float value = BT_EffectAPI.getBuffValue(bytes, LIFESTEAL)/100F;
+                        float value = BT_EffectAPI.getBuffValue(bytes, LIFESTEAL) / 100F;
 
                         if (p.worldObj.rand.nextFloat() <= value) {
                             int heartAmount = p.worldObj.rand.nextInt(3);
@@ -291,7 +289,7 @@ public class BT_Handler {
                         }
                     }
                     if (BT_EffectAPI.isBuffActive(bytes, CRIT)) {
-                        float value = BT_EffectAPI.getBuffValue(bytes, CRIT)/100F;
+                        float value = BT_EffectAPI.getBuffValue(bytes, CRIT) / 100F;
 
                         if (p.worldObj.rand.nextFloat() <= value) {
                             event.ammount *= 2.5F;
@@ -299,7 +297,7 @@ public class BT_Handler {
 
                     }
                     if (BT_EffectAPI.isBuffActive(bytes, SPEED)) {
-                        float value = BT_EffectAPI.getBuffValue(bytes, SPEED)/100F;
+                        float value = BT_EffectAPI.getBuffValue(bytes, SPEED) / 100F;
 
                         MiscUtils.damageEntityIgnoreEvent(event.entityLiving, edms, event.ammount);
                         int damageResistance = 20;
@@ -311,14 +309,14 @@ public class BT_Handler {
                         event.setCanceled(true);
                     }
                     if (BT_EffectAPI.isBuffActive(bytes, POISON)) {
-                        float value = BT_EffectAPI.getBuffValue(bytes, POISON)/100F;
+                        float value = BT_EffectAPI.getBuffValue(bytes, POISON) / 100F;
 
                         if (p.worldObj.rand.nextFloat() <= value) {
                             event.entityLiving.addPotionEffect(new PotionEffect(19, 450, 3));
                         }
                     }
                     if (BT_EffectAPI.isBuffActive(bytes, BIND)) {
-                        float value = BT_EffectAPI.getBuffValue(bytes, BIND)/100F;
+                        float value = BT_EffectAPI.getBuffValue(bytes, BIND) / 100F;
 
                         if (p.worldObj.rand.nextFloat() <= value) {
                             event.entityLiving.addPotionEffect((new PotionEffect(2, 200, 1000)));
@@ -335,11 +333,11 @@ public class BT_Handler {
                     for (ItemStack stack : equippedItems) {
                         if (stack != null && BT_ItemAPI.itemHasEffect(stack) && stack.getItem() instanceof ItemBow) {
                             byte[] bytes = stack.getTagCompound()
-                                    .getCompoundTag("BT_BuffList")
-                                    .getByteArray("BT_Values");
+                                .getCompoundTag("BT_BuffList")
+                                .getByteArray("BT_Values");
 
                             if (BT_EffectAPI.isBuffActive(bytes, DAMAGE)) {
-                                float value = BT_EffectAPI.getBuffValue(bytes, DAMAGE)/100F;
+                                float value = BT_EffectAPI.getBuffValue(bytes, DAMAGE) / 100F;
                                 if (value < 0) {
                                     value = -value;
                                     float mainDam = event.ammount * value;
@@ -352,7 +350,7 @@ public class BT_Handler {
                             // TODO: Eventually add mixin alternatives for everything and also add a mixin based
                             // speed buff for the bow draw speed
                             if (BT_EffectAPI.isBuffActive(bytes, LIFESTEAL)) {
-                                float value = BT_EffectAPI.getBuffValue(bytes, LIFESTEAL)/100F;
+                                float value = BT_EffectAPI.getBuffValue(bytes, LIFESTEAL) / 100F;
                                 if (p.worldObj.rand.nextFloat() <= value) {
                                     int heartAmount = p.worldObj.rand.nextInt(3);
                                     p.heal(heartAmount);
@@ -361,13 +359,13 @@ public class BT_Handler {
                                 }
                             }
                             if (BT_EffectAPI.isBuffActive(bytes, CRIT)) {
-                                float value = BT_EffectAPI.getBuffValue(bytes, CRIT)/100F;
+                                float value = BT_EffectAPI.getBuffValue(bytes, CRIT) / 100F;
                                 if (p.worldObj.rand.nextFloat() <= value) {
                                     event.ammount *= 2.5F;
                                 }
                             }
                             if (BT_EffectAPI.isBuffActive(bytes, POISON)) {
-                                float value = BT_EffectAPI.getBuffValue(bytes, POISON)/100F;
+                                float value = BT_EffectAPI.getBuffValue(bytes, POISON) / 100F;
                                 if (p.worldObj.rand.nextFloat() <= value) {
                                     event.entityLiving.addPotionEffect(new PotionEffect(19, 450, 3));
                                 }
@@ -383,8 +381,8 @@ public class BT_Handler {
                     if (p.getCurrentArmor(aSlot) != null && BT_ItemAPI.itemHasEffect(p.getCurrentArmor(aSlot))) {
                         ItemStack stack = p.getCurrentArmor(aSlot);
                         byte[] bytes = stack.getTagCompound()
-                                .getCompoundTag("BT_BuffList")
-                                .getByteArray("BT_Values");
+                            .getCompoundTag("BT_BuffList")
+                            .getByteArray("BT_Values");
 
                         if (BT_EffectAPI.isBuffActive(bytes, DURABILITY)) {
                             float value = BT_EffectAPI.getBuffValue(bytes, DURABILITY) / 100F;
@@ -419,8 +417,8 @@ public class BT_Handler {
             ItemStack stack = p.getCurrentEquippedItem();
 
             byte[] bytes = stack.getTagCompound()
-                    .getCompoundTag("BT_BuffList")
-                    .getByteArray("BT_Values");
+                .getCompoundTag("BT_BuffList")
+                .getByteArray("BT_Values");
 
             if (BT_EffectAPI.isBuffActive(bytes, SPEED)) {
                 float value = BT_EffectAPI.getBuffValue(bytes, SPEED) / 100F;
@@ -453,7 +451,6 @@ public class BT_Handler {
             + (float) (mod.getAmount() / player.capabilities.getWalkSpeed()) / BT_CoreConfig.FOVEffectsStrength;
     }
 
-
     @SubscribeEvent
     public void PlayerTickEvent(TickEvent.PlayerTickEvent event) {
         EntityPlayer p = event.player;
@@ -476,10 +473,9 @@ public class BT_Handler {
                 BT_ItemAPI.checkAndUpdateDeprecatedItem(stack);
             }
             if (stack != null && BT_ItemAPI.itemHasEffect(stack)) {
-            byte[] bytes = stack.getTagCompound()
+                byte[] bytes = stack.getTagCompound()
                     .getCompoundTag("BT_BuffList")
                     .getByteArray("BT_Values");
-
 
                 if (BT_EffectAPI.isBuffActive(bytes, SWIFT)) {
                     float value = BT_EffectAPI.getBuffValue(bytes, SWIFT) / 100F;
@@ -506,7 +502,9 @@ public class BT_Handler {
         try {
             manageFleeTask(p, w, fearFactor);
         } catch (Exception e) {
-            System.err.println("[BlacksmithTweaks] Error with fear buff: | " + e + " Why :( If this happens, please report it, this literally isn't supposed to happen anymore");
+            System.err.println(
+                "[BlacksmithTweaks] Error with fear buff: | " + e
+                    + " Why :( If this happens, please report it, this literally isn't supposed to happen anymore");
         }
         AttributeModifier speedModifier = new AttributeModifier(speedUUID, "BT_SWIFT", playerSpeedModifier, 2);
         IAttributeInstance attr = p.getEntityAttribute(SharedMonsterAttributes.movementSpeed);
@@ -525,7 +523,8 @@ public class BT_Handler {
             stack.setStackDisplayName(BT_ItemAPI.getDisplayName(stack));
         }
     }
-    //TODO: Make the fearFactor be a range rather than a constant. With higher values doing cooler stuff.
+
+    // TODO: Make the fearFactor be a range rather than a constant. With higher values doing cooler stuff.
     private void manageFleeTask(EntityPlayer p, World w, float fearFactor) {
 
         if (fearFactor < 0) return;
@@ -550,6 +549,5 @@ public class BT_Handler {
 
         }
     }
-
 
 }

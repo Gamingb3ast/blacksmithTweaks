@@ -8,8 +8,8 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.common.config.Property.Type;
 
-import com.gamingb3ast.blacksmithTweaks.api.BT_Effect;
 import com.gamingb3ast.blacksmithTweaks.BT_Mod;
+import com.gamingb3ast.blacksmithTweaks.api.BT_Effect;
 
 import DummyCore.Utils.DataStorage;
 import DummyCore.Utils.DummyData;

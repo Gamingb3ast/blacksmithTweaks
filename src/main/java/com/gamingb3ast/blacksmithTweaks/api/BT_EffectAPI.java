@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import DummyCore.Utils.Notifier;
 import net.minecraft.util.StatCollector;
+
+import DummyCore.Utils.Notifier;
 
 public class BT_EffectAPI {
 
@@ -34,16 +35,20 @@ public class BT_EffectAPI {
             return getRandomEffect();
         }
     }
+
     public static byte[] setBuffValue(byte[] valueArray, BT_Buff buff, byte value) {
-        valueArray[buff.ordinal()]=value;
+        valueArray[buff.ordinal()] = value;
         return valueArray;
     }
+
     public static byte getBuffValue(byte[] valueArray, BT_Buff buff) {
         return valueArray[buff.ordinal()];
     }
+
     public static boolean isBuffActive(byte[] valueArray, BT_Buff buff) {
         return valueArray[buff.ordinal()] != 0;
     }
+
     public static String translateBuffName(String name) {
         return StatCollector.translateToLocal("buff.bt." + name + ".name");
     }

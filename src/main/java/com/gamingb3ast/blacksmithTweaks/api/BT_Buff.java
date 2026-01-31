@@ -1,6 +1,7 @@
 package com.gamingb3ast.blacksmithTweaks.api;
 
 public enum BT_Buff {
+
     DAMAGE("damage"),
     SPEED("speed"),
     SLOW("slow"),
@@ -21,6 +22,7 @@ public enum BT_Buff {
     public String getName() {
         return name;
     }
+
     public static BT_Buff fromName(String name) {
         for (BT_Buff buff : values()) {
             if (buff.name.equals(name)) {

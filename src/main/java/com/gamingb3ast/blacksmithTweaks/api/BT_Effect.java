@@ -1,6 +1,5 @@
 package com.gamingb3ast.blacksmithTweaks.api;
 
-
 import DummyCore.Utils.DummyData;
 import DummyCore.Utils.EnumRarityColor;
 
@@ -25,16 +24,16 @@ public class BT_Effect {
             String fieldName = data.fieldName;
 
             byte value;
-            if(Float.parseFloat(data.fieldValue) > 1)
-                value = (byte) (100 + ((Float.parseFloat(data.fieldValue)-1)*500)); //normal from values -1 to 1. After that every 0.01 is 5 times more. So the maximum range is -2.40 to 2.35. (Multiplied by 100 to drop the decimal for storage)
-            else if(Float.parseFloat(data.fieldValue) < -1)
-                value = (byte) (-100 + ((Float.parseFloat(data.fieldValue)+1)*500));
-            else
-                value = (byte) (Float.parseFloat(data.fieldValue)*100);
+            if (Float.parseFloat(data.fieldValue) > 1)
+                value = (byte) (100 + ((Float.parseFloat(data.fieldValue) - 1) * 500));
+            else if (Float.parseFloat(data.fieldValue) < -1)
+                value = (byte) (-100 + ((Float.parseFloat(data.fieldValue) + 1) * 500));
+            else value = (byte) (Float.parseFloat(data.fieldValue) * 100);
             BT_EffectAPI.setBuffValue(buffValues, BT_Buff.fromName(fieldName), value);
         }
 
     }
+
     public BT_Effect registerEffect() {
         BT_EffectAPI.effects_list.add(this);
         BT_EffectAPI.totalWeight += weight;
@@ -44,10 +43,10 @@ public class BT_Effect {
     public String getName() {
         return name;
     }
+
     public static BT_Effect getEffectFromName(String name) {
-        for(BT_Effect effect : BT_EffectAPI.effects_list) {
-            if(effect.codeName.equalsIgnoreCase("BT:Effect:"+ name))
-                return effect;
+        for (BT_Effect effect : BT_EffectAPI.effects_list) {
+            if (effect.codeName.equalsIgnoreCase("BT:Effect:" + name)) return effect;
         }
         return null;
     }

@@ -114,7 +114,9 @@ public class BT_GuiAnvil extends GuiCommon {
         NBTTagCompound primalTag = MiscUtils.getStackTag(stk);
         NBTTagCompound tag = primalTag.getCompoundTag("BT_BuffList");
         if (tag.hasKey("BT_Values")) {
-            return tag.getByteArray("BT_Values").length * 2; //TODO: Make this configurable and also consider the weight of the effect (gotten from effectslist in effects lib)
+            return tag.getByteArray("BT_Values").length * 2; // TODO: Make this configurable and also consider the
+                                                             // weight of the effect (gotten from effectslist in effects
+                                                             // lib)
         }
         return 0;
     }
