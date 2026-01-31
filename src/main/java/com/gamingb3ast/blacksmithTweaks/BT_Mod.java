@@ -1,23 +1,29 @@
 package com.gamingb3ast.blacksmithTweaks;
 
+import static com.gamingb3ast.blacksmithTweaks.Tags.VERSION;
+
 import java.io.File;
 
-import DummyCore.Utils.DummyData;
-import DummyCore.Utils.EnumRarityColor;
-import DummyCore.Utils.MiscUtils;
-import DummyCore.Utils.Notifier;
-import com.gamingb3ast.blacksmithTweaks.anvil.BT_Anvil;
-import com.gamingb3ast.blacksmithTweaks.configs.BT_CoreConfig;
-import com.gamingb3ast.blacksmithTweaks.configs.BT_EffectsConfig;
-import com.gamingb3ast.blacksmithTweaks.network.BT_MessageShift;
-import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+
+import com.gamingb3ast.blacksmithTweaks.anvil.BT_Anvil;
+import com.gamingb3ast.blacksmithTweaks.api.BT_Effect;
+import com.gamingb3ast.blacksmithTweaks.api.BT_EffectAPI;
+import com.gamingb3ast.blacksmithTweaks.configs.BT_CoreConfig;
+import com.gamingb3ast.blacksmithTweaks.configs.BT_EffectsConfig;
+import com.gamingb3ast.blacksmithTweaks.network.BT_MessageAnvilRename;
+import com.gamingb3ast.blacksmithTweaks.network.BT_MessageShift;
+
+import DummyCore.Utils.DummyData;
+import DummyCore.Utils.EnumRarityColor;
+import DummyCore.Utils.MiscUtils;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.SidedProxy;
@@ -26,95 +32,84 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "blacksmithTweaks", useMetadata = true)
+@Mod(modid = "blacksmithTweaks", version = VERSION, useMetadata = true)
 public class BT_Mod {
-	
-	public static BT_Mod instance;
-	File configDir;
-	BT_CoreConfig config;
-	public static boolean effectConfigExists;
 
-	public static BT_Anvil anvil;
-	public static SimpleNetworkWrapper network;
-	@SidedProxy(serverSide="com.gamingb3ast.blacksmithTweaks.BT_ServerProxy",clientSide="com.gamingb3ast.blacksmithTweaks.BT_ClientProxy")
-	public static BT_ServerProxy proxy;
-	@EventHandler
-	public void preinit(FMLPreInitializationEvent event)
-	{
-		effectConfigExists = new File(event.getModConfigurationDirectory(), "BlacksmithTweaks/Effects.cfg").exists();
-		instance = this;
-		BT_CoreConfig.initialize(new File(event.getModConfigurationDirectory(), "BlacksmithTweaks/Core.cfg"));
-		BT_EffectsConfig.initialize(new File(event.getModConfigurationDirectory(), "BlacksmithTweaks/Effects.cfg"));
+    public static BT_Mod instance;
+    public static boolean effectConfigExists;
 
-		proxy.preload();
-		NetworkRegistry.INSTANCE.registerGuiHandler(instance, proxy);
+    public static BT_Anvil anvil;
+    public static SimpleNetworkWrapper network;
+    @SidedProxy(
+        serverSide = "com.gamingb3ast.blacksmithTweaks.BT_ServerProxy",
+        clientSide = "com.gamingb3ast.blacksmithTweaks.BT_ClientProxy")
+    public static BT_ServerProxy proxy;
+    public static boolean backhandLoaded;
 
-		//TODO: Work on networking and get the GUI shift checker working
-		network = NetworkRegistry.INSTANCE.newSimpleChannel("Blacksmith_Tweaks");
-		network.registerMessage(BT_MessageShift.Handler.class, BT_MessageShift.class, 0, Side.SERVER);
-		//com.gamingb3ast.blacksmithTweaks.network.registerMessage(new BT_MessageShift.Handler(), BT_MessageShift.class, 0, Side.SERVER);
-		MinecraftForge.EVENT_BUS.register(new BT_EventHandler());
+    @EventHandler
+    public void preinit(FMLPreInitializationEvent event) {
+        effectConfigExists = new File(event.getModConfigurationDirectory(), "BlacksmithTweaks/Effects.cfg").exists();
+        instance = this;
+        BT_CoreConfig.initialize(new File(event.getModConfigurationDirectory(), "BlacksmithTweaks/Core.cfg"));
+        BT_EffectsConfig.initialize(new File(event.getModConfigurationDirectory(), "BlacksmithTweaks/Effects.cfg"));
 
+        proxy.preload();
+        NetworkRegistry.INSTANCE.registerGuiHandler(instance, proxy);
 
-	}
-	
-	public static BT_ServerProxy proxy()
-	{
-		return instance.proxy;
-	}
-	
-	
-	@EventHandler
-	public static void onServerStarted(FMLServerStartedEvent event)
-	{
-		BT_EffectsLib.rand = MinecraftServer.getServer().worldServers[0].rand;
-	}
-	
+        // TODO: Work on networking and get the GUI shift checker working
+        network = NetworkRegistry.INSTANCE.newSimpleChannel("Blacksmith_Tweaks");
+        network.registerMessage(BT_MessageShift.Handler.class, BT_MessageShift.class, 0, Side.SERVER);
+        network.registerMessage(BT_MessageAnvilRename.Handler.class, BT_MessageAnvilRename.class, 1, Side.SERVER);
+        // com.gamingb3ast.blacksmithTweaks.network.registerMessage(new BT_MessageShift.Handler(),
+        // BT_MessageShift.class, 0, Side.SERVER);
+        MinecraftForge.EVENT_BUS.register(new BT_EventHandler());
+        backhandLoaded = Loader.instance()
+            .getIndexedModList()
+            .containsKey("backhand");
 
-	@EventHandler
-	public void init(FMLInitializationEvent event)
-	{
-		//GameRegistry.registerCraftingHandler(new BT_Handler());
-		FMLCommonHandler.instance().bus().register(new BT_Handler());
-		MinecraftForge.EVENT_BUS.register(new BT_Handler());
-		//TickRegistry.registerTickHandler(new BT_TickHandler(), Side.SERVER);
-		//registerEffects();
-		
-		anvil = new BT_Anvil();
-	}
-	
-	@EventHandler
-	public void postInit(FMLPostInitializationEvent event)
-	{
-		if(MiscUtils.oreDictionaryContains("blockSteel"))
-			GameRegistry.addRecipe(new ShapedOreRecipe(anvil,new Object[]{
-					"ISI",
-					"BBB",
-					"III",
-					'I',"ingotIron",
-					'S',"blockSteel",
-					'B',new ItemStack(Blocks.iron_bars,1,OreDictionary.WILDCARD_VALUE)
-			}));
-		else
-			GameRegistry.addRecipe(new ShapedOreRecipe(anvil,new Object[]{
-					"ISI",
-					"BBB",
-					"III",
-					'I',"ingotIron",
-					'S',Blocks.anvil,
-					'B',new ItemStack(Blocks.iron_bars,1,OreDictionary.WILDCARD_VALUE)
-			}));
-	}
-	
+    }
 
-	
-	public void registerEffects()
-	{
+    public static BT_ServerProxy proxy() {
+        return proxy;
+    }
 
+    @EventHandler
+    public static void onServerStarted(FMLServerStartedEvent event) {
+        BT_EffectAPI.rand = MinecraftServer.getServer().worldServers[0].rand;
+    }
 
+    @EventHandler
+    public void init(FMLInitializationEvent event) {
+        FMLCommonHandler.instance()
+            .bus()
+            .register(new BT_Handler());
+        MinecraftForge.EVENT_BUS.register(new BT_Handler());
+
+        anvil = new BT_Anvil();
+    }
+
+    @EventHandler
+    public void postInit(FMLPostInitializationEvent event) {
+        if (MiscUtils.oreDictionaryContains("blockSteel")) GameRegistry.addRecipe(
+            new ShapedOreRecipe(
+                anvil,
+                new Object[] { "ISI", "BBB", "III", 'I', "ingotIron", 'S', "blockSteel", 'B',
+                    new ItemStack(Blocks.iron_bars, 1, OreDictionary.WILDCARD_VALUE) }));
+        else GameRegistry.addRecipe(
+            new ShapedOreRecipe(
+                anvil,
+                new Object[] { "ISI", "BBB", "III", 'I', "ingotIron", 'S', Blocks.anvil, 'B',
+                    new ItemStack(Blocks.iron_bars, 1, OreDictionary.WILDCARD_VALUE) }));
+    }
+
+    // THIS IS NOT USED ANYMORE
+    public void registerEffects() {
+
+        // spotless:off
 		BT_Effect eaa = new BT_Effect("BT.Effect.Damaged", "Damaged", EnumRarityColor.BROKEN, new DummyData("damage", -0.2D)).registerEffect();
 		BT_Effect eab = new BT_Effect("BT.Effect.Dull", "Dull", EnumRarityColor.BROKEN, new DummyData("damage", -0.20D)).registerEffect();
 		BT_Effect eac = new BT_Effect("BT.Effect.Sluggish", "Sluggish", EnumRarityColor.BROKEN, new DummyData("speed", -0.46D), new DummyData("slow", -1)).registerEffect();
@@ -155,6 +150,6 @@ public class BT_Mod {
 		BT_Effect ebl = new BT_Effect("BT.Effect.Savage", "Savage", EnumRarityColor.UNIQUE, new DummyData("damage", 0.15D), new DummyData("speed", 0.42D), new DummyData("durability", 0.20D), new DummyData("swift", 2), new DummyData("poison", 0.60)).registerEffect();
 		BT_Effect ebm = new BT_Effect("BT.Effect.Murderous", "Murderous", EnumRarityColor.UNIQUE, new DummyData("damage", 0.17D), new DummyData("crit", 0.35D), new DummyData("fear", 1), new DummyData("speed", 0.18D), new DummyData("swift", 2), new DummyData("poison", 0.60), new DummyData("bind", 0.4)).registerEffect();
 		BT_Effect ebn = new BT_Effect("BT.Effect.Legendary", "Legendary", EnumRarityColor.LEGENDARY, new DummyData("damage", 0.25D), new DummyData("lifesteal", 0.70), new DummyData("speed", 0.5D), new DummyData("fear", 1), new DummyData("crit", 0.45D), new DummyData("durability", 0.35D), new DummyData("swift", 2), new DummyData("poison", 0.60), new DummyData("bind", 0.4)).registerEffect();
-
-	}
+        //spotless:on
+    }
 }
