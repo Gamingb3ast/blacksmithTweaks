@@ -1,19 +1,21 @@
 package com.gamingb3ast.blacksmithTweaks;
 
-import static com.gamingb3ast.blacksmithTweaks.BT_Buff.*;
-import static com.gamingb3ast.blacksmithTweaks.BT_Utils.*;
+import static com.gamingb3ast.blacksmithTweaks.api.BT_Buff.*;
+import static com.gamingb3ast.blacksmithTweaks.api.BT_ItemAPI.*;
 import static com.gamingb3ast.blacksmithTweaks.configs.BT_CoreConfig.buffApplicationMethod;
 
-import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.UUID;
 
+import com.gamingb3ast.blacksmithTweaks.api.BT_Buff;
 import com.gamingb3ast.blacksmithTweaks.api.BT_EffectAPI;
+import com.gamingb3ast.blacksmithTweaks.api.BT_ItemAPI;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIAvoidEntity;
+import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.item.EntityXPOrb;
@@ -56,7 +58,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import xonin.backhand.api.core.BackhandUtils;
 
-//TODO: Test this completely
 public class BT_Handler {
 
     @SubscribeEvent
@@ -130,11 +131,11 @@ public class BT_Handler {
                     }
 
                 }
-                BT_Utils.addRandomEffects(item);
+                BT_ItemAPI.addRandomEffect(item);
             } else if (buffApplicationMethod == 2 && isItemBuffable(item)) {
                 Container cont = player.openContainer;
-                if (isShiftDown) BT_Utils.buffItemsInContainer(cont, player);
-                else addRandomEffects(item);
+                if (isShiftDown) BT_ItemAPI.buffItemsInContainer(cont, player);
+                else addRandomEffect(item);
             }
 
         }
@@ -145,14 +146,14 @@ public class BT_Handler {
         EntityPlayer player = event.entityPlayer;
         Container cont = player.openContainer;
         if (buffApplicationMethod == 3) {
-            BT_Utils.buffItemsInContainer(cont, player);
+            BT_ItemAPI.buffItemsInContainer(cont, player);
 
         } else if (buffApplicationMethod == 4) {
             ItemStack stack = null;
             if (itemToBuffIndex != -1) stack = cont.getSlot(itemToBuffIndex)
                 .getStack();
             if (stack != null) if (!itemHasEffect(stack) && isItemBuffable(stack)) {
-                addRandomEffects(stack);
+                addRandomEffect(stack);
             }
         }
     }
@@ -170,7 +171,7 @@ public class BT_Handler {
                 itemToBuffIndex = inventory.indexOf(stack);
             }
         }
-        if (BT_Utils.itemHasEffect(stack)) {
+        if (BT_ItemAPI.itemHasEffect(stack)) {
 
             NBTTagCompound itemTag = stack.getTagCompound();
             NBTTagCompound effectsTag = (NBTTagCompound) stack.getTagCompound()
@@ -187,14 +188,14 @@ public class BT_Handler {
                 itemTag.setTag("BT_Display", displayTag);
                 BT_Mod.network.sendToServer(new BT_MessageAnvilRename(2, itemTag));
             } else {
-                stack.setStackDisplayName(BT_Utils.getDisplayName(stack));
+                stack.setStackDisplayName(BT_ItemAPI.getDisplayName(stack));
             }
             //Display tooltips
             byte[] bytes = effectsTag.getByteArray("BT_Values");
             for (int i = 0; i < bytes.length; i++) {
                 if(BT_EffectAPI.isBuffActive(bytes, BT_Buff.values()[i])) {
                     String name = BT_Buff.values()[i].getName();
-                    String mainName = BT_Utils.translateBuffName(name);
+                    String mainName = BT_EffectAPI.translateBuffName(name);
                     if (bytes[i] > 0)
                         event.toolTip.add(EnumRarityColor.GOOD.getRarityColor() + "+" + bytes[i] + "% " + mainName);
                     else event.toolTip.add(EnumRarityColor.ULTIMATE.getRarityColor() + bytes[i] + "% " + mainName);
@@ -207,7 +208,7 @@ public class BT_Handler {
     public void event_AttackEntityEvent(AttackEntityEvent event) {
         EntityPlayer p = event.entityPlayer;
         World w = p.worldObj;
-        if (p.getCurrentEquippedItem() != null && BT_Utils.itemHasEffect(p.getCurrentEquippedItem()) && !w.isRemote) {
+        if (p.getCurrentEquippedItem() != null && BT_ItemAPI.itemHasEffect(p.getCurrentEquippedItem()) && !w.isRemote) {
             ItemStack stack = p.getCurrentEquippedItem();
             byte[] bytes = stack.getTagCompound()
                 .getCompoundTag("BT_BuffList")
@@ -231,7 +232,7 @@ public class BT_Handler {
     public void event_HarvestCheck(BreakEvent event) {
         EntityPlayer p = event.getPlayer();
         World w = p.worldObj;
-        if (p.getCurrentEquippedItem() != null && BT_Utils.itemHasEffect(p.getCurrentEquippedItem()) && !w.isRemote) {
+        if (p.getCurrentEquippedItem() != null && BT_ItemAPI.itemHasEffect(p.getCurrentEquippedItem()) && !w.isRemote) {
             ItemStack stack = p.getCurrentEquippedItem();
             byte[] bytes = stack.getTagCompound()
                     .getCompoundTag("BT_BuffList")
@@ -258,7 +259,7 @@ public class BT_Handler {
                 EntityPlayer p = (EntityPlayer) (edms.getSourceOfDamage());
                 ItemStack stack = p.getCurrentEquippedItem();
 
-                if (stack != null && BT_Utils.itemHasEffect(stack)) {
+                if (stack != null && BT_ItemAPI.itemHasEffect(stack)) {
                     byte[] bytes = stack.getTagCompound()
                             .getCompoundTag("BT_BuffList")
                             .getByteArray("BT_Values");
@@ -328,7 +329,7 @@ public class BT_Handler {
                     equippedItems[1] = (BT_Mod.backhandLoaded ? BackhandUtils.getOffhandItem(p) : null);
 
                     for (ItemStack stack : equippedItems) {
-                        if (stack != null && BT_Utils.itemHasEffect(stack) && stack.getItem() instanceof ItemBow) {
+                        if (stack != null && BT_ItemAPI.itemHasEffect(stack) && stack.getItem() instanceof ItemBow) {
                             byte[] bytes = stack.getTagCompound()
                                     .getCompoundTag("BT_BuffList")
                                     .getByteArray("BT_Values");
@@ -375,7 +376,7 @@ public class BT_Handler {
                 World w = p.worldObj;
 
                 for (int aSlot = 0; aSlot < 4; aSlot++) {
-                    if (p.getCurrentArmor(aSlot) != null && BT_Utils.itemHasEffect(p.getCurrentArmor(aSlot))) {
+                    if (p.getCurrentArmor(aSlot) != null && BT_ItemAPI.itemHasEffect(p.getCurrentArmor(aSlot))) {
                         ItemStack stack = p.getCurrentArmor(aSlot);
                         byte[] bytes = stack.getTagCompound()
                                 .getCompoundTag("BT_BuffList")
@@ -410,7 +411,7 @@ public class BT_Handler {
     @SubscribeEvent
     public void event_BreakSpeed(BreakSpeed event) {
         EntityPlayer p = event.entityPlayer;
-        if (p.getCurrentEquippedItem() != null && BT_Utils.itemHasEffect(p.getCurrentEquippedItem())) {
+        if (p.getCurrentEquippedItem() != null && BT_ItemAPI.itemHasEffect(p.getCurrentEquippedItem())) {
             ItemStack stack = p.getCurrentEquippedItem();
 
             byte[] bytes = stack.getTagCompound()
@@ -448,14 +449,13 @@ public class BT_Handler {
             + (float) (mod.getAmount() / player.capabilities.getWalkSpeed()) / BT_CoreConfig.FOVEffectsStrength;
     }
 
-    EntityAIAvoidEntity avoidPlayerTask;
-    private EntityMob mob = null;
 
     @SubscribeEvent
     public void PlayerTickEvent(TickEvent.PlayerTickEvent event) {
         EntityPlayer p = event.player;
         World w = p != null ? p.worldObj : null;
         float playerSpeedModifier = 0.0F;
+        float fearFactor = 0.0F;
         hasteValue = 0.0F;
 
         if (p == null || p.ticksExisted < 80 || w == null) return;
@@ -467,9 +467,8 @@ public class BT_Handler {
         equippedItems[3] = p.getCurrentArmor(3);
         equippedItems[4] = p.getCurrentEquippedItem();
         equippedItems[5] = (BT_Mod.backhandLoaded ? BackhandUtils.getOffhandItem(p) : null);
-
         for (ItemStack stack : equippedItems) {
-            if (stack != null && BT_Utils.itemHasEffect(stack)) {
+            if (stack != null && BT_ItemAPI.itemHasEffect(stack)) {
             byte[] bytes = stack.getTagCompound()
                     .getCompoundTag("BT_BuffList")
                     .getByteArray("BT_Values");
@@ -491,18 +490,16 @@ public class BT_Handler {
                     float value = BT_EffectAPI.getBuffValue(bytes, SPEED) / 100F;
                     hasteValue += value;
                 }
-                try {
-                    if (BT_EffectAPI.isBuffActive(bytes, FEAR)) {
-                        float value = BT_EffectAPI.getBuffValue(bytes, FEAR) / 100F;
-                        assignFleeTask(p, w, value);
-                    } else if (avoidPlayerTask != null && mob != null) {
-                        removeFleeTask(avoidPlayerTask, mob, p);
-                    }
-                } catch (ConcurrentModificationException e) {
-                    System.err.println("[BlacksmithTweaks] Error with fear buff: | " + e + " Why :( ");
-
+                if (BT_EffectAPI.isBuffActive(bytes, FEAR)) {
+                    fearFactor = BT_EffectAPI.getBuffValue(bytes, FEAR) / 100F;
                 }
             }
+        }
+
+        try {
+            manageFleeTask(p, w, fearFactor);
+        } catch (Exception e) {
+            System.err.println("[BlacksmithTweaks] Error with fear buff: | " + e + " Why :( If this happens, please report it, this literally isn't supposed to happen anymore");
         }
         AttributeModifier speedModifier = new AttributeModifier(speedUUID, "BT_SWIFT", playerSpeedModifier, 2);
         IAttributeInstance attr = p.getEntityAttribute(SharedMonsterAttributes.movementSpeed);
@@ -518,49 +515,34 @@ public class BT_Handler {
         if (stack != null && stack.hasTagCompound()
             && stack.getTagCompound()
                 .hasKey("BT_Display")) {
-            stack.setStackDisplayName(BT_Utils.getDisplayName(stack));
+            stack.setStackDisplayName(BT_ItemAPI.getDisplayName(stack));
         }
     }
+    //TODO: Make the fearFactor be a range rather than a constant. With higher values doing cooler stuff.
+    private void manageFleeTask(EntityPlayer p, World w, float fearFactor) {
 
-    private void assignFleeTask(EntityPlayer p, World w, float value) {
-        if (p.ticksExisted % 50 == 0) {
-            for (Object obj : w.loadedEntityList) {
-                if (obj instanceof EntityMob) {
-                    mob = (EntityMob) obj;
-                    if (mob.getDistanceToEntity(p) <= 10) {
-                        avoidPlayerTask = new EntityAIAvoidEntity(mob, p.getClass(), (float) 12.0D, value, 1.2D);
-                        mob.tasks.addTask(1, avoidPlayerTask);
-                    } else if (mob.getDistanceToEntity(p) <= 15) {
-                        mob.tasks.removeTask(avoidPlayerTask);
-                    }
+        if (fearFactor < 0) return;
+        for (Object obj : w.loadedEntityList) {
+            if (!(obj instanceof EntityCreature)) continue;
+
+            EntityCreature mob = (EntityCreature) obj;
+            if (!EntityAIFear.field_98218_a.isEntityApplicable(mob)) continue;
+            EntityAIFear fearTask = null;
+
+            for (EntityAITasks.EntityAITaskEntry entry : mob.tasks.taskEntries) {
+                if (entry.action instanceof EntityAIFear) {
+                    fearTask = (EntityAIFear) entry.action;
+                    fearTask.setFearFactor(fearFactor);
+                    break;
                 }
             }
-        }
-    }
-
-    private void removeFleeTask(EntityAIAvoidEntity task, EntityMob mob, EntityPlayer p) {
-        ItemStack[] equippedItems = new ItemStack[6];
-        equippedItems[0] = p.getCurrentArmor(0);
-        equippedItems[1] = p.getCurrentArmor(1);
-        equippedItems[2] = p.getCurrentArmor(2);
-        equippedItems[3] = p.getCurrentArmor(3);
-        equippedItems[4] = p.getCurrentEquippedItem();
-        equippedItems[5] = (BT_Mod.backhandLoaded ? BackhandUtils.getOffhandItem(p) : null);
-
-        for (ItemStack stack : equippedItems) {
-            if (stack != null && BT_Utils.itemHasEffect(stack)) {
-                byte[] bytes = stack.getTagCompound()
-                        .getCompoundTag("BT_BuffList")
-                        .getByteArray("BT_Values");
-
-
-                if (BT_EffectAPI.isBuffActive(bytes, FEAR)) {
-                    mob.tasks.removeTask(task);
-                    return;
-                }
+            if (fearTask == null) {
+                fearTask = new EntityAIFear(mob, EntityPlayer.class, 20.0F, 1.1D, 1.4D, fearFactor);
+                mob.tasks.addTask(1, fearTask);
             }
-        }
 
+        }
     }
+
 
 }

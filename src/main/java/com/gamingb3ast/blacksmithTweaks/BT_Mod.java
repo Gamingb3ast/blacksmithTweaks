@@ -4,6 +4,7 @@ import static com.gamingb3ast.blacksmithTweaks.Tags.VERSION;
 
 import java.io.File;
 
+import com.gamingb3ast.blacksmithTweaks.api.BT_Effect;
 import com.gamingb3ast.blacksmithTweaks.api.BT_EffectAPI;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;

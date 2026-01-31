@@ -1,9 +1,8 @@
-package com.gamingb3ast.blacksmithTweaks;
+package com.gamingb3ast.blacksmithTweaks.api;
 
 
 import DummyCore.Utils.DummyData;
 import DummyCore.Utils.EnumRarityColor;
-import com.gamingb3ast.blacksmithTweaks.api.BT_EffectAPI;
 
 public class BT_Effect {
 
@@ -25,10 +24,10 @@ public class BT_Effect {
         for (DummyData data : buffs) {
             String name = data.fieldName;
 
-            byte value = 0;
+            byte value;
             if(Float.parseFloat(data.fieldValue) > 1)
                 value = (byte) (100 + ((Float.parseFloat(data.fieldValue)-1)*500)); //normal from values -1 to 1. After that every 0.01 is 5 times more. So the maximum range is -2.40 to 2.35. (Multiplied by 100 to drop the decimal for storage)
-            else if(Float.parseFloat(data.fieldValue) < 1)
+            else if(Float.parseFloat(data.fieldValue) < -1)
                 value = (byte) (-100 + ((Float.parseFloat(data.fieldValue)+1)*500));
             else
                 value = (byte) (Float.parseFloat(data.fieldValue)*100);

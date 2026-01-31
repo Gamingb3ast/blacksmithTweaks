@@ -1,4 +1,4 @@
-package com.gamingb3ast.blacksmithTweaks;
+package com.gamingb3ast.blacksmithTweaks.api;
 
 public enum BT_Buff {
     DAMAGE("damage"),
@@ -27,7 +27,7 @@ public enum BT_Buff {
                 return buff;
             }
         }
-        throw new IllegalArgumentException("Buff: " + name + " doesn't exist");
+        throw new IllegalArgumentException("Buff: " + name + " doesn't exist. Someone did something wrong!");
     }
 
 }

@@ -1,5 +1,6 @@
 package com.gamingb3ast.blacksmithTweaks;
 
+import com.gamingb3ast.blacksmithTweaks.api.BT_ItemAPI;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
@@ -20,7 +21,7 @@ public class BT_EventHandler {
                 BT_TileAnvil anvil = (BT_TileAnvil) tile;
                 ItemStack stk = anvil.getStackInSlot(0)
                     .copy();
-                BT_Utils.addRandomEffects(stk);
+                BT_ItemAPI.addRandomEffect(stk);
                 anvil.setInventorySlotContents(0, null);
                 anvil.setInventorySlotContents(1, stk);
                 anvil.markDirty();

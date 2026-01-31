@@ -12,11 +12,9 @@ import net.minecraft.util.StatCollector;
 
 import org.lwjgl.opengl.GL11;
 
-import com.gamingb3ast.blacksmithTweaks.BT_Utils;
+import com.gamingb3ast.blacksmithTweaks.api.BT_ItemAPI;
 
 import DummyCore.Client.GuiCommon;
-import DummyCore.Utils.DataStorage;
-import DummyCore.Utils.DummyData;
 import DummyCore.Utils.MiscUtils;
 
 public class BT_GuiAnvil extends GuiCommon {
@@ -101,7 +99,7 @@ public class BT_GuiAnvil extends GuiCommon {
         if (this.genericTile != null) {
             BT_TileAnvil anvil = (BT_TileAnvil) this.genericTile;
             if (anvil.getStackInSlot(0) != null && anvil.getStackInSlot(1) == null) {
-                if (BT_Utils.isItemBuffable(anvil.getStackInSlot(0))) {
+                if (BT_ItemAPI.isItemBuffable(anvil.getStackInSlot(0))) {
                     int cost = getReforgeCost(anvil.getStackInSlot(0));
                     EntityPlayer player = Minecraft.getMinecraft().thePlayer;
                     return player.experienceLevel >= cost || player.capabilities.isCreativeMode;
@@ -112,7 +110,7 @@ public class BT_GuiAnvil extends GuiCommon {
     }
 
     public int getReforgeCost(ItemStack stk) {
-        if (!BT_Utils.itemHasEffect(stk)) return 5;
+        if (!BT_ItemAPI.itemHasEffect(stk)) return 5;
         NBTTagCompound primalTag = MiscUtils.getStackTag(stk);
         NBTTagCompound tag = primalTag.getCompoundTag("BT_BuffList");
         if (tag.hasKey("BT_Values")) {

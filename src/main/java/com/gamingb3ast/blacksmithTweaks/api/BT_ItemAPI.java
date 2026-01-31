@@ -1,8 +1,8 @@
-package com.gamingb3ast.blacksmithTweaks;
+package com.gamingb3ast.blacksmithTweaks.api;
 
 import java.util.Arrays;
 
-import com.gamingb3ast.blacksmithTweaks.api.BT_EffectAPI;
+import DummyCore.Utils.EnumRarityColor;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.*;
 import net.minecraft.item.Item;
@@ -17,9 +17,9 @@ import com.gamingb3ast.blacksmithTweaks.configs.BT_CoreConfig;
 import DummyCore.Utils.MiscUtils;
 import DummyCore.Utils.Notifier;
 
-public class BT_Utils {
-    //TODO: Move this to API.
-    public static void addRandomEffects(ItemStack stk) {
+public class BT_ItemAPI {
+
+    public static void addRandomEffect(ItemStack stk) {
         if (isItemBuffable(stk)) {
             MiscUtils.createNBTTag(stk);
             NBTTagCompound itemTag = stk.getTagCompound();
@@ -28,17 +28,14 @@ public class BT_Utils {
                 : new NBTTagCompound());
 
             // Remove old effects
-            if (itemTag.hasKey("BT_ValuesList")) {
+            if (itemTag.hasKey("BT_BuffList")) {
                 itemTag.removeTag("BT_BuffList");
             }
             // Add new effects
             BT_Effect effect = BT_EffectAPI.getWeightedRandomEffect();
             effectTag.setByteArray("BT_Values", effect.buffValues);
             // Naming and localization
-            // Get prior display info
-            if (itemTag.hasKey("BT_Display")) {
-                displayTag = itemTag.getCompoundTag("BT_Display");
-            }
+
             if (!stk.getDisplayName()
                 .equals(StatCollector.translateToLocal(stk.getUnlocalizedName() + ".name"))
                 && !itemTag.hasKey("BT_Display")) {
@@ -53,8 +50,65 @@ public class BT_Utils {
             stk.setTagCompound(itemTag);
         }
     }
-    public static void addBuff(String buff, float value) {
-        //TODO: Implement this as API.
+    public static void addSpecificEffect(ItemStack stk, BT_Effect effect) {
+        if (isItemBuffable(stk)) {
+            MiscUtils.createNBTTag(stk);
+            NBTTagCompound itemTag = stk.getTagCompound();
+            NBTTagCompound effectTag = new NBTTagCompound();
+            NBTTagCompound displayTag = (itemTag.hasKey("BT_Display") ? itemTag.getCompoundTag("BT_Display")
+                    : new NBTTagCompound());
+
+            // Remove old effects
+            if (itemTag.hasKey("BT_BuffList")) {
+                itemTag.removeTag("BT_BuffList");
+            }
+            // Add new effects
+            effectTag.setByteArray("BT_Values", effect.buffValues);
+            // Naming and localization
+
+            if (!stk.getDisplayName()
+                    .equals(StatCollector.translateToLocal(stk.getUnlocalizedName() + ".name"))
+                    && !itemTag.hasKey("BT_Display")) {
+                displayTag.setString("BT_AnvilName", stk.getDisplayName());
+            }
+            displayTag.setString("BT_CodeName", effect.getCodeName()); // Used for localization
+            displayTag.setString("BT_EffectName", effect.getRarity() + effect.getName()); // Used for localization, if
+            // no localization then just
+            // the name of the effect.
+            itemTag.setTag("BT_Display", displayTag);
+            itemTag.setTag("BT_BuffList", effectTag);
+            stk.setTagCompound(itemTag);
+        }
+    }
+    public static void addBuff(ItemStack stack, BT_Buff buff, byte value) {
+        if (isItemBuffable(stack)) {
+            NBTTagCompound itemTag = stack.getTagCompound();
+
+            if(itemHasEffect(stack)) {
+                NBTTagCompound effectTag = itemTag.getCompoundTag("BT_BuffList");
+                effectTag.setByteArray("BT_Values", BT_EffectAPI.setBuffValue(effectTag.getByteArray("BT_Values"), buff, value));
+            }
+            else {
+                MiscUtils.createNBTTag(stack);
+                NBTTagCompound effectTag = new NBTTagCompound();
+                NBTTagCompound displayTag = (itemTag.hasKey("BT_Display") ? itemTag.getCompoundTag("BT_Display")
+                        : new NBTTagCompound());
+
+                effectTag.setByteArray("BT_Values", BT_EffectAPI.setBuffValue(new byte[BT_Buff.values().length], buff, value));
+
+                if (!stack.getDisplayName()
+                        .equals(StatCollector.translateToLocal(stack.getUnlocalizedName() + ".name"))) {
+                    displayTag.setString("BT_AnvilName", stack.getDisplayName());
+                }
+                displayTag.setString("BT_CodeName", "custom"); // Used for localization
+                displayTag.setString("BT_EffectName", EnumRarityColor.COMMON.getRarityColor()); // Used for localization, if
+                // no localization then just
+                // the name of the effect.
+                itemTag.setTag("BT_Display", displayTag);
+                itemTag.setTag("BT_BuffList", effectTag);
+                stack.setTagCompound(itemTag);
+            }
+        }
     }
 
     public static String getDisplayName(ItemStack stack) {
@@ -153,7 +207,7 @@ public class BT_Utils {
                 .getStack();
             if (stk != null && stk.getItem() != null) {
                 if (isItemBuffable(stk) && !itemHasEffect(stk)) {
-                    addRandomEffects(stk);
+                    addRandomEffect(stk);
                     cont.detectAndSendChanges();
                 }
             }
@@ -172,8 +226,6 @@ public class BT_Utils {
         }
     }
 
-    public static String translateBuffName(String name) {
-        return StatCollector.translateToLocal("buff.bt." + name + ".name");
-    }
+
 
 }
