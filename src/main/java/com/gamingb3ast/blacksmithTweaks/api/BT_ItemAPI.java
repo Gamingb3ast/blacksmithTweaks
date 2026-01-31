@@ -2,6 +2,8 @@ package com.gamingb3ast.blacksmithTweaks.api;
 
 import java.util.Arrays;
 
+import DummyCore.Utils.DummyData;
+import DummyCore.Utils.DataStorage;
 import DummyCore.Utils.EnumRarityColor;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.*;
@@ -101,26 +103,60 @@ public class BT_ItemAPI {
                     displayTag.setString("BT_AnvilName", stack.getDisplayName());
                 }
                 displayTag.setString("BT_CodeName", "custom"); // Used for localization
-                displayTag.setString("BT_EffectName", EnumRarityColor.COMMON.getRarityColor()); // Used for localization, if
-                // no localization then just
-                // the name of the effect.
+                displayTag.setString("BT_EffectName", EnumRarityColor.COMMON.getRarityColor());
                 itemTag.setTag("BT_Display", displayTag);
                 itemTag.setTag("BT_BuffList", effectTag);
                 stack.setTagCompound(itemTag);
             }
         }
     }
+    public static void checkAndUpdateDeprecatedItem(ItemStack stack) { //Used to update old worlds to the new data system.
+        if(stack.hasTagCompound() && stack.getTagCompound().hasKey("BT_TagList")) {
+            try {
+                String itemName = stack.getTagCompound().getCompoundTag("display").getString("Name");
+                String effectName = itemName.substring(4).split(" ")[0];
+                stack.getTagCompound().getCompoundTag("display").setString("Name", itemName.substring(itemName.indexOf(" ")+1));
+                if (BT_Effect.getEffectFromName(effectName) != null)
+                    addSpecificEffect(stack, BT_Effect.getEffectFromName(effectName));
+                else {
+                    DummyData[] buffs = DataStorage.parseData(stack.getTagCompound().getCompoundTag("BT_TagList").getString("BT_Buffs"));
+                    addSpecificEffect(stack, new BT_Effect("BT:Effect:" + effectName, effectName, EnumRarityColor.getColorByHex(itemName.substring(0, 2)), 1, buffs));
+                }
+            }
+            catch(Exception e) {
+                Notifier.notifyErrorCustomMod(
+                        "Blacksmith Tweaks",
+                        "ERROR: Failed to update deprecated item | \n" + Arrays.toString(e.getStackTrace())
+                                + " "
+                                + e.getMessage()
+                                + "\n Item info | "
+                                + stack.getTagCompound()
+                                .toString()
+                                + "\n Clearing item data, sorry for the inconvenience");
+            }
+            stack.getTagCompound().removeTag("BT_TagList");
+            stack.getTagCompound().removeTag("BT_OriginalName");
+        }
 
+    }
+
+    //This can get finicky if the addBuff method was used on an item without an effect.
     public static String getDisplayName(ItemStack stack) {
         try {
-            String effectName = getNonFormattedEffectName(stack);
             String anvilName = getAnvilName(stack);
-
             String originalName = StatCollector.translateToLocal(stack.getUnlocalizedName() + ".name");
-            if (!anvilName.equals(originalName) && !anvilName.isEmpty()) originalName = "§o" + anvilName;
-            if (effectName.contains("LANG"))
-                effectName = StatCollector.translateToLocal("custom.effect." + getCodeName(stack) + ".name");
-            return getColorFormatting(stack) + effectName + " " + originalName;
+            if (!anvilName.equals(originalName) && !anvilName.isEmpty())
+                originalName = "§o" + anvilName;
+
+            if(!getCodeName(stack).equals("custom")) {
+                String effectName = getNonFormattedEffectName(stack);
+                if (effectName.contains("LANG"))
+                    effectName = StatCollector.translateToLocal("custom.effect." + getCodeName(stack) + ".name");
+                return getColorFormatting(stack) + effectName + " " + originalName;
+            }
+            else
+                return getColorFormatting(stack) + " " + originalName;
+
         } catch (Exception e) {
             Notifier.notifyErrorCustomMod(
                 "Blacksmith Tweaks",
@@ -142,7 +178,7 @@ public class BT_ItemAPI {
     public static String getNonFormattedEffectName(ItemStack stack) {
         return stack.getTagCompound()
             .getCompoundTag("BT_Display")
-            .getString("BT_EffectName");
+            .getString("BT_EffectName").substring(2);
     }
 
     public static String getColorFormatting(ItemStack stack) {

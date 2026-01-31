@@ -16,13 +16,13 @@ public class BT_Effect {
         this(s, s1, color, 1, buffs);
     }
 
-    public BT_Effect(String s, String s1, EnumRarityColor color, int weight, DummyData... buffs) {
-        codeName = s;
-        name = s1;
+    public BT_Effect(String codeName, String name, EnumRarityColor color, int weight, DummyData... buffs) {
+        this.codeName = codeName;
+        this.name = name;
         rarity = color;
         this.weight = weight;
         for (DummyData data : buffs) {
-            String name = data.fieldName;
+            String fieldName = data.fieldName;
 
             byte value;
             if(Float.parseFloat(data.fieldValue) > 1)
@@ -31,7 +31,7 @@ public class BT_Effect {
                 value = (byte) (-100 + ((Float.parseFloat(data.fieldValue)+1)*500));
             else
                 value = (byte) (Float.parseFloat(data.fieldValue)*100);
-            BT_EffectAPI.setBuffValue(buffValues, BT_Buff.fromName(name), value);
+            BT_EffectAPI.setBuffValue(buffValues, BT_Buff.fromName(fieldName), value);
         }
 
     }
@@ -43,6 +43,13 @@ public class BT_Effect {
 
     public String getName() {
         return name;
+    }
+    public static BT_Effect getEffectFromName(String name) {
+        for(BT_Effect effect : BT_EffectAPI.effects_list) {
+            if(effect.codeName.equalsIgnoreCase("BT:Effect:"+ name))
+                return effect;
+        }
+        return null;
     }
 
     public String getRarity() {

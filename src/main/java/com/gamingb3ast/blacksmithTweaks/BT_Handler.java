@@ -171,34 +171,38 @@ public class BT_Handler {
                 itemToBuffIndex = inventory.indexOf(stack);
             }
         }
-        if (BT_ItemAPI.itemHasEffect(stack)) {
+        if (stack != null) {
+            BT_ItemAPI.checkAndUpdateDeprecatedItem(stack);
 
-            NBTTagCompound itemTag = stack.getTagCompound();
-            NBTTagCompound effectsTag = (NBTTagCompound) stack.getTagCompound()
-                .getTag("BT_BuffList");
-            NBTTagCompound displayTag = itemTag.getCompoundTag("BT_Display");
+            if (BT_ItemAPI.itemHasEffect(stack)) {
 
-            // Renaming item
-            if (container instanceof ContainerRepair && stack.equals(
-                container.getSlot(2)
-                    .getStack())
-                && !StatCollector.translateToLocal(stack.getUnlocalizedName() + ".name")
-                    .equals(stack.getDisplayName())) {
-                displayTag.setString("BT_AnvilName", stack.getDisplayName());
-                itemTag.setTag("BT_Display", displayTag);
-                BT_Mod.network.sendToServer(new BT_MessageAnvilRename(2, itemTag));
-            } else {
-                stack.setStackDisplayName(BT_ItemAPI.getDisplayName(stack));
-            }
-            //Display tooltips
-            byte[] bytes = effectsTag.getByteArray("BT_Values");
-            for (int i = 0; i < bytes.length; i++) {
-                if(BT_EffectAPI.isBuffActive(bytes, BT_Buff.values()[i])) {
-                    String name = BT_Buff.values()[i].getName();
-                    String mainName = BT_EffectAPI.translateBuffName(name);
-                    if (bytes[i] > 0)
-                        event.toolTip.add(EnumRarityColor.GOOD.getRarityColor() + "+" + bytes[i] + "% " + mainName);
-                    else event.toolTip.add(EnumRarityColor.ULTIMATE.getRarityColor() + bytes[i] + "% " + mainName);
+                NBTTagCompound itemTag = stack.getTagCompound();
+                NBTTagCompound effectsTag = (NBTTagCompound) stack.getTagCompound()
+                        .getTag("BT_BuffList");
+                NBTTagCompound displayTag = itemTag.getCompoundTag("BT_Display");
+
+                // Renaming item
+                if (container instanceof ContainerRepair && stack.equals(
+                        container.getSlot(2)
+                                .getStack())
+                        && !StatCollector.translateToLocal(stack.getUnlocalizedName() + ".name")
+                        .equals(stack.getDisplayName())) {
+                    displayTag.setString("BT_AnvilName", stack.getDisplayName());
+                    itemTag.setTag("BT_Display", displayTag);
+                    BT_Mod.network.sendToServer(new BT_MessageAnvilRename(2, itemTag));
+                } else {
+                    stack.setStackDisplayName(BT_ItemAPI.getDisplayName(stack));
+                }
+                //Display tooltips
+                byte[] bytes = effectsTag.getByteArray("BT_Values");
+                for (int i = 0; i < bytes.length; i++) {
+                    if (BT_EffectAPI.isBuffActive(bytes, BT_Buff.values()[i])) {
+                        String name = BT_Buff.values()[i].getName();
+                        String mainName = BT_EffectAPI.translateBuffName(name);
+                        if (bytes[i] > 0)
+                            event.toolTip.add(EnumRarityColor.GOOD.getRarityColor() + "+" + bytes[i] + "% " + mainName);
+                        else event.toolTip.add(EnumRarityColor.ULTIMATE.getRarityColor() + bytes[i] + "% " + mainName);
+                    }
                 }
             }
         }
@@ -468,6 +472,9 @@ public class BT_Handler {
         equippedItems[4] = p.getCurrentEquippedItem();
         equippedItems[5] = (BT_Mod.backhandLoaded ? BackhandUtils.getOffhandItem(p) : null);
         for (ItemStack stack : equippedItems) {
+            if (stack != null) {
+                BT_ItemAPI.checkAndUpdateDeprecatedItem(stack);
+            }
             if (stack != null && BT_ItemAPI.itemHasEffect(stack)) {
             byte[] bytes = stack.getTagCompound()
                     .getCompoundTag("BT_BuffList")
