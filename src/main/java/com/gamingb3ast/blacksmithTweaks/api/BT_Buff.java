@@ -1,5 +1,7 @@
 package com.gamingb3ast.blacksmithTweaks.api;
 
+import java.util.Arrays;
+
 public enum BT_Buff {
 
     DAMAGE("damage"),
@@ -30,6 +32,9 @@ public enum BT_Buff {
             }
         }
         throw new IllegalArgumentException("Buff: " + name + " doesn't exist. Someone did something wrong!");
+    }
+    public static String listBuffs() {
+        return "There are " + BT_Buff.values().length + " effects - " + Arrays.toString(BT_Buff.values()) + ".";
     }
 
 }

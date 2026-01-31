@@ -3,6 +3,7 @@ package com.gamingb3ast.blacksmithTweaks.configs;
 import java.io.File;
 import java.util.Set;
 
+import com.gamingb3ast.blacksmithTweaks.api.BT_Buff;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
@@ -50,15 +51,14 @@ public class BT_EffectsConfig extends Configuration {
         ConfigCategory help = this.getCategory("Help");
         help.setComment(
             "Using this .cfg file you can add your own effects, which will be applied to tools. \n"
-                + "Adding your own effect is very simple. Below you can see the example of how it's done. You need to create a custom category, using # chars, then write the code effect name(make sure your name is unique, otherwise your effect will most likely be ignored).\n"
-                + "Then you need to write this name again, this time without # chars, and add {} after it.\n"
-                + "Now, there are 3 fields you need to write in this {}.\n"
+                + "Adding your own effect is very simple. Above you can see the example of how it's done. You need to create a custom category, such as BT:Effect:exampleEffect, this is your effect code name (make sure your name is unique, otherwise your effect will most likely be ignored).\n"
+                + "Now, there are 3 fields you need to write in the brackets {}.\n"
                 + "The first one is 'name'. This says, what name will be actually shown in-game(the tool prefix).\n"
                 + "The second one is 'color'. You should put one hex number there. You can choose from this number set: 8,f,a,2,9,d,e,6,b,3,c,4. These can be used to represent the rarity of your effect. You can learn more about rarities in DummyCore code, in EnumRarityColor file.\n"
                 + "The third one is 'weight'. This one is optional and can be used to make the effect appear more frequently or infrequently. Only accepts integers, negative numbers are switched to positive. This is just a weighted average system. If not specified will use '1'.\n"
-                + "The last one is 'dataArray'. This represents the effects, that will be applied to your buff. There are 9 effects by now - 'damage','speed','durability', 'swift', 'slow', 'lifesteal', 'fear', 'poison' and 'crit'.\n"
-                + "To write this data you need to follow the simple rules: after : put ||, then put an actual name of one of the 10 possible effects. Then put : again, and after that write your value. It can be below 0, should never be an integer unless specified\n"
-                + "This value is percentage-based, and it scales, as 1 = 100%, and 0.25 = 25%. Some effects only except integer values, such as 'swift', 'fear', and 'slow', THESE ARE THE ONLY EFFECTS THAT ACCEPT INTEGER VALUES, PLEASE GIVE THE CORRECT TYPE OF NUMBER TO THE CORRECT EFFECT. \n"
+                + "The last one is 'dataArray'. This represents the effects, that will be applied to your buff. " + BT_Buff.listBuffs() + "\n"
+                + "To write this data you need to follow the simple rules::: after '=' put '||', then put an actual name of one of the + " + BT_Buff.values().length + " possible effects. Then put ':', and after that write your value. It can be below 0, values can range from -1.28 to 1.27, and should never be an integer unless specified\n"
+                + "This value is percentage-based, and it scales, as 1 = 100%, and 0.25 = 25%. Everything above or below 1 is multiplied by 5. So 1.1 = 150%, 1.27 = 235% and so on. Some effects only except integer values, such as 'fear', THIS IS THE ONLY EFFECT THAT ACCEPT INTEGER VALUES. IT TAKES A VALUE OF 1 (for now) \n"
                 + "If you want to add more than one effect, just put || after the value you have last written, and start writing another data string. But remember, that || represents the beginning of the new datastring, so something like |||| will most likely lead to crash.\n");
 
         ConfigCategory exampleCat = this.getCategory("BT:Effect:exampleEffect");
