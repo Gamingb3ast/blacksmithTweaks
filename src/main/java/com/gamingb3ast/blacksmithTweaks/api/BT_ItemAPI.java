@@ -195,6 +195,13 @@ public class BT_ItemAPI {
         }
     }
 
+    public static String getFormattedEffectName(ItemStack stack) {
+        String effectName = getNonFormattedEffectName(stack);
+        if (effectName.contains("LANG"))
+            effectName = StatCollector.translateToLocal("custom.effect." + getCodeName(stack) + ".name");
+        return getColorFormatting(stack) + effectName;
+    }
+
     public static String getNonFormattedEffectName(ItemStack stack) {
         return stack.getTagCompound()
             .getCompoundTag("BT_Display")
@@ -248,7 +255,7 @@ public class BT_ItemAPI {
     }
 
     public static boolean itemHasEffect(ItemStack stack) {
-        if (stack.hasTagCompound() && stack.getTagCompound()
+        if (stack != null && stack.hasTagCompound() && stack.getTagCompound()
             .hasKey("BT_BuffList")) {
             NBTTagCompound tag = (NBTTagCompound) stack.getTagCompound()
                 .getTag("BT_BuffList");

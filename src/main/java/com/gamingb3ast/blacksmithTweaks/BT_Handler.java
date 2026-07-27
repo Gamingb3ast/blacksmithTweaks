@@ -29,7 +29,6 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.event.FOVUpdateEvent;
@@ -150,7 +149,7 @@ public class BT_Handler {
             ItemStack stack = null;
             if (itemToBuffIndex != -1) stack = cont.getSlot(itemToBuffIndex)
                 .getStack();
-            if (stack != null) if (!itemHasEffect(stack) && isItemBuffable(stack)) {
+            if (!itemHasEffect(stack) && isItemBuffable(stack)) {
                 addRandomEffect(stack);
             }
         }
@@ -182,13 +181,14 @@ public class BT_Handler {
                 // Renaming item
                 if (container instanceof ContainerRepair && stack.equals(
                     container.getSlot(2)
-                        .getStack())
-                    && !StatCollector.translateToLocal(stack.getUnlocalizedName() + ".name")
-                        .equals(stack.getDisplayName())) {
+                        .getStack())) {
                     displayTag.setString("BT_AnvilName", stack.getDisplayName());
                     itemTag.setTag("BT_Display", displayTag);
                     BT_Mod.network.sendToServer(new BT_MessageAnvilRename(2, itemTag));
-                } else {
+                }
+                else if (!(container instanceof ContainerRepair && stack.equals(
+                        container.getSlot(0)
+                                .getStack()))){
                     stack.setStackDisplayName(BT_ItemAPI.getDisplayName(stack));
                 }
                 // Display tooltips
@@ -210,7 +210,7 @@ public class BT_Handler {
     public void event_AttackEntityEvent(AttackEntityEvent event) {
         EntityPlayer p = event.entityPlayer;
         World w = p.worldObj;
-        if (p.getCurrentEquippedItem() != null && BT_ItemAPI.itemHasEffect(p.getCurrentEquippedItem()) && !w.isRemote) {
+        if (BT_ItemAPI.itemHasEffect(p.getCurrentEquippedItem()) && !w.isRemote) {
             ItemStack stack = p.getCurrentEquippedItem();
             byte[] bytes = stack.getTagCompound()
                 .getCompoundTag("BT_BuffList")
@@ -234,7 +234,7 @@ public class BT_Handler {
     public void event_HarvestCheck(BreakEvent event) {
         EntityPlayer p = event.getPlayer();
         World w = p.worldObj;
-        if (p.getCurrentEquippedItem() != null && BT_ItemAPI.itemHasEffect(p.getCurrentEquippedItem()) && !w.isRemote) {
+        if (BT_ItemAPI.itemHasEffect(p.getCurrentEquippedItem()) && !w.isRemote) {
             ItemStack stack = p.getCurrentEquippedItem();
             byte[] bytes = stack.getTagCompound()
                 .getCompoundTag("BT_BuffList")
@@ -261,7 +261,7 @@ public class BT_Handler {
                 EntityPlayer p = (EntityPlayer) (edms.getSourceOfDamage());
                 ItemStack stack = p.getCurrentEquippedItem();
 
-                if (stack != null && BT_ItemAPI.itemHasEffect(stack)) {
+                if (BT_ItemAPI.itemHasEffect(stack)) {
                     byte[] bytes = stack.getTagCompound()
                         .getCompoundTag("BT_BuffList")
                         .getByteArray("BT_Values");
@@ -331,7 +331,7 @@ public class BT_Handler {
                     equippedItems[1] = (BT_Mod.backhandLoaded ? BackhandUtils.getOffhandItem(p) : null);
 
                     for (ItemStack stack : equippedItems) {
-                        if (stack != null && BT_ItemAPI.itemHasEffect(stack) && stack.getItem() instanceof ItemBow) {
+                        if (BT_ItemAPI.itemHasEffect(stack) && stack.getItem() instanceof ItemBow) {
                             byte[] bytes = stack.getTagCompound()
                                 .getCompoundTag("BT_BuffList")
                                 .getByteArray("BT_Values");
@@ -378,7 +378,7 @@ public class BT_Handler {
                 World w = p.worldObj;
 
                 for (int aSlot = 0; aSlot < 4; aSlot++) {
-                    if (p.getCurrentArmor(aSlot) != null && BT_ItemAPI.itemHasEffect(p.getCurrentArmor(aSlot))) {
+                    if (BT_ItemAPI.itemHasEffect(p.getCurrentArmor(aSlot))) {
                         ItemStack stack = p.getCurrentArmor(aSlot);
                         byte[] bytes = stack.getTagCompound()
                             .getCompoundTag("BT_BuffList")
@@ -413,7 +413,7 @@ public class BT_Handler {
     @SubscribeEvent
     public void event_BreakSpeed(BreakSpeed event) {
         EntityPlayer p = event.entityPlayer;
-        if (p.getCurrentEquippedItem() != null && BT_ItemAPI.itemHasEffect(p.getCurrentEquippedItem())) {
+        if (BT_ItemAPI.itemHasEffect(p.getCurrentEquippedItem())) {
             ItemStack stack = p.getCurrentEquippedItem();
 
             byte[] bytes = stack.getTagCompound()
@@ -472,7 +472,7 @@ public class BT_Handler {
             if (stack != null) {
                 BT_ItemAPI.checkAndUpdateDeprecatedItem(stack);
             }
-            if (stack != null && BT_ItemAPI.itemHasEffect(stack)) {
+            if (BT_ItemAPI.itemHasEffect(stack)) {
                 byte[] bytes = stack.getTagCompound()
                     .getCompoundTag("BT_BuffList")
                     .getByteArray("BT_Values");
@@ -516,12 +516,22 @@ public class BT_Handler {
             }
         } else attr.removeModifier(speedModifier);
 
+        //Hotbar display name
         ItemStack stack = p.getCurrentEquippedItem();
         if (stack != null && stack.hasTagCompound()
             && stack.getTagCompound()
                 .hasKey("BT_Display")) {
             stack.setStackDisplayName(BT_ItemAPI.getDisplayName(stack));
         }
+        if (p.openContainer instanceof ContainerRepair && BT_ItemAPI.itemHasEffect(p.openContainer.getSlot(0).getStack())) {
+            ContainerRepair anvilContainer = (ContainerRepair) p.openContainer;
+            ItemStack result = anvilContainer.getSlot(0).getStack();
+            String name = result.getDisplayName();
+            if(name.contains(BT_ItemAPI.getFormattedEffectName(result).substring(1)))
+                result.setStackDisplayName(name.substring(BT_ItemAPI.getFormattedEffectName(result).length()+1));
+        }
+
+
     }
 
     // TODO: Make the fearFactor be a range rather than a constant. With higher values doing cooler stuff.
