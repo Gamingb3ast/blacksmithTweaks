@@ -109,7 +109,7 @@ public class BT_CoreConfig extends Configuration {
                         + "\teffect_count : The number of effects currently registered\n"
                         + "\tweight_total : The total weight of the effects currently registered\n"
                         + "\tweight : The weight of the effect currently being evaluated, if no effect is registered, is treated as the average weight\n"
-                        + "\tbuff_count : The amount of buffs the item has"
+                        + "\tbuff_count : The amount of buffs the item has\n"
                         + "\tweighted_buff_count : The weighted total of the buffs the item has, can be used as a more interesting substitute for buff_count. Set by [Buff Weights] NOT YET IMPLEMENTED, DO NOT USE THIS." //TODO: Implement buff weights
         ).getString();
 
