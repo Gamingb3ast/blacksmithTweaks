@@ -47,6 +47,7 @@ public class BT_Effect {
     public static BT_Effect getEffectFromName(String name) {
         for (BT_Effect effect : BT_EffectAPI.effects_list) {
             if (effect.codeName.equalsIgnoreCase("BT:Effect:" + name)) return effect;
+            if (effect.codeName.equalsIgnoreCase(name)) return effect;
         }
         return null;
     }

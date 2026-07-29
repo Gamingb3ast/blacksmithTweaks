@@ -19,6 +19,8 @@ public class BT_CoreConfig extends Configuration {
     public static ArrayList<ItemStack> whitelist = new ArrayList<ItemStack>();
     public static int FOVEffectsStrength;
     public static int buffApplicationMethod;
+    public static int firstForgeCost;
+    public static String reforgeCostFormula;
     public static String CONFIG_GENERAL = "General";
 
     public BT_CoreConfig(File configFile) {
@@ -89,6 +91,28 @@ public class BT_CoreConfig extends Configuration {
                 + "Any other number will result in buff application being disabled\n"
                 + "WARNING: SOME OF THESE WILL NOT WORK WITH CERTAIN MODS, THIS CONFIG OPTION EXISTS SO YOU CAN HAVE ALTERNATIVES IN CASE OF BUGS OR CRASHES")
             .getInt();
+        // first forge cost
+        firstForgeCost = this.get(
+                CONFIG_GENERAL,
+                "First Forge Cost",
+                5,
+                "The price of forging a non-buffed item in the forging anvil"
+        ).getInt();
+        // reforge cost
+        reforgeCostFormula = this.get(CONFIG_GENERAL,
+                "Reforge Cost Formula",
+                "MAX(5, MIN(25, buff_count*2*(weight/(weight_total/effect_count))))",
+                "The xp cost to reforge an item."
+                        + "Uses the EvalEx expression parser\n"
+                        + "See: https://github.com/uklimaschewski/EvalEx for syntax/function documentation\n\n"
+                        + "Available variables:\n"
+                        + "\teffect_count : The number of effects currently registered\n"
+                        + "\tweight_total : The total weight of the effects currently registered\n"
+                        + "\tweight : The weight of the effect currently being evaluated, if no effect is registered, is treated as the average weight\n"
+                        + "\tbuff_count : The amount of buffs the item has"
+                        + "\tweighted_buff_count : The weighted total of the buffs the item has, can be used as a more interesting substitute for buff_count. Set by [Buff Weights] NOT YET IMPLEMENTED, DO NOT USE THIS." //TODO: Implement buff weights
+        ).getString();
+
 
         String applicationString = "Buff application disabled";
         switch (buffApplicationMethod) {

@@ -2,7 +2,6 @@ package com.gamingb3ast.blacksmithTweaks.api;
 
 import java.util.Arrays;
 
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -227,6 +226,9 @@ public class BT_ItemAPI {
             .getCompoundTag("BT_Display")
             .getString("BT_AnvilName");
     }
+    public static BT_Effect getEffect(ItemStack stack) {
+        return BT_Effect.getEffectFromName(getCodeName(stack));
+    }
 
     public static boolean isItemOnBlackList(ItemStack stk) {
         for (int i = 0; i < BT_CoreConfig.blacklist.size(); i++) {
@@ -263,8 +265,28 @@ public class BT_ItemAPI {
         }
         return false;
     }
+    public static byte[] getItemBuffs(ItemStack stack) {
+        if (stack != null && stack.hasTagCompound() && stack.getTagCompound()
+                .hasKey("BT_BuffList")) {
+            NBTTagCompound tag = (NBTTagCompound) stack.getTagCompound()
+                    .getTag("BT_BuffList");
+            if (tag.hasKey("BT_Values"))
+                return tag.getByteArray("BT_Values");
+        }
+        return null;
+    }
+    public static int getNumItemBuffs(ItemStack stack) {
+        if (stack != null && stack.hasTagCompound() && stack.getTagCompound()
+                .hasKey("BT_BuffList")) {
+            NBTTagCompound tag = (NBTTagCompound) stack.getTagCompound()
+                    .getTag("BT_BuffList");
+            if (tag.hasKey("BT_Values"))
+                return BT_EffectAPI.numBuffsActive(tag.getByteArray("BT_Values"));
+        }
+        return 0;
+    }
 
-    public static void buffItemsInContainer(Container cont, EntityPlayer player) {
+    public static void buffItemsInContainer(Container cont) {
         if (cont == null) return;
         for (int i = 0; i < cont.inventorySlots.size(); i++) {
             ItemStack stk = cont.getSlot(i)

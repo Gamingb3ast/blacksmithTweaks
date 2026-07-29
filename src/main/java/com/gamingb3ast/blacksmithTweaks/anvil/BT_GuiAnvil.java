@@ -1,11 +1,10 @@
 package com.gamingb3ast.blacksmithTweaks.anvil;
 
+import com.gamingb3ast.blacksmithTweaks.api.BT_EffectAPI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
@@ -22,6 +21,7 @@ public class BT_GuiAnvil extends GuiCommon {
     public BT_GuiAnvil(Container c, TileEntity tile) {
         super(c, tile);
     }
+
 
     public void initGui() {
         super.initGui();
@@ -76,7 +76,7 @@ public class BT_GuiAnvil extends GuiCommon {
                     0xff4444);
             } else {
                 int k1 = (int) l << 16 | (int) i1 << 8 | (int) j1;
-                int reqExp = this.getReforgeCost(anvil.getStackInSlot(0));
+                int reqExp = BT_EffectAPI.getReforgeCost(anvil.getStackInSlot(0));
                 if (reforgable) this.fontRendererObj.drawStringWithShadow(
                     reqExp + StatCollector.translateToLocal("gui.bt.anvil.reforge.levels.element"),
                     k + 70,
@@ -100,7 +100,7 @@ public class BT_GuiAnvil extends GuiCommon {
             BT_TileAnvil anvil = (BT_TileAnvil) this.genericTile;
             if (anvil.getStackInSlot(0) != null && anvil.getStackInSlot(1) == null) {
                 if (BT_ItemAPI.isItemBuffable(anvil.getStackInSlot(0))) {
-                    int cost = getReforgeCost(anvil.getStackInSlot(0));
+                    int cost = BT_EffectAPI.getReforgeCost(anvil.getStackInSlot(0));
                     EntityPlayer player = Minecraft.getMinecraft().thePlayer;
                     return player.experienceLevel >= cost || player.capabilities.isCreativeMode;
                 }
@@ -109,23 +109,13 @@ public class BT_GuiAnvil extends GuiCommon {
         return false;
     }
 
-    public int getReforgeCost(ItemStack stk) {
-        if (!BT_ItemAPI.itemHasEffect(stk)) return 5;
-        NBTTagCompound primalTag = MiscUtils.getStackTag(stk);
-        NBTTagCompound tag = primalTag.getCompoundTag("BT_BuffList");
-        if (tag.hasKey("BT_Values")) {
-            return tag.getByteArray("BT_Values").length * 2; // TODO: Make this configurable and also consider the
-                                                             // weight of the effect (gotten from effectslist in effects
-                                                             // lib)
-        }
-        return 0;
-    }
+
 
     protected void actionPerformed(GuiButton par1GuiButton) {
         super.actionPerformed(par1GuiButton);
         EntityPlayer player = Minecraft.getMinecraft().thePlayer;
         if (!player.capabilities.isCreativeMode)
-            player.experienceLevel -= this.getReforgeCost(((BT_TileAnvil) this.genericTile).getStackInSlot(0));
+            player.experienceLevel -= BT_EffectAPI.getReforgeCost(((BT_TileAnvil) this.genericTile).getStackInSlot(0));
         player.worldObj.playAuxSFX(1021, this.genericTile.xCoord, this.genericTile.yCoord, this.genericTile.zCoord, 0);
         MiscUtils.handleButtonPress(
             par1GuiButton.id,
@@ -135,6 +125,6 @@ public class BT_GuiAnvil extends GuiCommon {
             this.genericTile.xCoord,
             this.genericTile.yCoord,
             this.genericTile.zCoord,
-            "||xpCost:" + this.getReforgeCost(((BT_TileAnvil) this.genericTile).getStackInSlot(0)));
+            "||xpCost:" + BT_EffectAPI.getReforgeCost(((BT_TileAnvil) this.genericTile).getStackInSlot(0)));
     }
 }

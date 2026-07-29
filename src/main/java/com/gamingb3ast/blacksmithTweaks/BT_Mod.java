@@ -88,6 +88,7 @@ public class BT_Mod {
             .bus()
             .register(new BT_Handler());
         MinecraftForge.EVENT_BUS.register(new BT_Handler());
+        BT_EffectAPI.updateFormula();
 
         anvil = new BT_Anvil();
     }

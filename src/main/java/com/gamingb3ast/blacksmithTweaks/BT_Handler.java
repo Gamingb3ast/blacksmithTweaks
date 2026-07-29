@@ -131,7 +131,7 @@ public class BT_Handler {
                 BT_ItemAPI.addRandomEffect(item);
             } else if (buffApplicationMethod == 2 && isItemBuffable(item)) {
                 Container cont = player.openContainer;
-                if (isShiftDown) BT_ItemAPI.buffItemsInContainer(cont, player);
+                if (isShiftDown) BT_ItemAPI.buffItemsInContainer(cont);
                 else addRandomEffect(item);
             }
 
@@ -143,7 +143,7 @@ public class BT_Handler {
         EntityPlayer player = event.entityPlayer;
         Container cont = player.openContainer;
         if (buffApplicationMethod == 3) {
-            BT_ItemAPI.buffItemsInContainer(cont, player);
+            BT_ItemAPI.buffItemsInContainer(cont);
 
         } else if (buffApplicationMethod == 4) {
             ItemStack stack = null;
@@ -534,7 +534,7 @@ public class BT_Handler {
 
     }
 
-    // TODO: Make the fearFactor be a range rather than a constant. With higher values doing cooler stuff.
+    // TODO: Make the fearFactor be a range rather than a constant. With higher values doing cooler stuff. Also make it only apply to one player.
     private void manageFleeTask(EntityPlayer p, World w, float fearFactor) {
 
         if (fearFactor < 0) return;
